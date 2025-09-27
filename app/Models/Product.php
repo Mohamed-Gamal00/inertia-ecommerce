@@ -34,6 +34,7 @@ class Product extends Model
     ];
 
     /// mohamed gamal
+    protected $appends = ['image_url'];
 
     protected static function booted()
     {
@@ -150,18 +151,32 @@ class Product extends Model
             ]);
     }
 
+    // public function getImageUrlAttribute()
+    // {
+    //     if (!$this->image) {
+    //         return asset('assets/images/no-image.jpg');
+    //     }
+
+    //     if (Str::startsWith($this->image, ['http://', 'https://'])) {
+    //         return $this->image;
+    //     }
+
+    //     return asset('storage/' . $this->image);
+    // }
+
     public function getImageUrlAttribute()
     {
         if (!$this->image) {
-            return asset('assets/images/no-image.jpg');
+            return url('assets/images/no-image.jpg');
         }
 
         if (Str::startsWith($this->image, ['http://', 'https://'])) {
             return $this->image;
         }
 
-        return asset('storage/' . $this->image);
+        return url('storage/' . $this->image);
     }
+
 
     public function scopeFilter(Builder $builder, $filters)
     {
