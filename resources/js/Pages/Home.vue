@@ -3,19 +3,23 @@
 </script>
 
 <template>
-  <div class="p-5">
-    <button class="btn btn-primary">Bootstrap Test</button>
-    <div class="row">
-        <p class="text-center">zew</p>
-    </div>
+  <v-card
+    class="mx-auto my-8"
+    elevation="16"
+    max-width="344"
+  >
+    <v-card-item>
+      <v-card-title>
+        Card title
+      </v-card-title>
 
-    <div class="card" style="width: 18rem;">
-  <img src="..." class="card-img-top" alt="...">
-  <div class="card-body">
-    <h5 class="card-title">Card title</h5>
-    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
-    <a href="#" class="btn btn-primary">Go somewhere</a>
-  </div>
-</div>
-  </div>
+      <v-card-subtitle>
+        Card subtitle secondary text
+      </v-card-subtitle>
+    </v-card-item>
+
+    <v-card-text>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+    </v-card-text>
+  </v-card>
 </template>
