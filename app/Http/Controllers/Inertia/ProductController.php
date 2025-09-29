@@ -10,6 +10,7 @@ use Inertia\Inertia;
 
 class ProductController extends Controller
 {
+    "test";
     public function index()
     {
         $allProducts = Product::with('availability')->paginate(5);
