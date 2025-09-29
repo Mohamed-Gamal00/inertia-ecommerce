@@ -13,10 +13,6 @@ class ProductController extends Controller
     public function index()
     {
         $allProducts = Product::with('availability')->paginate(5);
-
-
-        // return $allProducts;
-
         return Inertia::render('Products', [
             'products' => $allProducts,
         ]);
