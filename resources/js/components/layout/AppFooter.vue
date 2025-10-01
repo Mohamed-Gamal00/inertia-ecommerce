@@ -1,5 +1,5 @@
 <template>
-    <v-footer app color="#222" class="text-white pt-14">
+    <v-footer app color="#222" class="text-white pt-14" absolute>
         <v-container fluid class="px-8">
             <v-row>
                 <!-- SHOP -->
