@@ -1,6 +1,6 @@
 <template>
 <v-footer color="primary" dark class="pa-0">
-  <v-container fluid class="py-8 px-4">
+  <v-container fluid >
     <v-row>
       <!-- Logo & About -->
       <v-col cols="12" md="4" class="mb-6 mb-md-0">
