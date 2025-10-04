@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\Inertia\ProductController;
+use App\Http\Controllers\Inertia\UserController;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,7 +17,13 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return Inertia::render('Home');
 });
+
+Route::prefix('products')->group(function () {
+    Route::get('/', [ProductController::class, 'index'])->name('products');
+});
+
+
 
 require __DIR__ . '/dashboard.php';
