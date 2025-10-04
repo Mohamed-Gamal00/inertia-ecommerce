@@ -26,51 +26,65 @@ watch(
 </script>
 
 <template>
-    <div>
-    <h1>Products List</h1>
-    <v-row>
-        <v-col cols="2" v-for="product in products.data" :key="product.id">
-            <v-card class="text-center py-3 px-2" elevation="0">
-            <v-hover v-slot="{ isHovering, props }">
-                <div
-                class="img-parent"
-                style="
-                    overflow: hidden;
-                    width: 100%;
-                    height: 170px;
-                    border-radius: 50%;
-                "
-                >
-                <img
-                    :src="product.image_url"
-                    alt="image"
-                    :style="`
-                    cursor: pointer;
-                    height:100%;
-                    width:100%;
-                    transition: all 0.3s ease-in-out;
-                    scale: ${isHovering ? 1.05 : 1};
-                    `"
-                    v-bind="props"
-                />
-                </div>
-            </v-hover>
-            <v-card-text>{{ product.name }}</v-card-text>
-            </v-card>
-        </v-col>
-        </v-row>
-    <!-- <ul>
-        <li v-for="product in products.data" :key="product.id">
-        {{ product.name }}
-        </li>
-    </ul> -->
+  <div class="px-4 py-6">
+    <h1 class="text-h5 mb-6 text-center">قائمة المنتجات</h1>
 
-    <!-- نفس فكرة المثال: v-model مع ref -->
-    <v-pagination
+    <v-row class="justify-center">
+      <v-col
+        v-for="product in products.data"
+        :key="product.id"
+        cols="6"
+        sm="4"
+        md="3"
+        lg="2"
+        class="d-flex justify-center"
+      >
+        <v-card
+          class="text-center py-3 px-2 w-100"
+          elevation="2"
+          rounded="xl"
+        >
+          <v-hover v-slot="{ isHovering, props }">
+            <div
+              class="img-parent mx-auto"
+              style="
+                overflow: hidden;
+                width: 100%;
+                aspect-ratio: 1 / 1;
+                border-radius: 50%;
+                background: #f9f9f9;
+              "
+            >
+              <img
+                :src="product.image_url"
+                alt="image"
+                :style="`
+                  cursor: pointer;
+                  height: 100%;
+                  width: 100%;
+                  object-fit: cover;
+                  transition: transform 0.3s ease-in-out;
+                  transform: scale(${isHovering ? 1.05 : 1});
+                `"
+                v-bind="props"
+              />
+            </div>
+          </v-hover>
+
+          <v-card-text class="mt-3 font-weight-medium">
+            {{ product.name }}
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <div class="d-flex justify-center mt-6">
+      <v-pagination
         v-model="page"
         :length="products.last_page"
-        total-visible="7"
+        total-visible="5"
         @update:model-value="goto"
-    />
+      />
     </div>
+  </div>
 </template>

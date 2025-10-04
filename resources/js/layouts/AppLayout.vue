@@ -1,20 +1,18 @@
 <template>
-  <v-app>
-    <v-layout class="d-flex flex-column min-h-screen position-relative">
-
-      <!-- مكونات ثابتة -->
+  <v-app>      <!-- مكونات ثابتة -->
       <CartDrawer />
       <AppHeader />
 
       <!-- المحتوى الرئيسي -->
-      <v-main class="flex-grow-1 py-15" style="overflow-y: auto;">
-        <slot></slot>
+      <v-main >
+        <v-container>
+            <slot></slot>
+        </v-container>
       </v-main>
 
       <!-- الفوتر -->
       <AppFooter />
 
-    </v-layout>
   </v-app>
 </template>
 

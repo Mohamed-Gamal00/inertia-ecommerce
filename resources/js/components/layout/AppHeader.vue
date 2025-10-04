@@ -32,7 +32,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <v-app-bar app color="primary" dark>
+  <v-app-bar color="primary" dark>
     <!-- Logo -->
     <v-app-bar-nav-icon class="d-md-none" @click="drawer = !drawer" />
     <Link href="/" class="d-flex align-center text-white no-underline">
@@ -75,21 +75,21 @@ onBeforeUnmount(() => {
   </v-app-bar>
 
 <!-- Drawer (Responsive Menu) -->
-        <v-navigation-drawer v-model="drawer" app temporary location="right">
-        <v-list>
-            <v-list-item
-            v-for="item in menu"
-            :key="item.href"
-            @click="drawer = false"
-            >
-            <Link
-                :href="item.href"
-                class="w-full block py-2 px-4 text-black no-underline"
-            >
-                {{ item.title }}
-            </Link>
-            </v-list-item>
-        </v-list>
-        </v-navigation-drawer>
+    <v-navigation-drawer v-model="drawer" app temporary location="right">
+    <v-list>
+        <v-list-item
+        v-for="item in menu"
+        :key="item.href"
+        @click="drawer = false"
+        >
+        <Link
+            :href="item.href"
+            class="w-full block py-2 px-4 text-black no-underline"
+        >
+            {{ item.title }}
+        </Link>
+        </v-list-item>
+    </v-list>
+    </v-navigation-drawer>
 
 </template>
