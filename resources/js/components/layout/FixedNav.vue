@@ -6,27 +6,24 @@
           <v-col cols="2">
             <img
               class="w-50"
-              src="@/assets/images/logo.png"
+              src=""
               alt="logo"
-              @click="$router.push({ name: 'home' })"
+              @click="$inertia.visit(route('home'))"
               style="cursor: pointer"
             />
           </v-col>
-          <v-col cols="7 ">
+          <v-col cols="7">
             <ul
               class="links d-flex text-white justify-space-between"
               style="list-style: none"
             >
               <li v-for="category in categories" :key="category.title">
-                <router-link
-                  :to="{
-                    name: 'products_category',
-                    params: { category: category.route, title: category.title },
-                  }"
+                <Link
+                  :href="route('products_category', { category: category.route, title: category.title })"
                   style="color: white; text-decoration: none"
                 >
                   {{ category.title }}
-                </router-link>
+                </Link>
               </li>
             </ul>
           </v-col>
@@ -35,6 +32,7 @@
             class="d-flex justify-end alin-center"
             style="gap: 20px"
           >
+            <!-- أيقونة البحث -->
             <svg
               data-icon="search"
               viewBox="0 0 512 512"
@@ -46,6 +44,8 @@
                 d="M495,466.2L377.2,348.4c29.2-35.6,46.8-81.2,46.8-130.9C424,103.5,331.5,11,217.5,11C103.4,11,11,103.5,11,217.5   S103.4,424,217.5,424c49.7,0,95.2-17.5,130.8-46.7L466.1,495c8,8,20.9,8,28.9,0C503,487.1,503,474.1,495,466.2z M217.5,382.9   C126.2,382.9,52,308.7,52,217.5S126.2,52,217.5,52C308.7,52,383,126.3,383,217.5S308.7,382.9,217.5,382.9z"
               ></path>
             </svg>
+
+            <!-- أيقونة السلة -->
             <div
               class="wishlists d-flex flex-column align-center"
               style="cursor: pointer"
@@ -53,7 +53,7 @@
             >
               <v-badge
                 location="right top"
-                :content="cartItems.length"
+                :content="5"
                 color="red"
                 offset-x="-14"
               ></v-badge>
@@ -84,20 +84,23 @@
 </template>
 
 <script>
-import { productModules } from "@/stores/products";
-import { createStore } from "@/stores/cart.js";
+import { Link } from "@inertiajs/vue3";
 // import { mapState } from "pinia";
+// import { productModules } from "@/stores/products";
+// import { createStore } from "@/stores/cart.js";
+
 export default {
-  computed: {
-    ...mapState(productModules, ["categories"]),
-    ...mapState(createStore, ["cartItems"]),
-  },
-  inject: ["Emitter"],
-  methods: {
-    openCart() {
-      this.Emitter.emit("openCart");
-    },
-  },
+  components: { Link },
+//   computed: {
+//     ...mapState(productModules, ["categories"]),
+//     ...mapState(createStore, ["cartItems"]),
+//   },
+//   inject: ["Emitter"],
+//   methods: {
+//     openCart() {
+//       this.Emitter.emit("openCart");
+//     },
+//   },
 };
 </script>
 
