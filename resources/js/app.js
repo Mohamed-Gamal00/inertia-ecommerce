@@ -13,7 +13,7 @@ const vuetify = createVuetify({
     components,
     directives,
     locale: {
-        locale: "en",
+        locale: "ar",
         fallback: "en",
     },
 });

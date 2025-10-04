@@ -33,45 +33,48 @@ onBeforeUnmount(() => {
 
 <template>
   <v-app-bar color="primary" dark>
-    <!-- Logo -->
-    <v-app-bar-nav-icon class="d-md-none" @click="drawer = !drawer" />
-    <Link href="/" class="d-flex align-center text-white no-underline">
-      <v-icon class="mr-2">mdi-storefront</v-icon>
-      <span class="font-bold text-lg">متجري</span>
-    </Link>
+    <v-container fluid class="d-flex align-center justify-content-between">
+        <!-- Logo -->
+        <v-app-bar-nav-icon class="d-md-none" @click="drawer = !drawer" />
+        <Link href="/" class="d-flex align-center text-white no-underline">
+          <v-icon class="mr-2">mdi-storefront</v-icon>
+          <span class="font-bold text-lg">متجري</span>
+        </Link>
 
-    <!-- Desktop Menu -->
-    <v-spacer />
-    <div class="d-none d-md-flex">
-      <Link
-        v-for="item in menu"
-        :key="item.href"
-        :href="item.href"
-        class="mx-3 text-white no-underline"
-      >
-        {{ item.title }}
-      </Link>
-    </div>
+        <!-- Desktop Menu -->
+        <v-spacer />
+        <div class="d-none d-md-flex">
+          <Link
+            v-for="item in menu"
+            :key="item.href"
+            :href="item.href"
+            class="mx-3 text-white no-underline"
+          >
+            {{ item.title }}
+          </Link>
+        </div>
 
-    <!-- Search -->
-    <v-text-field
-      v-model="search"
-      placeholder="ابحث عن المنتجات..."
-      hide-details
-      single-line
-      prepend-inner-icon="mdi-magnify"
-      class="mx-4 d-none d-md-flex"
-    />
+        <!-- Search -->
+        <v-text-field
+          v-model="search"
+          placeholder="ابحث عن المنتجات..."
+          hide-details
+          single-line
+          prepend-inner-icon="mdi-magnify"
+          class="mx-4 d-none d-md-flex"
+        />
 
-    <!-- Actions -->
-    <v-badge :style="`cursor: pointer;pointer-events: `" @click="openCart" :content="cartCount" color="red" overlap>
-      <v-icon>mdi-cart</v-icon>
-    </v-badge>
+        <!-- Actions -->
+        <v-badge :style="`cursor: pointer;pointer-events: `" @click="openCart" :content="cartCount" color="red" overlap>
+          <v-icon>mdi-cart</v-icon>
+        </v-badge>
 
 
-    <Link href="/account" class="text-white mx-2">
-      <v-icon>mdi-account</v-icon>
-    </Link>
+        <Link href="/account" class="text-white mx-2">
+          <v-icon>mdi-account</v-icon>
+        </Link>
+
+    </v-container>
   </v-app-bar>
 
 <!-- Drawer (Responsive Menu) -->
