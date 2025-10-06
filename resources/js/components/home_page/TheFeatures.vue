@@ -12,7 +12,7 @@
               role="img"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 640 512"
-              class="svg-inline--fa fa-shipping-fast fa-w-20 fa-3x mr-5"
+              class="svg-inline--fa fa-shipping-fast fa-w-20 fa-3x ml-5"
               style="width: 25px"
             >
               <path
@@ -34,7 +34,7 @@
               role="img"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 384 512"
-              class="svg-inline--fa fa-award fa-w-12 fa-3x mr-5"
+              class="svg-inline--fa fa-award fa-w-12 fa-3x ml-5"
               style="width: 25px"
             >
               <path
@@ -56,7 +56,7 @@
               role="img"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 576 512"
-              class="svg-inline--fa fa-trophy-alt fa-w-18 fa-3x mr-5"
+              class="svg-inline--fa fa-trophy-alt fa-w-18 fa-3x ml-5"
               style="width: 25px"
             >
               <path
@@ -85,7 +85,7 @@ export default {};
       content: "";
       position: absolute;
       background-color: #52515193;
-      left: 0;
+      right: 0;
       top: 50%;
       transform: translateY(-50%);
       width: 1px;
@@ -95,7 +95,7 @@ export default {};
       content: "";
       position: absolute;
       background-color: #52515193;
-      right: 0;
+      left: 0;
       top: 50%;
       transform: translateY(-50%);
       width: 1px;

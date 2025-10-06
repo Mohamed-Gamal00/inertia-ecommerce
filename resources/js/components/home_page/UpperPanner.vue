@@ -3,6 +3,7 @@
     <div class="parent">
       <v-container>
         <VRow>
+            <v-col cols="6"></v-col>
           <v-col cols="6">
             <div class="cont">
               <h3><span>Huge Saving</span>on UHD Television</h3>

@@ -20,7 +20,7 @@
           <v-row>
             <v-col cols="7">
               <img
-                :src="tab ? tab : product.thumbnail"
+                :src="tab ? tab : product.image_url"
                 class="w-100"
                 style="width: 100%; height: 400px"
                 alt="thumbnail"
@@ -30,24 +30,22 @@
                 v-if="loading"
                 type="image,image,image"
               ></v-skeleton-loader>
-              <v-tabs center-active height="130" v-model="tab" class="mt-10">
-                <v-tab
-                  v-for="(img, i) in product.images"
-                  :key="i"
-                  :value="img"
-                  class="mx-10"
-                >
-                  <img
-                    style="object-fit: contain"
-                    width="70"
-                    height="100"
-                    contain
-                    :src="img"
-                    alt="img"
-                  />
-                </v-tab>
-              </v-tabs>
-            </v-col>
+                <v-tabs center-active height="130" v-model="tab" class="mt-10">
+                    <v-tab
+                        v-for="(img, i) in product.images"
+                        :key="i"
+                        :value="img.image_url"
+                        class="mx-10"
+                    >
+                        <img
+                            style="object-fit: contain"
+                            width="70"
+                            height="100"
+                            :src="img.image_url"
+                            alt="img"
+                        />
+                    </v-tab>
+                </v-tabs>            </v-col>
             <v-col cols="5" class="pt-0 pl-6">
               <v-skeleton-loader
                 v-if="loading"
@@ -175,48 +173,51 @@
 </template>
 
 <script>
-import { VSkeletonLoader } from "vuetify/lib/labs/components.mjs";
-import { mapActions } from "pinia";
-import { createStore } from "@/stores/cart.js";
+// import { VSkeletonLoader } from "vuetify/lib/labs/components.mjs";
+
 export default {
-  inject: ["Emitter"],
-  components: {
-    VSkeletonLoader,
-  },
-  methods: {
-    ...mapActions(createStore, ["addItem"]),
-    addToCart(item) {
-      item.quantity = this.quantity;
-      this.btnLoading = true;
-      setTimeout(() => {
-        this.btnLoading = false;
-      }, 1000);
-      this.addItem(item);
-      this.Emitter.emit("openCart");
-      this.Emitter.emit("showMsg", item.title);
-      this.dialog = false;
+    inject: ["Emitter"],
+    components: {
+        // VSkeletonLoader,
     },
-  },
-  data() {
-    return {
-      loading: false,
-      tab: "",
-      quantity: 1,
-      dialog: false,
-      product: "",
-      btnLoading: false,
-    };
-  },
-  mounted() {
-    this.Emitter.on("openQuickView", (data) => {
-      this.loading = true;
-      this.product = data;
-      this.dialog = true;
-      setTimeout(() => {
-        this.loading = false;
-      }, 1000);
-    });
-  },
+    data() {
+        return {
+            loading: false,
+            tab: "",
+            quantity: 1,
+            dialog: false,
+            product: {}, // ✅ بدل ""
+            btnLoading: false,
+        };
+    },
+    // methods: {
+    //     ...mapActions(createStore, ["addItem"]),
+    //     addToCart(item) {
+    //         item.quantity = this.quantity;
+    //         this.btnLoading = true;
+    //
+    //         setTimeout(() => {
+    //             this.btnLoading = false;
+    //         }, 1000);
+    //
+    //         this.addItem(item);
+    //         this.Emitter.emit("openCart");
+    //         this.Emitter.emit("showMsg", item.name || item.title);
+    //         this.dialog = false;
+    //     },
+    // },
+    mounted() {
+        this.Emitter.on("openQuickView", (data) => {
+            this.loading = true;
+            this.product = data;
+            this.dialog = true;
+
+            // شوية delay بسيط عشان نحاكي التحميل
+            setTimeout(() => {
+                this.loading = false;
+            }, 800);
+        });
+    },
 };
 </script>
 

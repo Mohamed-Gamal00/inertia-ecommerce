@@ -9,13 +9,13 @@
               v-bind="props"
               style="overflow: hidden; border-radius: 7px"
             >
-<!--              <img-->
-<!--                src="@/assets/images/playstations.webp"-->
-<!--                :style="`width:100%;cursor:pointer;transition:0.5s all ease-in-out; scale: ${-->
-<!--                  isHovering ? 1.05 : 1-->
-<!--                }`"-->
-<!--                alt="playstations"-->
-<!--              />-->
+              <img
+                src="@/assets/images/playstations.webp"
+                :style="`width:100%;cursor:pointer;transition:0.5s all ease-in-out; scale: ${
+                  isHovering ? 1.05 : 1
+                }`"
+                alt="playstations"
+              />
             </div>
           </v-hover>
         </v-col>
@@ -26,13 +26,13 @@
               v-bind="props"
               style="overflow: hidden; border-radius: 7px"
             >
-<!--              <img-->
-<!--                src="@/assets/images/headset.webp"-->
-<!--                :style="`width:100%;cursor:pointer;transition:0.5s all ease-in-out; scale: ${-->
-<!--                  isHovering ? 1.05 : 1-->
-<!--                }`"-->
-<!--                alt="playstations"-->
-<!--              />-->
+              <img
+                src="@/assets/images/headset.webp"
+                :style="`width:100%;cursor:pointer;transition:0.5s all ease-in-out; scale: ${
+                  isHovering ? 1.05 : 1
+                }`"
+                alt="playstations"
+              />
             </div>
           </v-hover>
         </v-col>
@@ -43,13 +43,13 @@
               v-bind="props"
               style="overflow: hidden; border-radius: 7px"
             >
-<!--              <img-->
-<!--                src="@/assets/images/chairs.webp"-->
-<!--                :style="`width:100%;cursor:pointer;transition:0.5s all ease-in-out; scale: ${-->
-<!--                  isHovering ? 1.05 : 1-->
-<!--                }`"-->
-<!--                alt="playstations"-->
-<!--              />-->
+              <img
+                src="@/assets/images/chairs.webp"
+                :style="`width:100%;cursor:pointer;transition:0.5s all ease-in-out; scale: ${
+                  isHovering ? 1.05 : 1
+                }`"
+                alt="playstations"
+              />
             </div>
           </v-hover>
         </v-col>
@@ -62,13 +62,13 @@
               v-bind="props"
               style="overflow: hidden; height: 100%"
             >
-<!--              <img-->
-<!--                src="@/assets/images/iphones.webp"-->
-<!--                :style="`width:100%;height:100%;cursor:pointer;transition:0.5s all ease-in-out; scale: ${-->
-<!--                  isHovering ? 1.05 : 1-->
-<!--                }`"-->
-<!--                alt="playstations"-->
-<!--              />-->
+              <img
+                src="@/assets/images/iphones.webp"
+                :style="`width:100%;height:100%;cursor:pointer;transition:0.5s all ease-in-out; scale: ${
+                  isHovering ? 1.05 : 1
+                }`"
+                alt="playstations"
+              />
             </div>
           </v-hover>
         </v-col>
@@ -79,13 +79,13 @@
               v-bind="props"
               style="overflow: hidden; height: 100%"
             >
-<!--              <img-->
-<!--                src="@/assets/images/laptops.webp"-->
-<!--                :style="`width:100%;height:100%;cursor:pointer;transition:0.5s all ease-in-out; scale: ${-->
-<!--                  isHovering ? 1.05 : 1-->
-<!--                }`"-->
-<!--                alt="playstations"-->
-<!--              />-->
+              <img
+                src="@/assets/images/laptops.webp"
+                :style="`width:100%;height:100%;cursor:pointer;transition:0.5s all ease-in-out; scale: ${
+                  isHovering ? 1.05 : 1
+                }`"
+                alt="playstations"
+              />
             </div>
           </v-hover>
         </v-col>

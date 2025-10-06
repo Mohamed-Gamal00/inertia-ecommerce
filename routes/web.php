@@ -16,14 +16,12 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', function () {
-    return Inertia::render('Home');
-});
+Route::get('/', [\App\Http\Controllers\Inertia\HomeController::class, 'index'])->name('home');
+
 
 Route::prefix('products')->group(function () {
     Route::get('/', [ProductController::class, 'index'])->name('products');
 });
-
 
 
 require __DIR__ . '/dashboard.php';
