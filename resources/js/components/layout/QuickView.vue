@@ -15,6 +15,7 @@
         @click="dialog = false"
         >mdi-close</v-icon
       >
+
       <v-card elevation="0" class="content_card">
         <v-container fluid class="bg-white pt-10 px-10">
           <v-row>
