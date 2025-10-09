@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Inertia\CategoryController;
 use App\Http\Controllers\Inertia\ProductController;
 use App\Http\Controllers\Inertia\UserController;
 use Illuminate\Support\Facades\Route;
@@ -21,7 +22,12 @@ Route::get('/', [\App\Http\Controllers\Inertia\HomeController::class, 'index'])-
 
 Route::prefix('products')->group(function () {
     Route::get('/', [ProductController::class, 'index'])->name('products');
+    Route::get('/{slug}', [ProductController::class, 'show'])->name('productss.show');
 });
 
+Route::prefix('categories')->group(function () {
+    Route::get('/', [CategoryController::class, 'index'])->name('categories.index');
+    Route::get('/{slug}', [CategoryController::class, 'show'])->name('categories.show');
+});
 
 require __DIR__ . '/dashboard.php';

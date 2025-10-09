@@ -20,6 +20,7 @@
         "vite-plugin-vuetify": "^2.1.2",
         "vue": "^3.5.22",
         "vue-i18n": "^11.1.12",
-        "vuetify": "^3.10.3"
+        "vuetify": "^3.10.3",
+        "ziggy-js": "^2.6.0"
     }
 }

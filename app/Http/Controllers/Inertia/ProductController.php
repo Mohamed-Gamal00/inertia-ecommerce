@@ -13,8 +13,16 @@ class ProductController extends Controller
     public function index()
     {
         $allProducts = Product::with('availability')->paginate(5);
-        return Inertia::render('Products', [
+        return Inertia::render('Products/Index', [
             'products' => $allProducts,
+        ]);
+    }
+
+    public function show($slug)
+    {
+        $product = Product::with(['images', 'parent'])->where('slug', $slug)->firstOrFail();
+        return Inertia::render('Products/Show', [
+            'product' => $product,
         ]);
     }
 }

@@ -2,6 +2,9 @@ import "./bootstrap";
 import { createApp, h } from "vue";
 import { createInertiaApp } from "@inertiajs/vue3";
 import Layout from "./layouts/AppLayout.vue";
+
+import { ZiggyVue } from "ziggy-js";
+
 // Vuetify
 import "vuetify/styles";
 import { createVuetify } from "vuetify";
@@ -54,7 +57,7 @@ createInertiaApp({
         app.use(plugin);
         app.use(i18n);
         app.use(vuetify);
-
+        app.use(ZiggyVue);
         app.provide("Emitter", Emitter);
 
         app.mount(el);

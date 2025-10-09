@@ -1,11 +1,11 @@
 <template>
-  <v-app>      <!-- مكونات ثابتة -->
+  <v-app>
       <CartDrawer />
       <AppHeader />
       <QuickView />
 
       <!-- المحتوى الرئيسي -->
-      <v-main >
+      <v-main class="pa-0">
         <v-container fluid>
             <slot></slot>
         </v-container>

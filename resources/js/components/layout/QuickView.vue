@@ -46,7 +46,9 @@
                             alt="img"
                         />
                     </v-tab>
-                </v-tabs>            </v-col>
+                </v-tabs>
+
+            </v-col>
             <v-col cols="5" class="pt-0 pl-6">
               <v-skeleton-loader
                 v-if="loading"

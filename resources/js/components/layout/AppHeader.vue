@@ -1,11 +1,14 @@
 <script setup>
 import { ref, inject, onMounted, onBeforeUnmount } from "vue";
-import { Link } from "@inertiajs/vue3";
+import { Link, usePage } from "@inertiajs/vue3"; // ✅ هنا استخدم usePage()
 
 const Emitter = inject("Emitter");
 const drawer = ref(false);
 const search = ref("");
 const cartCount = ref(0);
+
+const { props } = usePage(); // ✅ نحصل على كل البيانات المشتركة
+const categories = props.categories ?? []; // ✅ الأقسام الجاية من السيرفر
 
 const menu = [
   { title: "الرئيسية", href: "/" },
@@ -15,7 +18,7 @@ const menu = [
 ];
 
 function openCart() {
-  Emitter.emit("openCart"); // 🔔 هيفتح الكارت
+  Emitter.emit("openCart");
 }
 
 function updateCart(count) {
@@ -42,6 +45,27 @@ onBeforeUnmount(() => {
         </Link>
 
         <!-- Desktop Menu -->
+              <!-- الأقسام -->
+      <v-menu open-on-hover>
+        <template #activator="{ props }">
+          <v-btn text v-bind="props" class="text-white">الأقسام</v-btn>
+        </template>
+
+        <v-list>
+          <v-list-item
+            v-for="cat in categories"
+            :key="cat.id"
+          >
+            <Link
+            :href="route('categories.show', cat.slug)"
+            class="text-black no-underline"
+            >
+            {{ cat.name }}
+            </Link>
+
+          </v-list-item>
+        </v-list>
+      </v-menu>
         <v-spacer />
         <div class="d-none d-md-flex">
           <Link
@@ -68,6 +92,8 @@ onBeforeUnmount(() => {
         <v-badge :style="`cursor: pointer;pointer-events: `" @click="openCart" :content="cartCount" color="red" overlap>
           <v-icon>mdi-cart</v-icon>
         </v-badge>
+
+
 
 
         <Link href="/account" class="text-white mx-2">

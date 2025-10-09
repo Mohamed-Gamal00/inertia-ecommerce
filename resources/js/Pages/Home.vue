@@ -82,7 +82,7 @@ export default {
         QualityFeatuers,
         WhyShopWithUsVue,
     },
-    name: "HomeView",
+    name: "Home",
 
 };
 </script>

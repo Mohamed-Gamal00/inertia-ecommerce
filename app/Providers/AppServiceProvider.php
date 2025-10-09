@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\MainCategory;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
+use Inertia\Inertia;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,5 +24,9 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrapFive();
         require_once app_path('Helper/TextTranslate.php');
+
+        Inertia::share([
+            'categories' => fn() => MainCategory::select('id', 'name', 'slug')->get(),
+        ]);
     }
 }

@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue'
-import { router } from '@inertiajs/vue3'
-;
+import { router } from '@inertiajs/vue3';
+import ProductCard from "@/Components/Shared/ProductCard.vue";
 
 const props = defineProps({
   products: Object
@@ -16,6 +16,15 @@ const goto = (val) => {
     preserveState: true,
     preserveScroll: true,
   })
+}
+
+// Emitter
+import { inject } from "vue";
+const Emitter = inject("Emitter");
+
+// Methods
+function openQuickView(product) {
+    Emitter.emit("openQuickView", product);
 }
 
 // لو السيرفر رجع بيانات جديدة نحدّث الـ ref
@@ -39,42 +48,8 @@ watch(
         lg="2"
         class="d-flex justify-center"
       >
-        <v-card
-          class="text-center py-3 px-2 w-100"
-          elevation="2"
-          rounded="xl"
-        >
-          <v-hover v-slot="{ isHovering, props }">
-            <div
-              class="img-parent mx-auto"
-              style="
-                overflow: hidden;
-                width: 100%;
-                aspect-ratio: 1 / 1;
-                border-radius: 50%;
-                background: #f9f9f9;
-              "
-            >
-              <img
-                :src="product.image_url"
-                alt="image"
-                :style="`
-                  cursor: pointer;
-                  height: 100%;
-                  width: 100%;
-                  object-fit: cover;
-                  transition: transform 0.3s ease-in-out;
-                  transform: scale(${isHovering ? 1.05 : 1});
-                `"
-                v-bind="props"
-              />
-            </div>
-          </v-hover>
+        <ProductCard :item="product" @quick-view="openQuickView" />
 
-          <v-card-text class="mt-3 font-weight-medium">
-            {{ product.name }}
-          </v-card-text>
-        </v-card>
       </v-col>
     </v-row>
 
