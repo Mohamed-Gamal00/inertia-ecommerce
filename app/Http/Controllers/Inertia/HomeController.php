@@ -16,7 +16,7 @@ class HomeController extends Controller
 //            ->latest()
 //            ->take(10)
 //            ->get();
-        $products = Product::with('images')->latest()->take(10)->get();
+        $products = Product::with(['images', 'parent'])->latest()->take(10)->get();
 
         // بنرجعها كـ props لـ Vue
         return Inertia::render('Home', [

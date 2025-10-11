@@ -1,12 +1,12 @@
 <template>
-    <v-card class="mx-auto my-12 product-card" max-width="374">
+    <v-card elevation="0" class="product-card">
         <v-hover v-slot="{ isHovering, props }">
             <div
                 class="img-parent position-relative"
                 style="height: 200px; overflow: hidden"
             >
                 <img
-                    :src="currentImage"
+                    :src="item.image_url"
                     :alt="item.name_en"
                     class="w-100"
                     :style="{
@@ -22,12 +22,9 @@
                 <v-btn
                     density="compact"
                     width="80"
-                    color="primary"
-
                     height="32"
-                    variant="tonal"
+                    variant="outlined"
                     class="bg-white quick-view-btn"
-                    prepend-icon= "mdi-eye"
                     style="
                         text-transform: none;
                         position: absolute;
@@ -45,58 +42,36 @@
             </div>
         </v-hover>
 
-        <v-card-item>
-            <v-card-title>{{ item.name }}</v-card-title>
-
-            <v-card-subtitle>
-                <span class="me-1">{{ item.parent.name }}</span>
-
-                <v-icon
-                    color="error"
-                    icon="mdi-fire-circle"
-                    size="small"
-                ></v-icon>
-            </v-card-subtitle>
-        </v-card-item>
-
-        <v-card-text>
-            <v-row align="center" class="mx-0">
-                <v-rating
-                    :model-value="4.5"
-                    color="amber"
-                    density="compact"
-                    size="small"
-                    half-increments
-                    readonly
-                ></v-rating>
-
-                <div class="text-grey ms-4">4.5 (413)</div>
-            </v-row>
+        <v-card-text class="pl-0 pb-1 pr-10">
+            {{ shortText(`(${item.name})`, 40) }}
         </v-card-text>
 
-        <v-divider class="mx-4 mb-1"></v-divider>
+        <v-rating
+            v-model="item.rating"
+            half-increments
+            readonly
+            color="yellow-darken-2"
+            size="x-small"
+            density="compact"
+        />
 
         <v-card-text class="pl-0 pt-0">
-        <template v-if="item.discount_price && item.discount_price < item.price">
-            <del class="text-grey">${{ item.price }}</del>
-            <span class="text-red ml-2" style="font-weight: 900; font-size: 16px">
-            ${{ Math.ceil(item.discount_price) }}
+            <del>${{ item.price }}</del>
+            from
+            <span class="text-red" style="font-weight: 900; font-size: 16px">
+                ${{
+                    Math.ceil(
+                        item.price - item.price * (item.discount_price / 100)
+                    )
+                }}
             </span>
-        </template>
-
-        <template v-else>
-            <span class="text-dark" style="font-weight: 900; font-size: 16px">
-            ${{ Math.ceil(item.price) }}
-            </span>
-        </template>
         </v-card-text>
-
 
         <v-btn-toggle v-model="currentImage">
             <v-btn
                 v-for="(pic, i) in item.images"
                 :key="i"
-                :value="pic.image_url"
+                :value="pic"
                 size="x-small"
                 rounded="xl"
                 :ripple="false"
@@ -114,22 +89,18 @@
             </v-btn>
         </v-btn-toggle>
 
-        <v-card-actions>
-            <v-btn
-            color="deep-purple-lighten-2"
-            text="Reserve"
-            block
-            >
-            <Link :href="route('productss.show', item.slug)">
+        <div class="mt-5">
+            <Link :href="route('productss.show', item.slug)" class="text-none">
+                <v-btn
+                    style="text-transform: none; border-radius: 30px"
+                    density="default"
+                    variant="outlined"
+                    class="py-3 px-12"
+                >
                     تفاصيل المنتج
-                </Link>
                 </v-btn>
-            <!-- <v-btn
-                color="deep-purple-lighten-2"
-                text="Reserve"
-                block
-            ></v-btn> -->
-        </v-card-actions>
+            </Link>
+        </div>
     </v-card>
 </template>
 
@@ -148,6 +119,8 @@ const emit = defineEmits(["quick-view"]);
 
 const currentImage = ref(props.item.image_url);
 
+const shortText = (text, limit) =>
+    text.length <= limit ? text : text.substring(0, limit) + "...";
 </script>
 
 <style scoped>

@@ -17,30 +17,33 @@
             </Link>
         </div>
 
-        <!-- سكيلتون لودينج -->
-        <v-container fluid v-if="!products || !products.length">
-            <v-row>
-                <v-col cols="12" class="pt-14">
-                    <v-row>
-                        <v-col cols="3" v-for="num in 4" :key="num">
-                            <v-skeleton-loader type="image,article,button" />
-                        </v-col>
-                    </v-row>
-                </v-col>
-            </v-row>
-        </v-container>
+        <!-- ✅ أزرار التنقل فوق السلايدر -->
+        <div class="d-flex justify-start mb-4">
+            <v-btn icon variant="outlined" class="mx-2" @click="goPrev">
+                <v-icon>mdi-chevron-right</v-icon>
+            </v-btn>
+            <v-btn icon variant="outlined" class="mx-2" @click="goNext">
+                <v-icon>mdi-chevron-left</v-icon>
+            </v-btn>
+        </div>
 
-        <!-- سلايدر -->
+        <!-- ✅ سلايدر -->
         <Swiper
             :modules="modules"
             :pagination="{ el: '.swiper-pagination', clickable: true }"
-            :slides-per-view="4"
+            :breakpoints="{
+                0: { slidesPerView: 1, spaceBetween: 10 },
+                600: { slidesPerView: 2, spaceBetween: 15 },
+                960: { slidesPerView: 3, spaceBetween: 25 },
+                1280: { slidesPerView: 4, spaceBetween: 35 },
+            }"
             :space-between="35"
-            :autoplay="{ delay: 6000 }"
+            :autoplay="{ delay: 20000 }"
             class="pb-9"
+            @swiper="onSwiperInit"
         >
             <swiper-slide v-for="item in products" :key="item.id">
-            <ProductCard :item="item" @quick-view="openQuickView" />
+                <ProductCard :item="item" @quick-view="openQuickView" />
             </swiper-slide>
 
             <div class="swiper-pagination"></div>
@@ -50,63 +53,46 @@
 
 <script setup>
 import ProductCard from "@/Components/Shared/ProductCard.vue";
-
-// Inertia
 import { Link, router } from "@inertiajs/vue3";
-
-// Swiper
 import { Swiper, SwiperSlide } from "swiper/vue";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
+import { ref, inject } from "vue";
 
-// Props
 const props = defineProps({
-    products: {
-        type: Array,
-        default: () => [],
-    },
+    products: Array,
     title: String,
     titleColor: String,
 });
 
-// Emitter
-import { inject } from "vue";
 const Emitter = inject("Emitter");
-
-// Methods
 function openQuickView(product) {
     Emitter.emit("openQuickView", product);
 }
 
-function goToDetails(productId) {
-    router.visit(`/products/${productId}`);
+const modules = [Pagination, Navigation, Autoplay];
+
+// ✅ نحتفظ بالـ swiper instance لما يجهز
+const swiperInstance = ref(null);
+
+function onSwiperInit(swiper) {
+    swiperInstance.value = swiper;
 }
 
-// Swiper Modules
-const modules = [Pagination, Navigation, Autoplay];
+function goNext() {
+    swiperInstance.value?.slideNext();
+}
+
+function goPrev() {
+    swiperInstance.value?.slidePrev();
+}
 </script>
 
 <style lang="scss" scoped>
 .products-swiper {
-    .swiper-button-next,
-    .swiper-button-prev {
-        width: 35px;
-        height: 35px;
-        border: 2px solid black;
-        border-radius: 50%;
-        background-color: white;
-        top: 43%;
-        &::after {
-            font-size: 13px;
-            font-weight: 900;
-            color: rgb(97, 97, 97);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-    }
+    position: relative;
 
     .swiper-pagination-bullet {
         width: 10px;
