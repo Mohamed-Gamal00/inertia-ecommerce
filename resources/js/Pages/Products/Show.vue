@@ -1,33 +1,7 @@
 <template>
   <v-container class="mt-16 product-details">
     <v-row>
-      <!-- الصور -->
-      <!-- <v-col cols="12" md="7">
-        <v-skeleton-loader v-if="loading" type="image" />
-        <v-img
-          v-else
-          :src="product.image_url"
-          height="450"
-          class="rounded-lg"
-          cover
-        />
 
-        <v-tabs
-          v-model="selectedImage"
-          align-tabs="center"
-          class="mt-6"
-          height="120"
-        >
-          <v-tab
-            v-for="(img, i) in product.images"
-            :key="i"
-            :value="img"
-            class="mx-2"
-          >
-            <v-img :src="img.image_url" height="100" width="100" cover class="rounded-lg" />
-          </v-tab>
-        </v-tabs>
-      </v-col> -->
             <v-col cols="7">
               <img
                 :src="selectedImage || product.image_url"
@@ -60,7 +34,6 @@
                     </v-tab>
                 </v-tabs>
             </v-col>
-      <!-- التفاصيل -->
       <v-col cols="12" md="5">
         <v-card elevation="0" class="pt-2">
           <v-card-title class="px-0 text-h6 font-weight-bold">
@@ -97,10 +70,22 @@
           </v-card-text>
 
           <!-- السعر -->
-          <v-card-text class="pl-0 pt-0">
-            <del class="text-grey">${{ product.price }}</del>
-            <span class="ml-2 font-weight-bold text-h6">${{product.discount_price }}</span>
-          </v-card-text>
+    <v-card-text class="pl-0 pt-0">
+    <!-- لو في خصم -->
+    <template v-if="product.discount_price && product.discount_price < product.price">
+        <del class="text-grey">${{ product.price }}</del>
+        <span class="text-red ml-2" style="font-weight: 900; font-size: 16px">
+        ${{ Math.ceil(product.discount_price) }}
+        </span>
+    </template>
+
+    <!-- لو مفيش خصم -->
+    <template v-else>
+        <span class="text-dark" style="font-weight: 900; font-size: 16px">
+        ${{ Math.ceil(product.price) }}
+        </span>
+    </template>
+    </v-card-text>
 
           <!-- الكمية -->
           <v-card-text class="pl-0 pt-0">Quantity</v-card-text>

@@ -21,7 +21,6 @@
 
                 <v-btn
                     density="compact"
-                    width="80"
                     color="primary"
 
                     height="32"

@@ -22,7 +22,7 @@ class CategoryController extends Controller
     public function show($slug)
     {
         $category = MainCategory::where('slug', $slug)->firstOrFail();
-        $products = $category->products()->with('images')->latest()->get();
+        $products = $category->products()->with(['images','parent'])->latest()->get();
         return Inertia::render('Categories/Show', [
             'category' => $category,
             'products' => $products,
