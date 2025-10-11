@@ -40,91 +40,7 @@
             class="pb-9"
         >
             <swiper-slide v-for="item in products" :key="item.id">
-                <v-card elevation="0">
-                    <v-hover v-slot="{ isHovering, props }">
-                        <div
-                            class="img-parent position-relative"
-                            style="height: 200px; overflow: hidden"
-                        >
-                            <img
-                                :src="item.image_url"
-                                :alt="item.name_en"
-                                class="w-100"
-                                :style="{
-                  height: '100%',
-                  transition: 'all 0.3s ease-in-out',
-                  cursor: 'pointer',
-                  scale: isHovering ? 1.05 : 1,
-                  objectFit: 'cover',
-                }"
-                                v-bind="props"
-                            />
-                            <v-btn
-                                density="compact"
-                                width="80"
-                                height="35"
-                                variant="outlined"
-                                class="bg-white quick-view-btn"
-                                style="
-                  text-transform: none;
-                  position: absolute;
-                  left: 50%;
-                  top: 50%;
-                  transform: translate(-50%, -50%);
-                  font-size: 12px;
-                  opacity: 0;
-                  transition: 0.2s all ease-in-out;
-                "
-                                @click="openQuickView(item)"
-                            >
-                                Quick View
-                            </v-btn>
-                        </div>
-                    </v-hover>
-
-                    <!-- الاسم -->
-                    <v-card-text class="pl-0 pb-1 pr-10">
-                        {{
-                            item.name && item.name.length <= 40
-                                ? item.name
-                                : item.name.substring(0, 40) + "..."
-                        }}
-                    </v-card-text>
-
-                    <!-- السعر -->
-                    <v-card-text class="pl-0 pt-0">
-                        <template v-if="item.discount_price">
-                            <del>${{ item.price }}</del>
-                            <span
-                                class="text-red"
-                                style="font-weight: 900; font-size: 16px; margin-left: 8px"
-                            >
-                ${{ item.discount_price }}
-              </span>
-                        </template>
-                        <template v-else>
-              <span
-                  style="font-weight: 900; font-size: 16px"
-                  class="text-black"
-              >
-                ${{ item.price }}
-              </span>
-                        </template>
-                    </v-card-text>
-
-                    <!-- الزر -->
-                    <div class="mt-5">
-                        <v-btn
-                            style="text-transform: none; border-radius: 30px"
-                            density="compact"
-                            variant="outlined"
-                            class="py-3 px-12"
-                            @click="goToDetails(item.id)"
-                        >
-                            Choose Options
-                        </v-btn>
-                    </div>
-                </v-card>
+            <ProductCard :item="item" @quick-view="openQuickView" />
             </swiper-slide>
 
             <div class="swiper-pagination"></div>
@@ -133,6 +49,8 @@
 </template>
 
 <script setup>
+import ProductCard from "@/Components/Shared/ProductCard.vue";
+
 // Inertia
 import { Link, router } from "@inertiajs/vue3";
 

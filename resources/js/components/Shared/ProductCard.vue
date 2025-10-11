@@ -117,7 +117,6 @@
 
 <script setup>
 import { ref, computed } from "vue";
-import { router } from "@inertiajs/vue3";
 import { Link } from "@inertiajs/vue3";
 
 
@@ -130,7 +129,7 @@ const props = defineProps({
 
 const emit = defineEmits(["quick-view"]);
 
-const currentImage = ref(props.item.thumbnail);
+const currentImage = ref(props.item.image_url);
 
 const shortText = (text, limit) =>
   text.length <= limit ? text : text.substring(0, limit) + "...";
