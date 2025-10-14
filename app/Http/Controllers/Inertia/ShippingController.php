@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Front;
+namespace App\Http\Controllers\Inertia;
 
 use App\Http\Controllers\Controller;
 use App\Models\City;
@@ -57,7 +57,7 @@ class ShippingController extends Controller
     }
 
 
-    // $formattedShippingCost = resolve('App\currency\Currency')->getCurrency($shippingCost);//  القيمة هنا بتيجي معاها 
+    // $formattedShippingCost = resolve('App\currency\Currency')->getCurrency($shippingCost);//  القيمة هنا بتيجي معاها
     $formattedShippingCost = $shippingCost;
 
     // Update totalCart to include the shipping cost if it is a valid number

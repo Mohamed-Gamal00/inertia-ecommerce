@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Front;
+namespace App\Http\Controllers\Inertia;
 
 use App\Events\OrderCreated;
 use App\Http\Controllers\Controller;
