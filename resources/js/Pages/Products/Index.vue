@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { router } from '@inertiajs/vue3';
-import ProductCard from "@/Components/Shared/ProductCard.vue";
+import ProductCard from "../../components/Shared/ProductCard.vue";
 
 const props = defineProps({
   products: Object

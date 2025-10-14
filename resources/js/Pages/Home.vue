@@ -63,14 +63,14 @@ const props = defineProps({
 </template>
 
 <script>
-import UpperPanner from "@/components/home_page/UpperPanner.vue";
-import TheFeatures from "@/components/home_page/TheFeatures.vue";
-import TopOffers from "@/components/home_page/TopOffers.vue";
-import ProductsComponents from "@/components/home_page/ProductsSwiper.vue";
-import TopCategories from "@/components/home_page/TopCategories.vue";
-import NewProducts from "@/components/home_page/NewProducts.vue";
-import QualityFeatuers from "@/components/home_page/QualityFeatuers.vue";
-import WhyShopWithUsVue from "@/components/home_page/WhyShopWithUs.vue";
+import UpperPanner from "../components/home_page/UpperPanner.vue";
+import TheFeatures from "../components/home_page/TheFeatures.vue";
+import TopOffers from "../components/home_page/TopOffers.vue";
+import ProductsComponents from "../components/home_page/ProductsSwiper.vue";
+import TopCategories from "../components/home_page/TopCategories.vue";
+import NewProducts from "../components/home_page/NewProducts.vue";
+import QualityFeatuers from "../components/home_page/QualityFeatuers.vue";
+import WhyShopWithUsVue from "../components/home_page/WhyShopWithUs.vue";
 export default {
     components: {
         UpperPanner,

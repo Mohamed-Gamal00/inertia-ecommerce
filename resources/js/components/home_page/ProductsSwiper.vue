@@ -52,7 +52,7 @@
 </template>
 
 <script setup>
-import ProductCard from "@/Components/Shared/ProductCard.vue";
+import ProductCard from "../../components/Shared/ProductCard.vue";
 import { Link, router } from "@inertiajs/vue3";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";

@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import ProductCard from "@/Components/Shared/ProductCard.vue";
+import ProductCard from "../../components/Shared/ProductCard.vue";
 
 defineProps({
   category: Object,
