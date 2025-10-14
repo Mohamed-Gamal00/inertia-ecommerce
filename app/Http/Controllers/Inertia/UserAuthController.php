@@ -104,7 +104,7 @@ class UserAuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login.view');
+        return redirect()->route('login');
     }
 
     public function verifyCode(Request $request)

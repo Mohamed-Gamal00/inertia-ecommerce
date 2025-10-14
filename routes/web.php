@@ -22,7 +22,6 @@ use Inertia\Inertia;
 //     Route::post('/auth/login', [UserAuthController::class, 'login'])->name('login');
 //     Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
 // });
-Route::middleware(['web'])->prefix('auth')->group(function () {
     Route::get('/login', [UserAuthController::class, 'loginView'])->name('login');
     Route::get('/register', [UserAuthController::class, 'registerView'])->name('register');
     Route::get('/forgot-password', [UserAuthController::class, 'forgotPasswordView'])->name('forgot');
@@ -34,7 +33,6 @@ Route::middleware(['web'])->prefix('auth')->group(function () {
     Route::post('/forgot-password', [UserAuthController::class, 'forgotPassword'])->name('auth.forgot');
     Route::post('/update-password', [UserAuthController::class, 'passwordUpdate'])->name('auth.update');
     Route::post('/logout', [UserAuthController::class, 'logout'])->name('auth.logout');
-});
 
 // Route::middleware('guest:web')->prefix('auth')->group(function () {
 //     Route::get('/login', [UserAuthController::class, 'loginView'])->name('login.view');
@@ -58,18 +56,21 @@ Route::middleware('auth:web')->group(function () {
     })->name('account');
 });
 
-Route::get('/', [\App\Http\Controllers\Inertia\HomeController::class, 'index'])->name('home');
+
+Route::middleware('auth:web')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Inertia\HomeController::class, 'index'])->name('home');
 
 
-Route::prefix('products')->group(function () {
-    Route::get('/', [ProductController::class, 'index'])->name('products');
-    Route::get('/{slug}', [ProductController::class, 'show'])->name('productss.show');
-});
+    Route::prefix('products')->group(function () {
+        Route::get('/', [ProductController::class, 'index'])->name('products');
+        Route::get('/{slug}', [ProductController::class, 'show'])->name('productss.show');
+    });
 
-Route::prefix('categories')->group(function () {
-    Route::get('/', [CategoryController::class, 'index'])->name('categories.index');
-    Route::get('/{slug}', [CategoryController::class, 'show'])->name('categories.show');
-});
+    Route::prefix('categories')->group(function () {
+        Route::get('/', [CategoryController::class, 'index'])->name('categories.index');
+        Route::get('/{slug}', [CategoryController::class, 'show'])->name('categories.show');
+    });});
+
 
 
 

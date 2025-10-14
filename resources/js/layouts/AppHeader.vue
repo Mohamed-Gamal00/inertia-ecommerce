@@ -132,10 +132,10 @@ onBeforeUnmount(() => {
 
         <!-- 🚪 لو المستخدم مش داخل -->
         <template v-else>
-          <Link href="/auth/login" class="text-white mx-2 no-underline">
+          <Link href="/login" class="text-white mx-2 no-underline">
             تسجيل الدخول
           </Link>
-          <Link href="/auth/register" class="text-white mx-2 no-underline">
+          <Link href="/register" class="text-white mx-2 no-underline">
             إنشاء حساب
           </Link>
         </template>

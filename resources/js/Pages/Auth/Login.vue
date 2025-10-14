@@ -15,7 +15,7 @@ const submit = () => {
     loading.value = true;
     errorMessage.value = null;
 
-    form.post("/auth/login", {
+    form.post("/login", {
         onFinish: () => (loading.value = false),
         onError: (errors) => {
             if (errors.email) {
