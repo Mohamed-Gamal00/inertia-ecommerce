@@ -10,7 +10,7 @@ const cartCount = ref(0);
 const { props } = usePage();
 const categories = props.categories ?? [];
 const user = computed(()=>usePage().props.auth.user) // ✅ المستخدم الحالي
-console.log(user);
+// console.log(user);
 const menu = [
   { title: "الرئيسية", href: "/" },
   { title: "المنتجات", href: "/products" },
@@ -112,7 +112,7 @@ onBeforeUnmount(() => {
 
             <v-list>
               <v-list-item>
-                <Link href="/account" class="text-black no-underline">
+                <Link href="/user-profile" class="text-black no-underline">
                   الحساب الشخصي
                 </Link>
               </v-list-item>

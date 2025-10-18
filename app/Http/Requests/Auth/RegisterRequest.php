@@ -35,6 +35,8 @@ class RegisterRequest extends FormRequest
             'phone_number' => 'required|unique:users',
             'address' => ['required', 'string', 'max:255'],
             'city_id' => ['required', 'exists:cities,id'],
+            'country_id' => ['required', 'exists:countries,id'],
+
         ];
     }
 

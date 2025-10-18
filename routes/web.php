@@ -3,6 +3,7 @@
 use App\Http\Controllers\Inertia\UserAuthController;
 use App\Http\Controllers\Inertia\CategoryController;
 use App\Http\Controllers\Inertia\ProductController;
+use App\Http\Controllers\Inertia\UserProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -85,49 +86,48 @@ Route::prefix('categories')->group(function () {
 // Route::post('/password-update', [\App\Http\Controllers\Front\UserAuthController::class, 'passwordUpdate'])->name('password.update');
 // Route::post('/resend-verify-code', [\App\Http\Controllers\Front\UserAuthController::class, 'resendVerifyCode'])->name('resendVerifyCode');
 
-// // user Auth routes
-// Route::middleware('auth:web')->group(function () {
-//     Route::get('/user-profile', [UserProfileController::class, 'index'])->name('user.profile');
-//     Route::post('/wishlist2/{id}', [WishListController::class, 'wishListInProductDetails'])->name('wishlist_product_details');
-//     /* المفضلة */
-//     Route::get('/user_wishlist', [UserProfileController::class, 'userWishList'])->name('user.wishlist');
-//     Route::get('/user_info', [UserProfileController::class, 'userInfo'])->name('user.info');
-//     Route::get('/user_addresses', [UserProfileController::class, 'userAddresses'])->name('user.addresses');
-//     Route::get('/user_addresses/create', [UserProfileController::class, 'userAddressesCreate'])->name('create.address');
-//     Route::post('/user_addresses/store', [UserProfileController::class, 'userAddressesStore'])->name('store.address');
-//     Route::get('/user_addresses/{addressId}/edit', [UserProfileController::class, 'userAddressesEdit'])->name('edit.address');
-//     Route::put('/user_addresses/{addressId}/update', [UserProfileController::class, 'userAddressesUpdate'])->name('update.address');
-//     Route::delete('/user_addresses/{addressId}/delete', [UserProfileController::class, 'userAddressesDestroy'])->name('delete.address');
-//     /*new*/
-//     Route::post('/user_addresses/{address}/set_main', [UserProfileController::class, 'setMainAddress'])->name('user.addresses.set_main');
+// user Auth routes
+Route::middleware('auth:web')->group(function () {
+    Route::get('/user-profile', [UserProfileController::class, 'index'])->name('user.profile');
+    /* المفضلة */
+    Route::get('/user_wishlist', [UserProfileController::class, 'userWishList'])->name('user.wishlist');
+    Route::get('/user_info', [UserProfileController::class, 'userInfo'])->name('user.info');
+    Route::get('/user_addresses', [UserProfileController::class, 'userAddresses'])->name('user.addresses');
+    Route::get('/user_addresses/create', [UserProfileController::class, 'userAddressesCreate'])->name('create.address');
+    Route::post('/user_addresses/store', [UserProfileController::class, 'userAddressesStore'])->name('store.address');
+    Route::get('/user_addresses/{addressId}/edit', [UserProfileController::class, 'userAddressesEdit'])->name('edit.address');
+    Route::put('/user_addresses/{addressId}/update', [UserProfileController::class, 'userAddressesUpdate'])->name('update.address');
+    Route::delete('/user_addresses/{addressId}/delete', [UserProfileController::class, 'userAddressesDestroy'])->name('delete.address');
+    /*new*/
+    Route::post('/user_addresses/{address}/set_main', [UserProfileController::class, 'setMainAddress'])->name('user.addresses.set_main');
 
 
-//     Route::get('/user_change_password', [UserProfileController::class, 'changePasswordView'])->name('user_password');
-//     Route::put('/user_update_info/update', [UserProfileController::class, 'updatePassword'])->name('update_password');
-//     Route::put('/user_normal_info/update', [UserProfileController::class, 'updateUserInfo'])->name('update_user_info');
-//     Route::post('/user_normal_info/verify_to_update', [UserProfileController::class, 'verify_to_update'])->name('verify_to_update');
-//     Route::post('/user_normal_info/resendVerifyCode_to_update', [UserProfileController::class, 'resendVerifyCodeToupdate'])->name('resendVerifyCode_to_update');
+    Route::get('/user_change_password', [UserProfileController::class, 'changePasswordView'])->name('user_password');
+    Route::put('/user_update_info/update', [UserProfileController::class, 'updatePassword'])->name('update_password');
+    Route::put('/user_normal_info/update', [UserProfileController::class, 'updateUserInfo'])->name('update_user_info');
+    Route::post('/user_normal_info/verify_to_update', [UserProfileController::class, 'verify_to_update'])->name('verify_to_update');
+    Route::post('/user_normal_info/resendVerifyCode_to_update', [UserProfileController::class, 'resendVerifyCodeToupdate'])->name('resendVerifyCode_to_update');
 
 
-//     /* مشاهدة الطلب */
-//     Route::get('/user_orders/{number}', [UserOrdersController::class, 'showOrder'])->name('user.orders');
-//     /* الطلبات */
-//     Route::get('/user_main_orders', [UserOrdersController::class, 'mainOrders'])->name('user.main.orders');
-//     /* حذف طلب */
-//     Route::delete('/user_orders/delete', [UserOrdersController::class, 'destroy'])->name('order.delete');
+    // /* مشاهدة الطلب */
+    // Route::get('/user_orders/{number}', [UserOrdersController::class, 'showOrder'])->name('user.orders');
+    // /* الطلبات */
+    // Route::get('/user_main_orders', [UserOrdersController::class, 'mainOrders'])->name('user.main.orders');
+    // /* حذف طلب */
+    // Route::delete('/user_orders/delete', [UserOrdersController::class, 'destroy'])->name('order.delete');
 
 
-//     /* المرتجعات */
-//     Route::get('/user_return_orders', [ReturnProductsController::class, 'index'])->name('user.return_products');
-//     Route::post('/user_return_orders/store', [ReturnProductsController::class, 'store'])->name('user.return_products.store');
+    // /* المرتجعات */
+    // Route::get('/user_return_orders', [ReturnProductsController::class, 'index'])->name('user.return_products');
+    // Route::post('/user_return_orders/store', [ReturnProductsController::class, 'store'])->name('user.return_products.store');
 
 
-//     #################################################--Comments Routes
-//     Route::post('/comments', [CommentsController::class, 'store'])->name('comments.store');
-// });
+    #################################################--Comments Routes
+    // Route::post('/comments', [CommentsController::class, 'store'])->name('comments.store');
+});
 // Route::get('/user/payment/{order_number}', [\App\Http\Controllers\Front\PaymentController::class, 'index'])->name('user.payment');
-// /*عملية الدفع*/
+/*عملية الدفع*/
 // Route::get('/user_orders/{number}/payment/callback', [\App\Http\Controllers\Front\PaymentController::class, 'callback'])->name('payment.callback');
-// //Route::get('/user_orders/{number}/payment/callback', [\App\Http\Controllers\Front\PaymentController::class, 'callback'])->name('payment.callback');
+//Route::get('/user_orders/{number}/payment/callback', [\App\Http\Controllers\Front\PaymentController::class, 'callback'])->name('payment.callback');
 
 require __DIR__ . '/dashboard.php';

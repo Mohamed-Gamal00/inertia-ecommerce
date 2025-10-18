@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Inertia;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest ;
+use App\Models\City;
+use App\Models\Country;
 use App\Models\User;
 use App\Models\User_verfication;
 use App\Models\UserAddress;
@@ -36,11 +38,11 @@ class UserAuthController extends Controller
 
     public function registerView()
     {
-        $countries = DB::table('countries')->where('status', 'used')->get();
-        $countriesId = DB::table('countries')->where('status', 'used')->pluck('id')->toArray();
-        $cities = DB::table('cities')
-            ->whereIn('country_id', $countriesId)->where('status', 'used')
-            ->get();
+        $countries = Country::where('status', 'used')->get();
+        $countriesId =  Country::where('status', 'used')->pluck('id')->toArray();
+        $cities = City::whereIn('country_id', $countriesId)->where('status', 'used')->get();
+
+        // dd($cities);
 
         return Inertia::render('Auth/Register', [
             'countries' => $countries,
@@ -61,23 +63,34 @@ class UserAuthController extends Controller
     /* ================== AUTH ACTIONS ================== */
 
     // ✅ Handle Register
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $request->validate([
-            'first_name' => 'required|string|max:255',
-            'family_name' => 'nullable|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6|confirmed',
-        ]);
+        $data = $request->validated();
 
-        $user = User::create([
-            'first_name' => $request->first_name,
-            'family_name' => $request->family_name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        DB::transaction(function () use ($data) {
+            $user = User::create([
+                'first_name' => $data['first_name'],
+                'family_name' => $data['family_name'],
+                'phone_number' => $data['phone_number'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+                'address' => $data['address'],
+            ]);
 
-        Auth::guard('web')->login($user);
+            UserAddress::create([
+                'address_title' => 'العنوان الأساسي',
+                'first_name' => $user->first_name,
+                'family_name' => $user->family_name,
+                'phone_number' => $user->phone_number,
+                'user_id' => $user->id,
+                'address' => $data['address'],
+                'country_id' => 178,
+                'city_id' => $data['city_id'],
+                'main_address' => true,
+            ]);
+
+            Auth::guard('web')->login($user);
+        });
 
         return redirect()->route('home');
     }
