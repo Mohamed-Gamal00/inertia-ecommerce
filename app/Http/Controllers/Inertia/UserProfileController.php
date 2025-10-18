@@ -30,7 +30,7 @@ class UserProfileController extends Controller
 
     public function index()
     {
-        $user = Auth::user();
+        $user = Auth::user()->load('orders');
         return Inertia::render('Profile/Index', compact('user'));
     }
 

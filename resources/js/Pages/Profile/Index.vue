@@ -41,23 +41,23 @@
           <v-tabs-window v-model="tab">
 
             <v-tabs-window-item value="account">
-              <UserAccount :user="user" />
+              <UserAccount :user="page.props.user" />
             </v-tabs-window-item>
 
             <v-tabs-window-item value="wishlist">
-              <UserWishlist :user="user" />
+              <UserWishlist :user="page.props.user" />
             </v-tabs-window-item>
 
             <v-tabs-window-item value="orders">
-              <UserOrders :user="user" />
+              <UserOrders :user="page.props.user" />
             </v-tabs-window-item>
 
             <v-tabs-window-item value="returns">
-              <UserReturns :user="user" />
+              <UserReturns :user="page.props.user" />
             </v-tabs-window-item>
 
             <v-tabs-window-item value="addresses">
-              <UserAddresses :user="user" />
+              <UserAddresses :user="page.props.user" />
             </v-tabs-window-item>
 
 

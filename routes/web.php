@@ -34,19 +34,7 @@ use Inertia\Inertia;
     Route::post('/forgot-password', [UserAuthController::class, 'forgotPassword'])->name('auth.forgot');
     Route::post('/update-password', [UserAuthController::class, 'passwordUpdate'])->name('auth.update');
     Route::post('/logout', [UserAuthController::class, 'logout'])->name('auth.logout');
-// Route::middleware('guest:web')->prefix('auth')->group(function () {
-//     Route::get('/login', [UserAuthController::class, 'loginView'])->name('login.view');
-//     Route::post('/login', [UserAuthController::class, 'login'])->name('login');
 
-//     Route::get('/register', [UserAuthController::class, 'registerView'])->name('register.view');
-//     Route::post('/register', [UserAuthController::class, 'register'])->name('register');
-
-//     Route::get('/verify', [UserAuthController::class, 'verifyCodeView'])->name('verify.view');
-//     Route::post('/verify', [UserAuthController::class, 'verifyCode'])->name('verify');
-
-//     Route::get('/forgot-password', [UserAuthController::class, 'forgotPasswordView'])->name('forgot.view');
-//     Route::get('/reset-password', [UserAuthController::class, 'resetPasswordView'])->name('reset.view');
-// });
 
 Route::middleware('auth:web')->group(function () {
     Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
