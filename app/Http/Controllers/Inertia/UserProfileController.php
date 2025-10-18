@@ -41,11 +41,6 @@ class UserProfileController extends Controller
         return Inertia::render('Profile/Wishlist', compact('products'));
     }
 
-    public function userInfo()
-    {
-        $user = Auth::user();
-        return Inertia::render('Profile/UserInfo', compact('user'));
-    }
 
     public function updateUserInfo(UserRequest $request)
     {

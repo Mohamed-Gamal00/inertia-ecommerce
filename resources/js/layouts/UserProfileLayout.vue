@@ -64,7 +64,7 @@ const menuItems = [
 //   { label: 'الطلبات', icon: 'mdi-cube', route: 'user.info' },
 //   { label: 'المرتجعات', icon: 'mdi-undo-variant', route: 'user.info' },
   { label: 'العناوين', icon: 'mdi-map-marker', route: 'user.addresses' },
-  { label: 'الحساب', icon: 'mdi-account', route: 'user.info' },
+  { label: 'الحساب', icon: 'mdi-account', route: 'user.profile' },
 ]
 
 const logout = () => {

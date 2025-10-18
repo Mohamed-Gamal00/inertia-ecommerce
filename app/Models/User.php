@@ -52,6 +52,7 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    protected $appends = ['image_url'];
     /* new */
     public function verificationCode()
     {
@@ -96,7 +97,7 @@ class User extends Authenticatable
     public function getImageUrlAttribute()
     {
         if (!$this->image) {
-            return url('front/images/user-image.jpg');
+            return url('assets/images/admin.jpg');
         }
         return url('storage/' . $this->image);
     }
