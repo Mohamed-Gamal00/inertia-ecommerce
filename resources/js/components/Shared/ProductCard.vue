@@ -15,9 +15,23 @@
                         cursor: 'pointer',
                         scale: isHovering ? 1.05 : 1,
                         objectFit: 'cover',
-                    }"
+                      }"
                     v-bind="props"
                 />
+
+                <!-- 🔥 زر المفضلة -->
+                <v-btn
+                    icon
+                    size="small"
+                    class="favorite-btn"
+                    variant="flat"
+                    :color="isFavorite ? 'red' : 'white'"
+                    @click.stop="toggleFavorite"
+                >
+                    <v-icon :color="isFavorite ? 'red' : 'grey-darken-3'">
+                        {{ isFavorite ? 'mdi-heart' : 'mdi-heart-outline' }}
+                    </v-icon>
+                </v-btn>
 
                 <v-btn
                     density="compact"
@@ -49,12 +63,7 @@
 
             <v-card-subtitle>
                 <span class="me-1">{{ item.parent.name }}</span>
-
-                <v-icon
-                    color="error"
-                    icon="mdi-fire-circle"
-                    size="small"
-                ></v-icon>
+                <v-icon color="error" icon="mdi-fire-circle" size="small"></v-icon>
             </v-card-subtitle>
         </v-card-item>
 
@@ -68,7 +77,6 @@
                     half-increments
                     readonly
                 ></v-rating>
-
                 <div class="text-grey ms-4">4.5 (413)</div>
             </v-row>
         </v-card-text>
@@ -76,20 +84,18 @@
         <v-divider class="mx-4 mb-1"></v-divider>
 
         <v-card-text class="pl-0 pt-0">
-        <template v-if="item.discount_price && item.discount_price < item.price">
-            <del class="text-grey">${{ item.price }}</del>
-            <span class="text-red ml-2" style="font-weight: 900; font-size: 16px">
-            ${{ Math.ceil(item.discount_price) }}
-            </span>
-        </template>
-
-        <template v-else>
-            <span class="text-dark" style="font-weight: 900; font-size: 16px">
-            ${{ Math.ceil(item.price) }}
-            </span>
-        </template>
+            <template v-if="item.discount_price && item.discount_price < item.price">
+                <del class="text-grey">${{ item.price }}</del>
+                <span class="text-red ml-2" style="font-weight: 900; font-size: 16px">
+          ${{ Math.ceil(item.discount_price) }}
+        </span>
+            </template>
+            <template v-else>
+        <span class="text-dark" style="font-weight: 900; font-size: 16px">
+          ${{ Math.ceil(item.price) }}
+        </span>
+            </template>
         </v-card-text>
-
 
         <v-btn-toggle v-model="currentImage">
             <v-btn
@@ -104,37 +110,30 @@
                     :src="pic.image_url"
                     width="30"
                     height="30"
-                    style="
-                        border: 1px solid rgba(110, 110, 110, 0.377);
-                        border-radius: 50%;
-                    "
+                    style="border: 1px solid rgba(110, 110, 110, 0.377); border-radius: 50%;"
                     alt="img"
                 />
             </v-btn>
         </v-btn-toggle>
 
         <v-card-actions>
-            <v-btn
-            color="deep-purple-lighten-2"
-            text="Reserve"
-            block
-            >
-            <Link :href="route('productss.show', item.slug)">
+            <v-btn color="deep-purple-lighten-2" text="Reserve" block>
+                <Link :href="route('productss.show', item.slug)">
                     تفاصيل المنتج
                 </Link>
-                </v-btn>
-            <!-- <v-btn
-                color="deep-purple-lighten-2"
-                text="Reserve"
-                block
-            ></v-btn> -->
+            </v-btn>
         </v-card-actions>
+
+        <!-- 🔥 Snackbar لرسايل النجاح أو الخطأ -->
+        <v-snackbar v-model="snackbar" location="top right" :color="snackbarColor" timeout="2000">
+            {{ snackbarMessage }}
+        </v-snackbar>
     </v-card>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import { Link } from "@inertiajs/vue3";
+import { ref } from 'vue';
+import { Link, router, usePage } from '@inertiajs/vue3';
 
 const props = defineProps({
     item: {
@@ -143,14 +142,59 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(["quick-view"]);
+const emit = defineEmits(['quick-view']);
 
+const { props: pageProps } = usePage();
+const user = pageProps.auth?.user;
 const currentImage = ref(props.item.image_url);
+const isFavorite = ref(props.item.is_in_wishlist || false);
+const snackbar = ref(false);
+const snackbarMessage = ref('');
+const snackbarColor = ref('success');
 
+function toggleFavorite() {
+    if (!user) {
+        router.visit(route('login'));
+        return;
+    }
+
+    const action = isFavorite.value ? 'wishlist.remove' : 'wishlist.add';
+    router.post(route(action, props.item.id), {}, {
+        preserveState: true,
+        preserveScroll: true,
+        onSuccess: () => {
+            isFavorite.value = !isFavorite.value;
+            snackbarMessage.value = isFavorite.value
+                ? 'تم إضافة المنتج إلى قائمة الأمنيات'
+                : 'تم إزالة المنتج من قائمة الأمنيات';
+            snackbarColor.value = 'success';
+            snackbar.value = true;
+        },
+        onError: (errors) => {
+            snackbarMessage.value = 'حدث خطأ، حاول مرة أخرى';
+            snackbarColor.value = 'error';
+            snackbar.value = true;
+        },
+    });
+}
 </script>
 
 <style scoped>
 .product-card:hover .quick-view-btn {
     opacity: 1 !important;
+}
+
+.favorite-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.85) !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.favorite-btn:hover {
+    background-color: white !important;
+    transform: scale(1.1);
 }
 </style>

@@ -198,10 +198,21 @@ class Product extends Model
     public function wishlistUsers()
     {
         return $this->belongsToMany(
-            Product::class,
+            User::class,
             'wishlist_products_user',
             'product_id',
             'user_id',
         );
+    }
+
+    public function scopeWithIsInWishlist($query, $user = null)
+    {
+        if ($user) {
+            $query->withExists(['wishlistUsers as is_in_wishlist' => function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            }]);
+        } else {
+            $query->addSelect(\DB::raw('false as is_in_wishlist'));
+        }
     }
 }

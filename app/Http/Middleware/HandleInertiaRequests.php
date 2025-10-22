@@ -43,6 +43,11 @@ class HandleInertiaRequests extends Middleware
             'auth.user' => fn() => Auth::guard('web')->check()
                 ? Auth::guard('web')->user()->only('id', 'first_name', 'family_name','phone_number', 'email', 'image_url')
                 : null,
+
+            'flash' => [
+                'success' => $request->session()->get('success'),
+                'error' => $request->session()->get('error'),
+            ],
         ];
     }
 }

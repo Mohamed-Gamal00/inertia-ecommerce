@@ -18,11 +18,6 @@ use Inertia\Inertia;
 |
 */
 
-// Route::middleware(['web'])->group(function () {
-//     Route::get('/auth/login', [UserAuthController::class, 'loginView'])->name('login.view');
-//     Route::post('/auth/login', [UserAuthController::class, 'login'])->name('login');
-//     Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
-// });
     Route::get('/login', [UserAuthController::class, 'loginView'])->name('login');
     Route::get('/register', [UserAuthController::class, 'registerView'])->name('register');
     Route::get('/forgot-password', [UserAuthController::class, 'forgotPasswordView'])->name('forgot');
@@ -77,8 +72,11 @@ Route::prefix('categories')->group(function () {
 // user Auth routes
 Route::middleware('auth:web')->group(function () {
     Route::get('/user-profile', [UserProfileController::class, 'index'])->name('user.profile');
-    /* المفضلة */
-    Route::get('/user_wishlist', [UserProfileController::class, 'userWishList'])->name('user.wishlist');
+
+    Route::post('/wishlist/add/{product}', [\App\Http\Controllers\Inertia\WishListController::class, 'add'])->name('wishlist.add');
+    Route::post('/wishlist/remove/{product}', [\App\Http\Controllers\Inertia\WishListController::class, 'remove'])->name('wishlist.remove');
+
+//    Route::get('/user_wishlist', [UserProfileController::class, 'userWishList'])->name('user.wishlist');
     Route::get('/user_info', [UserProfileController::class, 'userInfo'])->name('user.info');
     Route::get('/user_addresses', [UserProfileController::class, 'userAddresses'])->name('user.addresses');
     Route::get('/user_addresses/create', [UserProfileController::class, 'userAddressesCreate'])->name('create.address');
