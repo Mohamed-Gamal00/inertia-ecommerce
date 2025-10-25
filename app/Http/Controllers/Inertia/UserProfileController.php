@@ -41,80 +41,13 @@ class UserProfileController extends Controller
 
         $user->load([
             'orders.orderItems',
+            'addresses',
             'wishlistProducts' => function ($query) use ($user) {
                 $query->with(['images', 'parent'])
                     ->withIsInWishlist($user);
             },
         ]);
-
-        // return $user;
         return Inertia::render('Profile/Index', compact('user'));
-    }
-
-    public function userWishList()
-    {
-        $user = Auth::user();
-        $products = $user->wishlistProducts()->paginate(9);
-        return Inertia::render('Profile/Wishlist', compact('products'));
-    }
-
-
-    public function updateUserInfo(UserRequest $request)
-    {
-        $user = Auth::user();
-        $phoneChanged = $user->phone_number != $request->phone_number;
-
-        if ($phoneChanged) {
-            $verificationData = $this->sms_service->setVerificationCode($user->id);
-            $message = $this->sms_service->getSMSVerifyMessageByAppName($verificationData->code);
-            $this->moraSms->send_sms($user->phone_number, $message);
-
-            session(['phone_number' => $request->phone_number]);
-            return back()->with('success_update', 'تم ارسال كود التحقق الي رقمك.');
-        }
-
-        $user->update($request->all());
-        return back()->with('info', 'تم تغيير البيانات بنجاح');
-    }
-
-    public function verify_to_update(Request $request)
-    {
-        $request->validate(['code' => 'required']);
-        $user = Auth::user();
-        $userVerification = User_verfication::where('user_id', $user->id)->first();
-
-        if (!$userVerification) {
-            return back()->with('error', 'لم يتم العثور على رمز التحقق.');
-        }
-
-        if (now()->greaterThan($userVerification->verification_code_expires_at)) {
-            return back()->with('error', 'انتهت صلاحية رمز التحقق.');
-        }
-
-        $isValidCode = $this->sms_service->checkOTPCodePassword($user->id, $request->code);
-        if ($isValidCode) {
-            $user->update(['phone_number' => session('phone_number')]);
-            session()->forget('phone_number');
-            return back()->with('info', 'تم تغيير البيانات بنجاح.');
-        }
-
-        return back()->with('error', 'الرمز غير صالح، أعد الإرسال.');
-    }
-
-    public function resendVerifyCodeToupdate()
-    {
-        $user = Auth::user();
-        $verificationData = $this->sms_service->setVerificationCode($user->id);
-        $message = $this->sms_service->getSMSVerifyMessageByAppName($verificationData->code);
-        $this->moraSms->send_sms($user->phone_number, $message);
-        return back()->with('info', 'تم إرسال كود تحقق جديد.');
-    }
-
-    public function userAddresses()
-    {
-        $user = Auth::user();
-        $addresses = $user->addresses()->get();
-        return Inertia::render('Profile/Addresses/Index', compact('addresses'));
     }
 
     public function userAddressesCreate()

@@ -76,14 +76,21 @@ Route::middleware('auth:web')->group(function () {
     Route::post('/wishlist/add/{product}', [\App\Http\Controllers\Inertia\WishListController::class, 'add'])->name('wishlist.add');
     Route::post('/wishlist/remove/{product}', [\App\Http\Controllers\Inertia\WishListController::class, 'remove'])->name('wishlist.remove');
 
-//    Route::get('/user_wishlist', [UserProfileController::class, 'userWishList'])->name('user.wishlist');
-    Route::get('/user_info', [UserProfileController::class, 'userInfo'])->name('user.info');
-    Route::get('/user_addresses', [UserProfileController::class, 'userAddresses'])->name('user.addresses');
-    Route::get('/user_addresses/create', [UserProfileController::class, 'userAddressesCreate'])->name('create.address');
-    Route::post('/user_addresses/store', [UserProfileController::class, 'userAddressesStore'])->name('store.address');
-    Route::get('/user_addresses/{addressId}/edit', [UserProfileController::class, 'userAddressesEdit'])->name('edit.address');
-    Route::put('/user_addresses/{addressId}/update', [UserProfileController::class, 'userAddressesUpdate'])->name('update.address');
-    Route::delete('/user_addresses/{addressId}/delete', [UserProfileController::class, 'userAddressesDestroy'])->name('delete.address');
+    //    Route::get('/user_wishlist', [UserProfileController::class, 'userWishList'])->name('user.wishlist');
+    // Route::get('/user_info', [UserProfileController::class, 'userInfo'])->name('user.info');
+    // Route::get('/user_addresses', [UserProfileController::class, 'userAddresses'])->name('user.addresses');
+    // Route::get('/user_addresses/create', [UserProfileController::class, 'userAddressesCreate'])->name('create.address');
+    // Route::post('/user_addresses/store', [UserProfileController::class, 'userAddressesStore'])->name('store.address');
+    // Route::get('/user_addresses/{addressId}/edit', [UserProfileController::class, 'userAddressesEdit'])->name('edit.address');
+    // Route::put('/user_addresses/{addressId}/update', [UserProfileController::class, 'userAddressesUpdate'])->name('update.address');
+    // Route::delete('/user_addresses/{addressId}/delete', [UserProfileController::class, 'userAddressesDestroy'])->name('delete.address');
+
+    Route::prefix('user/addresses')->name('user.addresses.')->group(function () {
+        Route::post('/', [UserProfileController::class, 'userAddressesStore'])->name('store');
+        Route::put('/{id}', [UserProfileController::class, 'userAddressesUpdate'])->name('update');
+        Route::delete('/{id}', [UserProfileController::class, 'userAddressesDestroy'])->name('destroy');
+        Route::post('/set-main/{id}', [UserProfileController::class, 'setMainAddress'])->name('setMain');
+    });
     /*new*/
     Route::post('/user_addresses/{address}/set_main', [UserProfileController::class, 'setMainAddress'])->name('user.addresses.set_main');
 
