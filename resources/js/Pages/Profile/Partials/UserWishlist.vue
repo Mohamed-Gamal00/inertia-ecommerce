@@ -8,8 +8,8 @@
         :key="product.id"
         cols="6"
         sm="4"
-        md="3"
-        lg="2"
+        md="4"
+        lg="4"
         class="d-flex justify-center"
       >
         <ProductCard :item="product" @quick-view="openQuickView" />
