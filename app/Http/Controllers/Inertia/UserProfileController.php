@@ -28,9 +28,25 @@ class UserProfileController extends Controller
         $this->moraSms = $moraSmsGateway;
     }
 
+    // public function index()
+    // {
+    //     $user = Auth::user()->load('orders.orderItems');
+    //     // return $user;
+    //     return Inertia::render('Profile/Index', compact('user'));
+    // }
+
     public function index()
     {
-        $user = Auth::user()->load('orders.orderItems');
+        $user = Auth::user();
+
+        $user->load([
+            'orders.orderItems',
+            'wishlistProducts' => function ($query) use ($user) {
+                $query->with(['images', 'parent'])
+                    ->withIsInWishlist($user);
+            },
+        ]);
+
         // return $user;
         return Inertia::render('Profile/Index', compact('user'));
     }

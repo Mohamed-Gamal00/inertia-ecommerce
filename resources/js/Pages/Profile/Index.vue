@@ -80,7 +80,7 @@ import UserAccount from './Partials/UserAccount.vue'
 import UserReturns from './Partials/UserReturns.vue'
 
 const page = usePage()
-const user = computed(() => page.props.auth.user)
+const user = computed(() => page.props.user)
 const tab = ref('account')
 
 onMounted(() => {
