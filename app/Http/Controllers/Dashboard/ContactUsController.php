@@ -27,6 +27,7 @@ class ContactUsController extends Controller
 
   public function show($id)
   {
+    
     $message = $this->contactRepository->show($id);
     return view('dashboard.contact_us.show', compact('message'));
   }
