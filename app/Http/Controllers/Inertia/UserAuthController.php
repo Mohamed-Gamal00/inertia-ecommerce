@@ -79,14 +79,14 @@ class UserAuthController extends Controller
 
             UserAddress::create([
                 'address_title' => 'العنوان الأساسي',
-                'first_name' => $user->first_name,
-                'family_name' => $user->family_name,
-                'phone_number' => $user->phone_number,
-                'user_id' => $user->id,
-                'address' => $data['address'],
-                'country_id' => 178,
-                'city_id' => $data['city_id'],
-                'main_address' => true,
+                'first_name'    => $user->first_name,
+                'family_name'   => $user->family_name,
+                'phone_number'  => $user->phone_number,
+                'user_id'       => $user->id,
+                'address'       => $data['address'],
+                'country_id'    => $data['country_id'] ?? Country::first()?->id,
+                'city_id'       => $data['city_id'] ?? null,
+                'main_address'  => true,
             ]);
 
             Auth::guard('web')->login($user);

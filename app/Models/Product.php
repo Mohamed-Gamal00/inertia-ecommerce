@@ -212,7 +212,7 @@ class Product extends Model
                 $q->where('user_id', $user->id);
             }]);
         } else {
-            $query->addSelect(\DB::raw('false as is_in_wishlist'));
+            $query->selectRaw('products.*, false as is_in_wishlist');
         }
     }
 }

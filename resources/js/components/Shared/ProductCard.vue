@@ -1,6 +1,6 @@
 <template>
     <v-card class="mx-auto my-12 product-card" max-width="374">
-        <v-hover v-slot="{ isHovering, props }">
+        <v-hover v-slot="{ isHovering, props: hoverProps }">
             <div
                 class="img-parent position-relative"
                 style="height: 200px; overflow: hidden"
@@ -16,7 +16,7 @@
                         scale: isHovering ? 1.05 : 1,
                         objectFit: 'cover',
                       }"
-                    v-bind="props"
+                    v-bind="hoverProps"
                 />
 
                 <!-- 🔥 زر المفضلة -->
@@ -61,8 +61,8 @@
         <v-card-item>
             <v-card-title>{{ item.name }}</v-card-title>
 
-            <v-card-subtitle>
-                <span class="me-1">{{ item.parent.name }}</span>
+            <v-card-subtitle v-if="item.parent">
+                <span class="me-1">{{ item.parent?.name_en || item.parent?.name }}</span>
                 <v-icon color="error" icon="mdi-fire-circle" size="small"></v-icon>
             </v-card-subtitle>
         </v-card-item>
@@ -117,10 +117,13 @@
         </v-btn-toggle>
 
         <v-card-actions>
-            <v-btn color="deep-purple-lighten-2" text="Reserve" block>
-                <Link :href="route('productss.show', item.slug)">
-                    تفاصيل المنتج
-                </Link>
+            <v-btn
+                color="deep-purple-lighten-2"
+                block
+                variant="tonal"
+                :href="item.slug ? route('productss.show', item.slug) : '#'"
+            >
+                تفاصيل المنتج
             </v-btn>
         </v-card-actions>
 
@@ -134,6 +137,7 @@
 <script setup>
 import { ref } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
+import { route } from 'ziggy-js';
 
 const props = defineProps({
     item: {

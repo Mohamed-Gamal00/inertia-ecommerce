@@ -14,7 +14,7 @@ return new class extends Migration {
                 $table->string('name_en');
                 $table->string('code')->nullable();
                 $table->string('phone_code')->nullable();
-                $table->boolean('status')->default(true);
+                $table->enum('status', ['used', 'not_used'])->default('not_used');
             });
         }
 
@@ -24,7 +24,7 @@ return new class extends Migration {
                 $table->string('name_ar');
                 $table->string('name_en')->nullable();
                 $table->string('code')->nullable();
-                $table->boolean('status')->default(true);
+                $table->enum('status', ['used', 'not_used'])->default('not_used');
                 $table->decimal('shipping_price', 10, 2)->default(0);
                 $table->foreignId('country_id')->constrained('countries')->cascadeOnDelete();
             });
