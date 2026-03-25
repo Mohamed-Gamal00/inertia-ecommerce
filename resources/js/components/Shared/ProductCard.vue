@@ -116,11 +116,25 @@
             </v-btn>
         </v-btn-toggle>
 
-        <v-card-actions>
+        <v-card-actions class="flex-column gap-1 pa-2">
+            <v-btn
+                color="primary"
+                block
+                variant="elevated"
+                height="40"
+                style="border-radius:20px; text-transform:none"
+                :loading="addingToCart"
+                @click="addToCart"
+            >
+                <v-icon start>mdi-cart-plus</v-icon>
+                أضف للسلة
+            </v-btn>
             <v-btn
                 color="deep-purple-lighten-2"
                 block
                 variant="tonal"
+                height="40"
+                style="border-radius:20px; text-transform:none"
                 :href="item.slug ? route('productss.show', item.slug) : '#'"
             >
                 تفاصيل المنتج
@@ -135,26 +149,45 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, inject } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import { route } from 'ziggy-js';
+import axios from 'axios';
 
 const props = defineProps({
-    item: {
-        type: Object,
-        required: true,
-    },
+    item: { type: Object, required: true },
 });
 
 const emit = defineEmits(['quick-view']);
+const Emitter = inject('Emitter');
 
 const { props: pageProps } = usePage();
 const user = pageProps.auth?.user;
 const currentImage = ref(props.item.image_url);
 const isFavorite = ref(props.item.is_in_wishlist || false);
+const addingToCart = ref(false);
 const snackbar = ref(false);
 const snackbarMessage = ref('');
 const snackbarColor = ref('success');
+
+async function addToCart() {
+    addingToCart.value = true;
+    try {
+        const { data } = await axios.post('/cart/add', {
+            product_id: props.item.id,
+            quantity: 1,
+        });
+        Emitter.emit('cart-item-added', data.items);
+        snackbarMessage.value = 'تم إضافة المنتج للسلة';
+        snackbarColor.value = 'success';
+    } catch (e) {
+        snackbarMessage.value = e.response?.data?.message || 'حدث خطأ';
+        snackbarColor.value = 'error';
+    } finally {
+        addingToCart.value = false;
+        snackbar.value = true;
+    }
+}
 
 function toggleFavorite() {
     if (!user) {

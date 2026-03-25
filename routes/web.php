@@ -41,6 +41,12 @@ Route::middleware('auth:web')->group(function () {
 
 Route::get('/', [\App\Http\Controllers\Inertia\HomeController::class, 'index'])->name('home');
 
+// Cart routes (web - cookie based, works for guests and users)
+Route::post('/cart/add', [\App\Http\Controllers\Inertia\CartController::class, 'store'])->name('cart.add');
+Route::get('/cart', [\App\Http\Controllers\Inertia\CartController::class, 'index'])->name('cart.index');
+Route::patch('/cart/{id}', [\App\Http\Controllers\Inertia\CartController::class, 'update'])->name('cart.update');
+Route::delete('/cart/{id}', [\App\Http\Controllers\Inertia\CartController::class, 'destroy'])->name('cart.destroy');
+
 
 Route::prefix('products')->group(function () {
     Route::get('/', [ProductController::class, 'index'])->name('products');

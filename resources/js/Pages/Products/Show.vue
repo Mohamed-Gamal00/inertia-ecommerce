@@ -113,19 +113,19 @@
             <v-card-actions class="mt-7 w-100 px-0">
               <v-btn
                 variant="elevated"
-                style="
-                  text-transform: none;
-                  border-radius: 30px;
-                  background-color: rgb(32, 32, 32);
-                "
+                style="text-transform:none; border-radius:30px; background-color:rgb(32,32,32)"
                 class="w-75 text-white"
                 density="compact"
                 height="45"
-                @click="addToCart(singleProduct)"
+                @click="addToCart"
                 :loading="btnLoading"
-                >Add To Cart</v-btn
-              >
+                :disabled="product.quantity < 1"
+              >Add To Cart</v-btn>
             </v-card-actions>
+
+          <v-snackbar v-model="snackbar" location="top right" :color="snackbarColor" timeout="2000">
+              {{ snackbarMessage }}
+          </v-snackbar>
         </v-card>
       </v-col>
     </v-row>
@@ -133,33 +133,48 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, inject } from "vue";
 import { usePage } from "@inertiajs/vue3";
+import axios from "axios";
 
 const { props } = usePage();
 const product = props.product;
+const Emitter = inject("Emitter");
 
 const loading = ref(false);
 const selectedImage = ref(null);
 const quantity = ref(1);
 const btnLoading = ref(false);
+const snackbar = ref(false);
+const snackbarMessage = ref('');
+const snackbarColor = ref('success');
 
-const discount_price = computed(() =>
-  Math.ceil(
-    product.price -
-      product.price * (product.discount_price / 100)
-  )
+const effectivePrice = computed(() =>
+    product.discount_price && product.discount_price < product.price
+        ? product.discount_price
+        : product.price
 );
 
-const subtotal = computed(() => discount_price.value * quantity.value);
+const subtotal = computed(() => Math.ceil(effectivePrice.value) * quantity.value);
 
-const addToCart = (product) => {
-  btnLoading.value = true;
-  setTimeout(() => {
-    btnLoading.value = false;
-    alert(`${product.title} added to cart!`);
-  }, 800);
-};
+async function addToCart() {
+    btnLoading.value = true;
+    try {
+        const { data } = await axios.post('/cart/add', {
+            product_id: product.id,
+            quantity: quantity.value,
+        });
+        Emitter.emit('cart-item-added', data.items);
+        snackbarMessage.value = 'تم إضافة المنتج للسلة';
+        snackbarColor.value = 'success';
+    } catch (e) {
+        snackbarMessage.value = e.response?.data?.message || 'حدث خطأ';
+        snackbarColor.value = 'error';
+    } finally {
+        btnLoading.value = false;
+        snackbar.value = true;
+    }
+}
 </script>
 
 <style scoped>

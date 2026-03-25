@@ -25,27 +25,23 @@ class CartModelRepository implements CartRepository
             ->where('status', 0)
             ->first();
 
-        // dd($product->quantity);
-
-        /* لو المنتج مش موجود في السلة */
         if (!$item) {
-            $cart = Cart::create([
-                'user_id' => Auth::guard('web')->user()->id ?? null,
+            Cart::create([
+                'user_id'    => Auth::guard('web')->user()->id ?? null,
                 'product_id' => $product->id,
-                'status' => 0,
-                'quantity' => $quantity,
-                'color_id' => $color_id,
+                'status'     => 0,
+                'quantity'   => $quantity,
+                'color_id'   => $color_id,
             ]);
-            $this->get()->push($cart);
-            return $cart;
+        } else {
+            if ($item->quantity >= $product->quantity) {
+                return null;
+            }
+            $item->increment('quantity', $quantity);
         }
 
-        // لو الكمية المضافة اكبر من كمية المنتج نفسه
-        if ($item->quantity >= $product->quantity) {
-            return redirect()->back()->with('warning', 'عفوا هذه الكميه ليست متاحه');
-        }
-        /* لو موجود هزوده */
-        return $item->increment('quantity', $quantity);
+        // Reset cache so next get() fetches fresh from DB
+        $this->items = collect([]);
     }
 
     public function get(): Collection
@@ -59,16 +55,14 @@ class CartModelRepository implements CartRepository
 
     public function delete($id)
     {
-        Cart::where('id', '=', $id)
-            ->update(['status' => 1]);
+        Cart::where('id', '=', $id)->update(['status' => 1]);
+        $this->items = collect([]);
     }
 
     public function update($id, $quantity)
     {
-        Cart::where('id', '=', $id)
-            ->update([
-                'quantity' => $quantity
-            ]);
+        Cart::where('id', '=', $id)->update(['quantity' => $quantity]);
+        $this->items = collect([]);
     }
 
     public function empty()

@@ -4,135 +4,121 @@ namespace App\Http\Controllers\Inertia;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
-use App\Models\Color;
 use App\Models\Product;
-use App\Repositories\Cart\CartModelRepository;
 use App\Repositories\Cart\CartRepository;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
-    protected $cart;
+    protected CartRepository $cart;
 
     public function __construct(CartRepository $cart)
     {
         $this->cart = $cart;
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    // GET /cart — return cart items as JSON
     public function index()
     {
-        return view('front.cart.index', [
-            'cart' => $this->cart,
+        $items = $this->cart->get()->map(fn($item) => [
+            'id'                  => $item->id,
+            'product_id'          => $item->product_id,
+            'name'                => $item->product?->name,
+            'name_en'             => $item->product?->name_en,
+            'image'               => $item->product?->image_url,
+            'price'               => $item->product?->price,
+            'discount_price'      => $item->product?->discount_price,
+            'quantity'            => $item->quantity,
+        ]);
+
+        return response()->json([
+            'items' => $items,
+            'count' => $items->count(),
+            'total' => $this->cart->total(),
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
+    // POST /cart/add
     public function store(Request $request)
     {
         $request->validate([
-            'product_id' => ['required', 'int', 'exists:products,id'],
-            'quantity' => ['nullable', 'int', 'min:1'],
-            'color_id' => 'nullable|exists:colors,id'
+            'product_id' => 'required|integer|exists:products,id',
+            'quantity'   => 'nullable|integer|min:1',
+            'color_id'   => 'nullable|exists:colors,id',
         ]);
 
-        $product = Product::findOrfail($request->post('product_id'));
+        $product = Product::findOrFail($request->product_id);
 
-        if ($product->quantity < $request->quantity) {
-            return redirect()->back()->with('warning', 'عفوا هذه الكميه ليست متاحه');
+        if ($product->quantity < ($request->quantity ?? 1)) {
+            return response()->json(['message' => 'الكمية غير متاحة'], 422);
         }
 
+        $this->cart->add($product, $request->quantity ?? 1, $request->color_id);
 
-        $action = $request->input('action');
-
-//        dd($action);
-
-        if ($action === 'add') {
-            $this->cart->add($product, $request->input('quantity'), $request->color_id);
-            return redirect()->back()->with('info', 'تم اضافة المنتج في السلة');
-        } elseif ($action === 'addAndGoToCart') {
-            $this->cart->add($product, $request->input('quantity'), $request->color_id);
-            return redirect()->route('order.index');
-        }
-
-        $this->cart->add($product, $request->post('quantity'));
-        return redirect()->back(); //new line
-    }
-
-    public function storeAndGoToCart(Request $request)
-    {
-        $request->validate([
-            'product_id' => ['required', 'int', 'exists:products,id'],
-            'quantity' => ['nullable', 'int', 'min:1'],
+        $items = $this->cart->get()->map(fn($item) => [
+            'id'             => $item->id,
+            'product_id'     => $item->product_id,
+            'name'           => $item->product?->name,
+            'name_en'        => $item->product?->name_en,
+            'image'          => $item->product?->image_url,
+            'price'          => $item->product?->price,
+            'discount_price' => $item->product?->discount_price,
+            'quantity'       => $item->quantity,
         ]);
 
-        $product = Product::findOrFail($request->input('product_id'));
-        $this->cart->add($product, $request->input('quantity'));
-
-        return redirect()->route('cart.show');
+        return response()->json([
+            'message' => 'تم إضافة المنتج للسلة',
+            'items'   => $items,
+            'count'   => $items->count(),
+            'total'   => $this->cart->total(),
+        ]);
     }
 
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
+    // PATCH /cart/{id}
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'quantity' => ['required', 'int', 'min:1'],
+        $request->validate(['quantity' => 'required|integer|min:1']);
+        $this->cart->update($id, $request->quantity);
+
+        $items = $this->cart->get()->map(fn($item) => [
+            'id'             => $item->id,
+            'product_id'     => $item->product_id,
+            'name'           => $item->product?->name,
+            'name_en'        => $item->product?->name_en,
+            'image'          => $item->product?->image_url,
+            'price'          => $item->product?->price,
+            'discount_price' => $item->product?->discount_price,
+            'quantity'       => $item->quantity,
         ]);
-        $this->cart->update($id, $request->post('quantity'));
+
+        return response()->json([
+            'items' => $items,
+            'count' => $items->count(),
+            'total' => $this->cart->total(),
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
+    // DELETE /cart/{id}
     public function destroy($id)
     {
         $this->cart->delete($id);
 
-//        return [
-//            'message' => 'Item Deleted!'
-//        ];
-    }
+        $items = $this->cart->get()->map(fn($item) => [
+            'id'             => $item->id,
+            'product_id'     => $item->product_id,
+            'name'           => $item->product?->name,
+            'name_en'        => $item->product?->name_en,
+            'image'          => $item->product?->image_url,
+            'price'          => $item->product?->price,
+            'discount_price' => $item->product?->discount_price,
+            'quantity'       => $item->quantity,
+        ]);
 
-    public function getCartCount(CartRepository $cart)
-    {
-        $count = $cart->get()->count();
-        return response()->json(['count' => $count]);
-    }
-
-    public function getTotalPrice()
-    {
-        $totalPrice = resolve('App\currency\Currency')->getCurrency($this->cart->total());
-
-        return response()->json(['totalPrice' => $totalPrice]);
-    }
-
-    public function getTotalQuantity(CartRepository $cart)
-    {
-        // Get the total quantity of all items in the cart
-        $totalQuantity = $cart->get()->sum('quantity');
-
-        return response()->json(['totalQuantity' => $totalQuantity]);
+        return response()->json([
+            'items' => $items,
+            'count' => $items->count(),
+            'total' => $this->cart->total(),
+        ]);
     }
 }
