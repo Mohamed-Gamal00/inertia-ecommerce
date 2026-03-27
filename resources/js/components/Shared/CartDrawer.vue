@@ -91,7 +91,7 @@
                     <span style="font-weight:700; font-size:16px">{{ total }} ر.س</span>
                 </div>
                 <v-card-actions class="flex-column gap-2">
-                    <v-btn block variant="elevated" color="primary" height="44" style="border-radius:22px; text-transform:none">
+                    <v-btn block variant="elevated" color="primary" height="44" style="border-radius:22px; text-transform:none" href="/checkout">
                         إتمام الشراء
                     </v-btn>
                     <v-btn block variant="outlined" color="primary" height="44" style="border-radius:22px; text-transform:none" @click="drawer = false">

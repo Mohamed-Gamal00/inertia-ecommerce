@@ -1,102 +1,146 @@
 <template>
-  <div class="quick-view mt-16">
-    <v-dialog v-model="dialog" max-width="900">
-      <v-icon
-        style="position:absolute; right:-14px; top:-14px; background-color:black; color:white; font-size:18px; padding:13px; z-index:10;"
-        @click="dialog = false"
-      >mdi-close</v-icon>
+    <v-dialog v-model="dialog" max-width="860" :scrim="true">
+        <v-card rounded="xl" elevation="0" class="qv-card" v-if="product.id">
 
-      <v-card elevation="0" class="content_card">
-        <v-container fluid class="bg-white pt-10 px-10">
-          <v-row>
-            <!-- Images -->
-            <v-col cols="7">
-              <v-skeleton-loader v-if="loading" type="image,image,image" />
-              <template v-else>
-                <img
-                  :src="tab || product.image_url"
-                  class="w-100"
-                  style="width:100%; height:400px; object-fit:cover"
-                  alt="product"
-                />
-                <v-tabs center-active height="130" v-model="tab" class="mt-10">
-                  <v-tab v-for="(img, i) in product.images" :key="i" :value="img.image_url" class="mx-10">
-                    <img style="object-fit:contain" width="70" height="100" :src="img.image_url" alt="img" />
-                  </v-tab>
-                </v-tabs>
-              </template>
-            </v-col>
+            <!-- Close button -->
+            <v-btn
+                icon
+                size="small"
+                variant="flat"
+                color="white"
+                class="qv-close"
+                @click="dialog = false"
+            >
+                <v-icon size="18">mdi-close</v-icon>
+            </v-btn>
 
-            <!-- Details -->
-            <v-col cols="5" class="pt-0 pl-6">
-              <v-skeleton-loader v-if="loading" type="article,article,article" />
-              <v-card elevation="0" v-else>
-                <v-card-title class="px-0" style="font-size:15px; font-weight:bold; white-space:pre-wrap">
-                  {{ product.name }}
-                  <span v-if="product.parent"> - {{ product.parent.name }}</span>
-                </v-card-title>
+            <v-row style="min-height:480px">
 
-                <v-card-text style="color:rgb(97,97,97); font-size:13px" class="px-0 pt-0">
-                  {{ product.description }}
-                </v-card-text>
+                <!-- Left: images -->
+                <v-col cols="12" md="5" class="qv-image-col">
+                    <v-skeleton-loader v-if="loading" type="image" height="100%" />
+                    <template v-else>
+                        <div class="qv-main-image">
+                            <img :src="activeImage || product.image_url" alt="product" />
+                            <!-- Discount badge -->
+                            <div v-if="product.discount_price && product.discount_price < product.price" class="qv-badge">
+                                -{{ discountPercent }}%
+                            </div>
+                        </div>
+                        <!-- Thumbnails -->
+                        <div v-if="product.images?.length" class="qv-thumbs">
+                            <div
+                                v-for="(img, i) in product.images"
+                                :key="i"
+                                class="qv-thumb"
+                                :class="{ 'qv-thumb--active': activeImage === img.image_url }"
+                                @click="activeImage = img.image_url"
+                            >
+                                <img :src="img.image_url" alt="thumb" />
+                            </div>
+                        </div>
+                    </template>
+                </v-col>
 
-                <v-card-text style="color:rgb(97,97,97); font-size:13px" class="px-0 pt-0">
-                  Availability:
-                  <strong>{{ product.quantity > 0 ? 'In Stock' : 'Out Of Stock' }}</strong>
-                </v-card-text>
+                <!-- Right: details -->
+                <v-col cols="12" md="7" class="qv-details-col">
+                    <v-skeleton-loader v-if="loading" type="article,article" />
+                    <template v-else>
 
-                <!-- Price -->
-                <v-card-text class="pl-0 pt-0">
-                  <template v-if="product.discount_price && product.discount_price < product.price">
-                    <del class="text-grey">${{ product.price }}</del>
-                    <span class="text-red ml-2" style="font-weight:900; font-size:16px">
-                      ${{ Math.ceil(product.discount_price) }}
-                    </span>
-                  </template>
-                  <template v-else>
-                    <span style="font-weight:900; font-size:16px">${{ Math.ceil(product.price) }}</span>
-                  </template>
-                </v-card-text>
+                        <!-- Category -->
+                        <div class="qv-category" v-if="product.parent">
+                            {{ product.parent.name_en || product.parent.name }}
+                        </div>
 
-                <!-- Quantity -->
-                <v-card-text class="pl-0 pt-0">Quantity</v-card-text>
-                <div class="counter px-1" style="border:1px solid #bbb; border-radius:30px; width:fit-content">
-                  <v-icon size="20" @click="quantity > 1 ? quantity-- : false">mdi-minus</v-icon>
-                  <input
-                    type="number" v-model="quantity" min="1"
-                    style="border:none; outline:none; width:60px; font-size:13px"
-                    class="text-center py-2"
-                  />
-                  <v-icon size="20" @click="quantity++">mdi-plus</v-icon>
-                </div>
+                        <!-- Name -->
+                        <h2 class="qv-name">{{ product.name }}</h2>
 
-                <v-card-text class="pl-0">
-                  Subtotal: <strong>${{ subtotal }}</strong>
-                </v-card-text>
+                        <!-- Rating -->
+                        <div class="d-flex align-center mb-3" style="gap:8px">
+                            <v-rating :model-value="4.5" half-increments readonly color="amber" density="compact" size="small" />
+                            <span class="text-grey" style="font-size:12px">(24 تقييم)</span>
+                        </div>
 
-                <v-card-actions class="mt-2 w-100 px-0">
-                  <v-btn
-                    variant="elevated"
-                    style="text-transform:none; border-radius:30px; background-color:rgb(32,32,32)"
-                    class="w-75 text-white"
-                    density="compact"
-                    height="45"
-                    :loading="btnLoading"
-                    :disabled="!product.id || product.quantity < 1"
-                    @click="addToCart"
-                  >Add To Cart</v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card>
+                        <!-- Price -->
+                        <div class="qv-price-row">
+                            <template v-if="product.discount_price && product.discount_price < product.price">
+                                <span class="qv-price-new">${{ Math.ceil(product.discount_price) }}</span>
+                                <span class="qv-price-old">${{ product.price }}</span>
+                            </template>
+                            <template v-else>
+                                <span class="qv-price-new">${{ Math.ceil(product.price) }}</span>
+                            </template>
+                        </div>
+
+                        <v-divider class="my-4" />
+
+                        <!-- Description -->
+                        <p v-if="product.description" class="qv-desc">
+                            {{ product.description }}
+                        </p>
+
+                        <!-- Stock -->
+                        <div class="d-flex align-center mb-4" style="gap:6px">
+                            <v-icon size="16" :color="product.quantity > 0 ? 'green' : 'red'">
+                                mdi-circle-small
+                            </v-icon>
+                            <span style="font-size:13px" :class="product.quantity > 0 ? 'text-green' : 'text-red'">
+                                {{ product.quantity > 0 ? 'متوفر في المخزن' : 'غير متوفر' }}
+                            </span>
+                        </div>
+
+                        <!-- Quantity -->
+                        <div class="d-flex align-center mb-5" style="gap:12px">
+                            <span style="font-size:13px; font-weight:600; color:#374151">الكمية</span>
+                            <div class="qv-qty">
+                                <button @click="quantity > 1 ? quantity-- : null">
+                                    <v-icon size="16">mdi-minus</v-icon>
+                                </button>
+                                <span>{{ quantity }}</span>
+                                <button @click="quantity++">
+                                    <v-icon size="16">mdi-plus</v-icon>
+                                </button>
+                            </div>
+                            <span class="text-grey" style="font-size:12px">
+                                الإجمالي: <strong>${{ subtotal }}</strong>
+                            </span>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="d-flex" style="gap:10px">
+                            <v-btn
+                                color="primary"
+                                rounded="lg"
+                                height="46"
+                                style="flex:1; text-transform:none; font-size:14px; font-weight:600"
+                                :loading="btnLoading"
+                                :disabled="product.quantity < 1"
+                                prepend-icon="mdi-cart-plus"
+                                @click="addToCart"
+                            >
+                                أضف للسلة
+                            </v-btn>
+                            <v-btn
+                                variant="outlined"
+                                color="primary"
+                                rounded="lg"
+                                height="46"
+                                style="text-transform:none; font-size:13px"
+                                :href="product.slug ? `/products/${product.slug}` : '#'"
+                            >
+                                التفاصيل
+                            </v-btn>
+                        </div>
+
+                    </template>
+                </v-col>
+            </v-row>
+        </v-card>
     </v-dialog>
 
     <v-snackbar v-model="snackbar" location="top right" :color="snackbarColor" timeout="2000">
-      {{ snackbarMessage }}
+        {{ snackbarMessage }}
     </v-snackbar>
-  </div>
 </template>
 
 <script setup>
@@ -105,15 +149,20 @@ import axios from 'axios';
 
 const Emitter = inject('Emitter');
 
-const dialog    = ref(false);
-const loading   = ref(false);
-const tab       = ref('');
-const quantity  = ref(1);
+const dialog     = ref(false);
+const loading    = ref(false);
+const product    = ref({});
+const activeImage = ref('');
+const quantity   = ref(1);
 const btnLoading = ref(false);
-const product   = ref({});
-const snackbar  = ref(false);
+const snackbar   = ref(false);
 const snackbarMessage = ref('');
 const snackbarColor   = ref('success');
+
+const discountPercent = computed(() => {
+    if (!product.value.discount_price || !product.value.price) return 0;
+    return Math.round(((product.value.price - product.value.discount_price) / product.value.price) * 100);
+});
 
 const effectivePrice = computed(() =>
     product.value.discount_price && product.value.discount_price < product.value.price
@@ -121,7 +170,7 @@ const effectivePrice = computed(() =>
         : product.value.price
 );
 
-const subtotal = computed(() => Math.ceil(effectivePrice.value || 0) * quantity.value);
+const subtotal = computed(() => Math.ceil((effectivePrice.value || 0) * quantity.value));
 
 async function addToCart() {
     btnLoading.value = true;
@@ -145,20 +194,187 @@ async function addToCart() {
 
 onMounted(() => {
     Emitter.on('openQuickView', (data) => {
-        loading.value = true;
         product.value = data;
+        activeImage.value = data.image_url || '';
         quantity.value = 1;
-        tab.value = '';
+        loading.value = true;
         dialog.value = true;
-        setTimeout(() => { loading.value = false; }, 800);
+        setTimeout(() => { loading.value = false; }, 600);
     });
 });
 </script>
 
-<style lang="scss" scoped>
-.content_card {
-    &::-webkit-scrollbar { width: 5px; }
-    &::-webkit-scrollbar-track { background: #f1f1f1; }
-    &::-webkit-scrollbar-thumb { background: #888; }
+<style scoped>
+.qv-card {
+    overflow: hidden;
+    position: relative;
+}
+
+.qv-close {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 10;
+    background: rgba(0,0,0,0.45) !important;
+}
+
+.qv-image-col {
+    background: #f8f9fb;
+    display: flex;
+    flex-direction: column;
+    padding: 28px 24px;
+    border-left: 1px solid #e5e7eb;
+}
+
+.qv-main-image {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 280px;
+}
+
+.qv-main-image img {
+    max-height: 300px;
+    max-width: 100%;
+    object-fit: contain;
+    transition: transform 0.3s;
+}
+
+.qv-main-image:hover img {
+    transform: scale(1.04);
+}
+
+.qv-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #ef4444;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 0 12px 0 12px;
+}
+
+.qv-thumbs {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+
+.qv-thumb {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    border: 2px solid #e5e7eb;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.qv-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.qv-thumb--active {
+    border-color: #3949ab;
+}
+
+.qv-details-col {
+    padding: 36px 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.qv-category {
+    font-size: 12px;
+    font-weight: 600;
+    color: #3949ab;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.qv-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.4;
+    margin-bottom: 10px;
+}
+
+.qv-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.qv-price-new {
+    font-size: 24px;
+    font-weight: 800;
+    color: #1a237e;
+}
+
+.qv-price-old {
+    font-size: 15px;
+    color: #9ca3af;
+    text-decoration: line-through;
+}
+
+.qv-desc {
+    font-size: 13px;
+    color: #6b7280;
+    line-height: 1.7;
+    margin-bottom: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.qv-qty {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 4px 12px;
+    background: #f9fafb;
+}
+
+.qv-qty button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    padding: 2px;
+    border-radius: 4px;
+    transition: background 0.15s;
+}
+
+.qv-qty button:hover {
+    background: #e5e7eb;
+    color: #111827;
+}
+
+.qv-qty span {
+    font-size: 15px;
+    font-weight: 600;
+    min-width: 24px;
+    text-align: center;
 }
 </style>

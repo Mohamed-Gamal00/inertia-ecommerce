@@ -1,163 +1,275 @@
-<script setup>
-import { ref, inject, onMounted, onBeforeUnmount, computed } from "vue";
-import { Link, usePage } from "@inertiajs/vue3";
+<template>
+    <!-- Main App Bar -->
+    <v-app-bar elevation="0" color="primary" height="64">
+        <v-container fluid class="d-flex align-center" style="gap:8px">
 
-const Emitter = inject("Emitter");
-const drawer = ref(false);
-const search = ref("");
+            <!-- Mobile: hamburger -->
+            <v-app-bar-nav-icon class="d-md-none" @click="mobileDrawer = !mobileDrawer" />
+
+            <!-- Logo -->
+            <Link href="/" class="d-flex align-center text-decoration-none me-4">
+                <v-icon color="white" size="28" class="me-1">mdi-storefront</v-icon>
+                <span class="font-weight-bold text-white" style="font-size:18px">متجري</span>
+            </Link>
+
+            <!-- Desktop nav links -->
+            <div class="d-none d-md-flex align-center" style="gap:4px">
+                <Link
+                    v-for="item in menu"
+                    :key="item.href"
+                    :href="item.href"
+                    class="nav-link text-decoration-none"
+                    :class="{ 'nav-link--active': isActive(item.href) }"
+                >
+                    {{ item.title }}
+                </Link>
+
+                <!-- Categories dropdown -->
+                <v-menu open-on-hover :close-on-content-click="true">
+                    <template #activator="{ props: menuProps }">
+                        <button class="nav-link" v-bind="menuProps">
+                            الأقسام
+                            <v-icon size="16" class="ms-1">mdi-chevron-down</v-icon>
+                        </button>
+                    </template>
+                    <v-card min-width="180" elevation="3" rounded="lg">
+                        <v-list density="compact" nav>
+                            <v-list-item
+                                v-for="cat in categories"
+                                :key="cat.id"
+                                :title="cat.name"
+                                rounded="lg"
+                                :href="`/categories/${cat.slug}`"
+                            />
+                        </v-list>
+                    </v-card>
+                </v-menu>
+            </div>
+
+            <v-spacer />
+
+            <!-- Search bar (desktop) -->
+            <v-text-field
+                v-model="search"
+                placeholder="ابحث عن منتج..."
+                hide-details
+                single-line
+                variant="outlined"
+                density="compact"
+                rounded="lg"
+                prepend-inner-icon="mdi-magnify"
+                class="d-none d-md-flex search-field"
+                style="max-width:260px"
+                bg-color="grey-lighten-5"
+            />
+
+            <!-- Cart icon -->
+            <v-btn icon variant="text" @click="openCart" class="ms-1" color="white">
+                <v-badge :content="cartCount || ''" :model-value="cartCount > 0" color="red" floating>
+                    <v-icon>mdi-cart-outline</v-icon>
+                </v-badge>
+            </v-btn>
+
+            <!-- Auth: logged in -->
+            <template v-if="user">
+                <v-menu :close-on-content-click="true">
+                    <template #activator="{ props: menuProps }">
+                        <v-btn variant="text" v-bind="menuProps" class="ms-1 d-none d-md-flex text-white" style="text-transform:none">
+                            <v-avatar color="primary" size="32" class="me-2">
+                                <span class="text-white" style="font-size:13px; font-weight:700">
+                                    {{ user.first_name?.charAt(0) }}
+                                </span>
+                            </v-avatar>
+                            {{ user.first_name }}
+                            <v-icon size="16" class="ms-1">mdi-chevron-down</v-icon>
+                        </v-btn>
+                    </template>
+                    <v-card min-width="180" elevation="3" rounded="lg">
+                        <v-list density="compact" nav>
+                            <v-list-item prepend-icon="mdi-account-outline" title="حسابي" rounded="lg" href="/user-profile" />
+                            <v-divider class="my-1" />
+                            <v-list-item prepend-icon="mdi-logout" rounded="lg" base-color="red">
+                                <Link href="/logout" method="post" as="button" class="text-decoration-none text-red" style="font-size:14px">
+                                    تسجيل الخروج
+                                </Link>
+                            </v-list-item>
+                        </v-list>
+                    </v-card>
+                </v-menu>
+            </template>
+
+            <!-- Auth: guest -->
+            <template v-else>
+                <div class="d-none d-md-flex align-center ms-2" style="gap:8px">
+                    <Link href="/login">
+                        <v-btn variant="text" size="small" style="text-transform:none; font-size:13px; color:white">
+                            دخول
+                        </v-btn>
+                    </Link>
+                    <Link href="/register">
+                        <v-btn color="white" size="small" rounded="lg" style="text-transform:none; font-size:13px; color:#1a237e">
+                            حساب جديد
+                        </v-btn>
+                    </Link>
+                </div>
+            </template>
+
+        </v-container>
+    </v-app-bar>
+
+    <!-- Mobile Drawer -->
+    <v-navigation-drawer v-model="mobileDrawer" temporary location="right" width="280">
+        <div class="pa-4 d-flex align-center border-b">
+            <v-icon color="primary" class="me-2">mdi-storefront</v-icon>
+            <span class="font-weight-bold text-primary">متجري</span>
+            <v-spacer />
+            <v-btn icon variant="text" size="small" @click="mobileDrawer = false">
+                <v-icon>mdi-close</v-icon>
+            </v-btn>
+        </div>
+
+        <!-- Mobile search -->
+        <div class="pa-3">
+            <v-text-field
+                v-model="search"
+                placeholder="ابحث عن منتج..."
+                hide-details
+                variant="outlined"
+                density="compact"
+                rounded="lg"
+                prepend-inner-icon="mdi-magnify"
+                bg-color="grey-lighten-5"
+            />
+        </div>
+
+        <v-list nav density="compact">
+            <v-list-item
+                v-for="item in menu"
+                :key="item.href"
+                :title="item.title"
+                :prepend-icon="item.icon"
+                :href="item.href"
+                rounded="lg"
+                @click="mobileDrawer = false"
+            />
+
+            <v-list-group value="categories">
+                <template #activator="{ props: groupProps }">
+                    <v-list-item v-bind="groupProps" title="الأقسام" prepend-icon="mdi-shape-outline" rounded="lg" />
+                </template>
+                <v-list-item
+                    v-for="cat in categories"
+                    :key="cat.id"
+                    :title="cat.name"
+                    :href="`/categories/${cat.slug}`"
+                    rounded="lg"
+                    @click="mobileDrawer = false"
+                />
+            </v-list-group>
+        </v-list>
+
+        <v-divider class="my-2" />
+
+        <!-- Mobile auth -->
+        <div class="pa-3">
+            <template v-if="user">
+                <div class="d-flex align-center mb-3 px-2">
+                    <v-avatar color="primary" size="36" class="me-3">
+                        <span class="text-white font-weight-bold">{{ user.first_name?.charAt(0) }}</span>
+                    </v-avatar>
+                    <div>
+                        <div class="font-weight-bold" style="font-size:14px">{{ user.first_name }} {{ user.family_name }}</div>
+                        <div class="text-grey" style="font-size:12px">{{ user.email }}</div>
+                    </div>
+                </div>
+                <v-btn block variant="outlined" color="primary" rounded="lg" href="/user-profile" style="text-transform:none" class="mb-2">
+                    حسابي
+                </v-btn>
+                <Link href="/logout" method="post" as="button" class="w-100">
+                    <v-btn block variant="tonal" color="red" rounded="lg" style="text-transform:none">
+                        تسجيل الخروج
+                    </v-btn>
+                </Link>
+            </template>
+            <template v-else>
+                <v-btn block color="primary" rounded="lg" href="/login" style="text-transform:none" class="mb-2">
+                    تسجيل الدخول
+                </v-btn>
+                <v-btn block variant="outlined" color="primary" rounded="lg" href="/register" style="text-transform:none">
+                    إنشاء حساب
+                </v-btn>
+            </template>
+        </div>
+    </v-navigation-drawer>
+</template>
+
+<script setup>
+import { ref, inject, computed, onMounted, onBeforeUnmount } from 'vue';
+import { Link, usePage } from '@inertiajs/vue3';
+
+const Emitter = inject('Emitter');
+const mobileDrawer = ref(false);
+const search = ref('');
 const cartCount = ref(0);
 
 const { props } = usePage();
-const categories = props.categories ?? [];
-const user = computed(()=>usePage().props.auth.user) // ✅ المستخدم الحالي
-// console.log(user);
+const categories = computed(() => usePage().props.categories ?? []);
+const user = computed(() => usePage().props.auth?.user);
+
 const menu = [
-  { title: "الرئيسية", href: "/" },
-  { title: "المنتجات", href: "/products" },
-  { title: "الفئات", href: "/categories" },
-  { title: "العروض", href: "/offers" },
+    { title: 'الرئيسية',  href: '/',          icon: 'mdi-home-outline' },
+    { title: 'المنتجات',  href: '/products',   icon: 'mdi-shopping-outline' },
+    { title: 'العروض',    href: '/offers',     icon: 'mdi-tag-outline' },
 ];
 
+function isActive(href) {
+    return window.location.pathname === href;
+}
+
 function openCart() {
-  Emitter.emit("openCart");
+    Emitter.emit('openCart');
 }
 
 function updateCart(count) {
-  cartCount.value = count;
+    cartCount.value = count;
 }
 
-onMounted(() => {
-  Emitter.on("cart-updated", updateCart);
-});
-
-onBeforeUnmount(() => {
-  Emitter.off("cart-updated", updateCart);
-});
+onMounted(() => Emitter.on('cart-updated', updateCart));
+onBeforeUnmount(() => Emitter.off('cart-updated', updateCart));
 </script>
 
-<template>
-  <v-app-bar color="primary" dark>
-    <v-container fluid class="d-flex align-center justify-content-between">
-      <!-- Logo -->
-      <v-app-bar-nav-icon class="d-md-none" @click="drawer = !drawer" />
-      <Link href="/" class="d-flex align-center text-white no-underline">
-        <v-icon class="mr-2">mdi-storefront</v-icon>
-        <span class="font-bold text-lg">متجري</span>
-      </Link>
+<style scoped>
+.nav-link {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.85);
+    transition: background 0.15s, color 0.15s;
+    cursor: pointer;
+    border: none;
+    background: none;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
 
-      <!-- الأقسام -->
-      <v-menu open-on-hover>
-        <template #activator="{ props }">
-          <v-btn text v-bind="props" class="text-white">الأقسام</v-btn>
-        </template>
+.nav-link:hover {
+    background: rgba(255,255,255,0.15);
+    color: #ffffff;
+}
 
-        <v-list>
-          <v-list-item v-for="cat in categories" :key="cat.id">
-            <Link
-              :href="route('categories.show', cat.slug)"
-              class="text-black no-underline"
-            >
-              {{ cat.name }}
-            </Link>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+.nav-link--active {
+    background: rgba(255,255,255,0.2);
+    color: #ffffff;
+    font-weight: 600;
+}
 
-      <v-spacer />
+.search-field :deep(.v-field) {
+    font-size: 13px;
+}
 
-      <!-- Desktop Menu -->
-      <div class="d-none d-md-flex">
-        <Link
-          v-for="item in menu"
-          :key="item.href"
-          :href="item.href"
-          class="mx-3 text-white no-underline"
-        >
-          {{ item.title }}
-        </Link>
-      </div>
-
-      <!-- Search -->
-      <v-text-field
-        v-model="search"
-        placeholder="ابحث عن المنتجات..."
-        hide-details
-        single-line
-        prepend-inner-icon="mdi-magnify"
-        class="mx-4 d-none d-md-flex"
-      />
-
-      <!-- Cart -->
-      <v-badge
-        :content="cartCount"
-        color="red"
-        overlap
-        style="cursor: pointer"
-        @click="openCart"
-      >
-        <v-icon>mdi-cart</v-icon>
-      </v-badge>
-
-      <!-- Auth Links -->
-      <div class="ml-4">
-        <!-- ✅ لو المستخدم داخل -->
-        <template v-if="user">
-          <v-menu>
-            <template #activator="{ props }">
-              <v-btn text class="text-white" v-bind="props">
-                <v-icon class="mr-1">mdi-account</v-icon>
-                {{ user.first_name }} {{ user.family_name }}
-              </v-btn>
-            </template>
-
-            <v-list>
-              <v-list-item>
-                <Link href="/user-profile" class="text-black no-underline">
-                  الحساب الشخصي
-                </Link>
-              </v-list-item>
-              <v-list-item>
-                <Link
-                  href="/logout"
-                  method="post"
-                  as="button"
-                  class="text-black no-underline"
-                >
-                  تسجيل الخروج
-                </Link>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </template>
-
-        <!-- 🚪 لو المستخدم مش داخل -->
-        <template v-else>
-          <Link href="/login" class="text-white mx-2 no-underline">
-            تسجيل الدخول
-          </Link>
-          <Link href="/register" class="text-white mx-2 no-underline">
-            إنشاء حساب
-          </Link>
-        </template>
-      </div>
-    </v-container>
-  </v-app-bar>
-
-  <!-- Drawer (Responsive Menu) -->
-  <v-navigation-drawer v-model="drawer" app temporary location="right">
-    <v-list>
-      <v-list-item
-        v-for="item in menu"
-        :key="item.href"
-        @click="drawer = false"
-      >
-        <Link
-          :href="item.href"
-          class="w-full block py-2 px-4 text-black no-underline"
-        >
-          {{ item.title }}
-        </Link>
-      </v-list-item>
-    </v-list>
-  </v-navigation-drawer>
-</template>
+.border-b {
+    border-bottom: 1px solid #e5e7eb;
+}
+</style>

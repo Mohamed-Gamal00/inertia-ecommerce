@@ -24,7 +24,7 @@ return new class extends Migration {
                 $table->string('image')->nullable();
                 $table->decimal('price', 10, 2)->default(0);
                 $table->decimal('discount_price', 10, 2)->nullable();
-                $table->boolean('status')->default(true);
+                $table->enum('status', ['active', 'archived'])->default('active');
                 $table->foreignId('category_id')->nullable()->constrained('main_categories')->nullOnDelete();
                 $table->foreignId('parent_id')->nullable()->constrained('main_categories')->nullOnDelete();
                 $table->foreignId('company_id')->nullable()->constrained('companies')->nullOnDelete();

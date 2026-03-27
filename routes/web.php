@@ -47,6 +47,13 @@ Route::get('/cart', [\App\Http\Controllers\Inertia\CartController::class, 'index
 Route::patch('/cart/{id}', [\App\Http\Controllers\Inertia\CartController::class, 'update'])->name('cart.update');
 Route::delete('/cart/{id}', [\App\Http\Controllers\Inertia\CartController::class, 'destroy'])->name('cart.destroy');
 
+// Checkout
+Route::get('/checkout', [\App\Http\Controllers\Inertia\CheckoutController::class, 'create'])->name('checkout');
+Route::post('/checkout', [\App\Http\Controllers\Inertia\CheckoutController::class, 'store'])->name('checkout.store');
+
+// Payment page (web)
+Route::get('/payment/{order_number}', [\App\Http\Controllers\Api\PaymentController::class, 'index'])->name('user.payment');
+
 
 Route::prefix('products')->group(function () {
     Route::get('/', [ProductController::class, 'index'])->name('products');

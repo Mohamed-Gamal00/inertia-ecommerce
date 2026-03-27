@@ -1,205 +1,321 @@
 <template>
-  <div>
-    <div class="d-flex justify-space-between align-center mb-4">
-      <h3 class="text-h5">عناويني</h3>
-      <v-btn color="primary" @click="showAddDialog = true">
-        <v-icon start>mdi-plus</v-icon> إضافة عنوان جديد
-      </v-btn>
+    <div>
+        <!-- Header -->
+        <div class="d-flex align-center justify-space-between mb-5">
+            <div>
+                <p class="text-grey-darken-1 mt-1" style="font-size:13px">
+                    {{ addresses.length }} عنوان مسجل
+                </p>
+            </div>
+            <v-btn color="primary" rounded="lg" style="text-transform:none" prepend-icon="mdi-plus" @click="openAdd">
+                عنوان جديد
+            </v-btn>
+        </div>
+
+        <!-- Address cards -->
+        <v-row v-if="addresses.length">
+            <v-col v-for="addr in addresses" :key="addr.id" cols="12" sm="6">
+                <v-card
+                    rounded="xl"
+                    :elevation="addr.main_address ? 4 : 1"
+                    class="address-card"
+                    :class="{ 'address-card--main': addr.main_address }"
+                >
+                    <!-- Top bar -->
+                    <div class="address-card-top">
+                        <div class="d-flex align-center" style="gap:8px">
+                            <v-icon size="18" :color="addr.main_address ? 'primary' : 'grey'">
+                                mdi-map-marker{{ addr.main_address ? '' : '-outline' }}
+                            </v-icon>
+                            <span class="font-weight-bold" style="font-size:14px">
+                                {{ addr.address_title || 'عنوان' }}
+                            </span>
+                        </div>
+                        <v-chip v-if="addr.main_address" color="primary" size="x-small" variant="flat">
+                            رئيسي
+                        </v-chip>
+                    </div>
+
+                    <v-divider />
+
+                    <!-- Body -->
+                    <div class="pa-4">
+                        <div class="info-row">
+                            <v-icon size="15" color="grey">mdi-account-outline</v-icon>
+                            <span>{{ addr.first_name }} {{ addr.family_name }}</span>
+                        </div>
+                        <div class="info-row">
+                            <v-icon size="15" color="grey">mdi-phone-outline</v-icon>
+                            <span dir="ltr">{{ addr.phone_number }}</span>
+                        </div>
+                        <div class="info-row">
+                            <v-icon size="15" color="grey">mdi-home-outline</v-icon>
+                            <span>{{ addr.address }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="address-card-actions">
+                        <v-btn
+                            v-if="!addr.main_address"
+                            size="small"
+                            variant="text"
+                            color="primary"
+                            style="text-transform:none; font-size:12px"
+                            prepend-icon="mdi-star-outline"
+                            @click="setMain(addr.id)"
+                        >
+                            تعيين رئيسي
+                        </v-btn>
+                        <v-spacer v-if="!addr.main_address" />
+                        <v-btn icon size="small" variant="text" color="grey" @click="openEdit(addr)">
+                            <v-icon size="18">mdi-pencil-outline</v-icon>
+                        </v-btn>
+                        <v-btn icon size="small" variant="text" color="error" @click="remove(addr.id)">
+                            <v-icon size="18">mdi-delete-outline</v-icon>
+                        </v-btn>
+                    </div>
+                </v-card>
+            </v-col>
+        </v-row>
+
+        <!-- Empty state -->
+        <div v-else class="empty-state">
+            <v-icon size="64" color="grey-lighten-1">mdi-map-marker-off-outline</v-icon>
+            <p class="mt-3 text-grey-darken-1" style="font-size:15px">لا توجد عناوين مسجلة بعد</p>
+            <v-btn color="primary" rounded="lg" class="mt-3" style="text-transform:none" @click="openAdd">
+                أضف عنوانك الأول
+            </v-btn>
+        </div>
+
+        <!-- Add / Edit Dialog -->
+        <v-dialog v-model="dialog" max-width="520" persistent>
+            <v-card rounded="xl" class="pa-2">
+                <v-card-title class="d-flex align-center justify-space-between pa-4 pb-2">
+                    <span class="font-weight-bold" style="font-size:16px">
+                        {{ editing ? 'تعديل العنوان' : 'إضافة عنوان جديد' }}
+                    </span>
+                    <v-btn icon size="small" variant="text" @click="close">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                </v-card-title>
+
+                <v-divider />
+
+                <v-card-text class="pa-4">
+                    <v-form @submit.prevent="save">
+                        <v-row dense>
+                            <v-col cols="12">
+                                <label class="field-label">اسم العنوان</label>
+                                <v-text-field
+                                    v-model="form.address_title"
+                                    placeholder="المنزل، العمل..."
+                                    variant="outlined"
+                                    density="comfortable"
+                                    rounded="lg"
+                                    bg-color="grey-lighten-5"
+                                    hide-details="auto"
+                                    class="mt-1 mb-3"
+                                />
+                            </v-col>
+                            <v-col cols="6">
+                                <label class="field-label">الاسم الأول</label>
+                                <v-text-field
+                                    v-model="form.first_name"
+                                    variant="outlined"
+                                    density="comfortable"
+                                    rounded="lg"
+                                    bg-color="grey-lighten-5"
+                                    hide-details="auto"
+                                    class="mt-1 mb-3"
+                                />
+                            </v-col>
+                            <v-col cols="6">
+                                <label class="field-label">اسم العائلة</label>
+                                <v-text-field
+                                    v-model="form.family_name"
+                                    variant="outlined"
+                                    density="comfortable"
+                                    rounded="lg"
+                                    bg-color="grey-lighten-5"
+                                    hide-details="auto"
+                                    class="mt-1 mb-3"
+                                />
+                            </v-col>
+                            <v-col cols="12">
+                                <label class="field-label">رقم الهاتف</label>
+                                <v-text-field
+                                    v-model="form.phone_number"
+                                    variant="outlined"
+                                    density="comfortable"
+                                    rounded="lg"
+                                    bg-color="grey-lighten-5"
+                                    hide-details="auto"
+                                    class="mt-1 mb-3"
+                                    prepend-inner-icon="mdi-phone-outline"
+                                    dir="ltr"
+                                />
+                            </v-col>
+                            <v-col cols="12">
+                                <label class="field-label">العنوان التفصيلي</label>
+                                <v-textarea
+                                    v-model="form.address"
+                                    variant="outlined"
+                                    density="comfortable"
+                                    rounded="lg"
+                                    bg-color="grey-lighten-5"
+                                    hide-details="auto"
+                                    rows="2"
+                                    class="mt-1 mb-3"
+                                    prepend-inner-icon="mdi-home-outline"
+                                />
+                            </v-col>
+                        </v-row>
+                    </v-form>
+                </v-card-text>
+
+                <v-card-actions class="pa-4 pt-0">
+                    <v-btn variant="text" rounded="lg" style="text-transform:none" @click="close">إلغاء</v-btn>
+                    <v-spacer />
+                    <v-btn
+                        color="primary"
+                        rounded="lg"
+                        style="text-transform:none; min-width:120px"
+                        :loading="saving"
+                        @click="save"
+                    >
+                        {{ editing ? 'تحديث' : 'حفظ' }}
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+        <!-- Confirm delete -->
+        <v-dialog v-model="confirmDelete" max-width="360">
+            <v-card rounded="xl" class="pa-4 text-center">
+                <v-icon size="48" color="error" class="mb-3">mdi-delete-alert-outline</v-icon>
+                <p class="font-weight-bold mb-1">حذف العنوان</p>
+                <p class="text-grey-darken-1 text-caption mb-4">هل أنت متأكد من حذف هذا العنوان؟</p>
+                <div class="d-flex justify-center" style="gap:12px">
+                    <v-btn variant="text" rounded="lg" style="text-transform:none" @click="confirmDelete = false">إلغاء</v-btn>
+                    <v-btn color="error" rounded="lg" style="text-transform:none" :loading="deleting" @click="confirmRemove">حذف</v-btn>
+                </div>
+            </v-card>
+        </v-dialog>
     </div>
-
-    <!-- قائمة العناوين -->
-    <v-row v-if="addresses.length">
-      <v-col
-        v-for="address in addresses"
-        :key="address.id"
-        cols="12"
-        sm="6"
-        md="4"
-      >
-        <v-card class="pa-3 rounded-xl" :elevation="address.main_address ? 8 : 2">
-          <div class="d-flex justify-space-between align-center">
-            <strong>{{ address.address_title }}</strong>
-
-            <v-chip
-              v-if="address.main_address"
-              color="green"
-              text-color="white"
-              size="small"
-            >
-              العنوان الرئيسي
-            </v-chip>
-          </div>
-
-          <p class="mt-2">{{ address.address }}</p>
-          <p class="text-caption text-muted">
-            {{ address.first_name }} {{ address.family_name }} - {{ address.phone_number }}
-          </p>
-
-          <v-divider class="my-2"></v-divider>
-
-          <div class="d-flex justify-space-between">
-            <v-btn size="small" color="primary" variant="tonal" @click="editAddress(address)">
-              <v-icon start>mdi-pencil</v-icon> تعديل
-            </v-btn>
-
-            <v-btn
-              size="small"
-              color="error"
-              variant="tonal"
-              @click="deleteAddress(address.id)"
-            >
-              <v-icon start>mdi-delete</v-icon> حذف
-            </v-btn>
-          </div>
-
-          <v-btn
-            v-if="!address.main_address"
-            class="mt-2"
-            color="success"
-            block
-            variant="tonal"
-            @click="setMainAddress(address.id)"
-          >
-            <v-icon start>mdi-star</v-icon>
-            تعيين كعنوان رئيسي
-          </v-btn>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <v-alert
-      v-else
-      type="info"
-      text="لا توجد عناوين بعد. أضف عنوانك الأول!"
-      class="text-center mt-6"
-    />
-
-    <!-- نافذة إضافة / تعديل العنوان -->
-    <v-dialog v-model="showAddDialog" max-width="600px" persistent>
-      <v-card class="pa-4 rounded-xl">
-        <h3 class="mb-4">
-          {{ editingAddress ? 'تعديل العنوان' : 'إضافة عنوان جديد' }}
-        </h3>
-
-        <v-form @submit.prevent="saveAddress">
-          <v-text-field
-            v-model="form.address_title"
-            label="اسم العنوان"
-            required
-          ></v-text-field>
-
-          <v-text-field
-            v-model="form.first_name"
-            label="الاسم الأول"
-            required
-          ></v-text-field>
-
-          <v-text-field
-            v-model="form.family_name"
-            label="اسم العائلة"
-            required
-          ></v-text-field>
-
-          <v-text-field
-            v-model="form.phone_number"
-            label="رقم الهاتف"
-            required
-          ></v-text-field>
-
-          <v-text-field
-            v-model="form.address"
-            label="العنوان بالتفصيل"
-            required
-          ></v-text-field>
-
-          <div class="d-flex justify-end mt-4">
-            <v-btn text @click="closeDialog">إلغاء</v-btn>
-            <v-btn color="primary" type="submit">
-              {{ editingAddress ? 'تحديث' : 'حفظ' }}
-            </v-btn>
-          </div>
-        </v-form>
-      </v-card>
-    </v-dialog>
-  </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import { router } from "@inertiajs/vue3";
+import { ref, computed } from 'vue';
+import { router } from '@inertiajs/vue3';
 
-const props = defineProps({
-  user: {
-    type: Object,
-    required: true,
-  },
-});
+const props = defineProps({ user: { type: Object, required: true } });
 
 const addresses = computed(() => props.user?.addresses ?? []);
 
-// popup states
-const showAddDialog = ref(false);
-const editingAddress = ref(null);
+const dialog        = ref(false);
+const editing       = ref(null);
+const saving        = ref(false);
+const confirmDelete = ref(false);
+const deleting      = ref(false);
+const deleteId      = ref(null);
 
-// form data
-const form = ref({
-  address_title: "",
-  first_name: "",
-  family_name: "",
-  phone_number: "",
-  address: "",
-});
+const emptyForm = () => ({ address_title: '', first_name: '', family_name: '', phone_number: '', address: '' });
+const form = ref(emptyForm());
 
-// functions
-const closeDialog = () => {
-  showAddDialog.value = false;
-  editingAddress.value = null;
-  Object.assign(form.value, {
-    address_title: "",
-    first_name: "",
-    family_name: "",
-    phone_number: "",
-    address: "",
-  });
-};
+function openAdd() {
+    editing.value = null;
+    form.value = emptyForm();
+    dialog.value = true;
+}
 
-const editAddress = (address) => {
-  editingAddress.value = address;
-  Object.assign(form.value, address);
-  showAddDialog.value = true;
-};
+function openEdit(addr) {
+    editing.value = addr;
+    form.value = { ...addr };
+    dialog.value = true;
+}
 
-const saveAddress = () => {
-  if (editingAddress.value) {
-    // تحديث
-    router.put(route("user.addresses.update", editingAddress.value.id), form.value, {
-      onSuccess: closeDialog,
+function close() {
+    dialog.value = false;
+    editing.value = null;
+}
+
+function save() {
+    saving.value = true;
+    if (editing.value) {
+        router.put(route('user.addresses.update', editing.value.id), form.value, {
+            onFinish: () => { saving.value = false; close(); },
+        });
+    } else {
+        router.post(route('user.addresses.store'), form.value, {
+            onFinish: () => { saving.value = false; close(); },
+        });
+    }
+}
+
+function remove(id) {
+    deleteId.value = id;
+    confirmDelete.value = true;
+}
+
+function confirmRemove() {
+    deleting.value = true;
+    router.delete(route('user.addresses.destroy', deleteId.value), {
+        onFinish: () => { deleting.value = false; confirmDelete.value = false; },
     });
-  } else {
-    // إضافة جديدة
-    router.post(route("user.addresses.store"), form.value, {
-      onSuccess: closeDialog,
-    });
-  }
-};
+}
 
-const deleteAddress = (id) => {
-  if (confirm("هل أنت متأكد من حذف هذا العنوان؟")) {
-    router.delete(route("user.addresses.destroy", id));
-  }
-};
-
-const setMainAddress = (id) => {
-  router.post(route("user.addresses.setMain", id));
-};
+function setMain(id) {
+    router.post(route('user.addresses.setMain', id));
+}
 </script>
 
 <style scoped>
-.v-card {
-  transition: all 0.3s;
+.address-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid #e5e7eb;
 }
-.v-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+.address-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08) !important;
+}
+
+.address-card--main {
+    border: 1.5px solid #3949ab;
+}
+
+.address-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+}
+
+.address-card-actions {
+    display: flex;
+    align-items: center;
+    padding: 4px 8px 8px;
+    border-top: 1px solid #f3f4f6;
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #4b5563;
+    margin-bottom: 6px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.field-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
 }
 </style>

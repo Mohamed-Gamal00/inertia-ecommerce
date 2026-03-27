@@ -44,7 +44,9 @@ class ShippingRepository implements ShippingInterface
 
     if (isset($data['price'])) {
       foreach ($data['price'] as $city_id => $city_price) {
-        $this->city->where('id', $city_id)->update(['shipping_price' => $city_price]);
+        if ($city_price !== null && $city_price !== '') {
+          $this->city->where('id', $city_id)->update(['shipping_price' => $city_price]);
+        }
       }
     }
 

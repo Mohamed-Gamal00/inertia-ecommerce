@@ -53,7 +53,7 @@ class ProductController extends Controller
 
     public function show($slug)
     {
-        $product = Product::with(['images', 'parent'])->where('slug', $slug)->firstOrFail();
+        $product = Product::with(['images', 'parent', 'features'])->where('slug', $slug)->firstOrFail();
         return Inertia::render('Products/Show', [
             'product' => $product,
         ]);

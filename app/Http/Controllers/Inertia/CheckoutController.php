@@ -31,19 +31,24 @@ use Throwable;
 class CheckoutController extends Controller
 {
     public function store(Request $request, CartRepository $cart, Order $order)
-
     {
+        dd('test');
+        // Ensure validation errors return JSON for axios
+        $request->headers->set('Accept', 'application/json');
 
         // billing for guest & shipping for authenticated user
-
-//        dd($request->all());
         if (Auth::guard('web')->check()) {
-            $request->validate([
-                'user_address' => 'required',
-                'terms' => 'required',
-            ], [
-                'user_address.required' => 'برجاء اختيار عنوان او اضافة عنون جديد',
-            ]);
+            // Only require user_address if not adding a new address
+            if (!isset($request->addr['shipping'])) {
+                $request->validate([
+                    'user_address' => 'required',
+                    'terms'        => 'required',
+                ], [
+                    'user_address.required' => 'برجاء اختيار عنوان او اضافة عنوان جديد',
+                ]);
+            } else {
+                $request->validate(['terms' => 'required']);
+            }
         }
 
         if (isset($request->addr['shipping']) && $request->user_address == 'add_address') {
@@ -83,7 +88,10 @@ class CheckoutController extends Controller
 
 
         $items = $cart->get();
-        // dd($items);
+
+        if ($items->isEmpty()) {
+            return response()->json(['message' => 'السلة فارغة'], 422);
+        }
 
         if ($request->payment_method == 'card_payment') {
 
@@ -106,7 +114,7 @@ class CheckoutController extends Controller
                     'payment_method' => $request->payment_method,
                     'order_status_id' => OrderStatus::select('id')->where('default_status', true)->first()->id,
                     'note' => $request->note,
-                    'shipping_price' => request()->shipping == 'noShipping' ? null : $request->shipping_price,
+                    'shipping_price' => request()->shipping == 'noShipping' ? 0 : (float)($request->shipping_price ?? 0),
                     'totalBeforeDiscount' => $cart->totalBeforeDiscount(),
                     'total_price' => $cart->total(),
                     'cookie_id' => Auth::guard('web')->check() ? null : Cart::getCookieId()
@@ -123,7 +131,7 @@ class CheckoutController extends Controller
                         'product_name' => $cart_items->product->name, // product is the relation
                         'price' => $cart_items->product->price * $cart_items->quantity, // product is the relation
                         'quantity' => $cart_items->quantity,
-                        'color' => $cart_items->color_id
+                        //'color' => $cart_items->color_id
                     ]);
 
                     $product = Product::where('id', $item->product_id)->first();
@@ -188,7 +196,9 @@ class CheckoutController extends Controller
                 $cart->empty();
 
                 DB::commit();
-                return redirect()->route('user.payment', ['order_number' => $order['number']]);
+                return response()->json([
+                    'redirect' => route('user.payment', ['order_number' => $order['number']])
+                ]);
             } catch (Throwable $e) {
                 DB::rollBack();
                 throw $e;
@@ -216,7 +226,7 @@ class CheckoutController extends Controller
                     'payment_method' => $request->payment_method, // cash on deleviry
                     'order_status_id' => OrderStatus::select('id')->where('default_status', true)->first()->id,
                     'note' => $request->note,
-                    'shipping_price' => request()->shipping == 'noShipping' ? null : $request->shipping_price,
+                    'shipping_price' => request()->shipping == 'noShipping' ? 0 : (float)($request->shipping_price ?? 0),
                     'totalBeforeDiscount' => $cart->totalBeforeDiscount(),
                     'total_price' => $cart->total(),
                     'cookie_id' => Auth::guard('web')->check() ? null : Cart::getCookieId()
@@ -233,7 +243,7 @@ class CheckoutController extends Controller
                         'product_name' => $cart_items->product->name, // product is the relation
                         'price' => $cart_items->product->price * $cart_items->quantity, // product is the relation
                         'quantity' => $cart_items->quantity,
-                        'color' => $cart_items->color_id
+                        //'color' => $cart_items->color_id
                     ]);
 
                     $product = Product::where('id', $item->product_id)->first();
@@ -297,69 +307,73 @@ class CheckoutController extends Controller
 
                 $cart->empty();
                 DB::commit();
+
+                return response()->json([
+                    'redirect' => route('home'),
+                    'message'  => 'تم اتمام الطلب بنجاح',
+                ]);
             } catch (Throwable $e) {
                 DB::rollBack();
-                throw $e;
+                return response()->json(['message' => $e->getMessage()], 500);
             }
-
-            if (Auth::guard('web')->check()) {
-                return redirect()->route('user.main.orders')->with('success', 'تم اتمام الطلب بنجاح');
-            }
-            return redirect()->route('guest.main.orders')->with('success', 'تم اتمام الطلب بنجاح');
         }
 
     }
 
     public function create(CartRepository $cart)
     {
-
-        // if cart is empty
         if ($cart->get()->count() == 0) {
-            return redirect()->route('front.home');
+            return redirect()->route('home');
         }
-
-        $productWeight = [];
 
         foreach ($cart->get() as $item) {
-            /* وزن كل منتج مضروب في الكمية بتاعته اللي في السلة */
-            $productWeight[] = $item->product->weight * $item->quantity;
-        }
-        // dd($productWeight);
-
-        // update cart weight to be total weight of each product item
-        foreach ($cart->get() as $item) {
-            $item->update([
-                'weight' => $item->quantity * $item->product->weight
-            ]);
+            $item->update(['weight' => $item->quantity * $item->product->weight]);
         }
 
-        $countries = DB::table('countries')->where('status', 'used')->get();
-        $countriesId = DB::table('countries')->where('status', 'used')->pluck('id')->toArray();
-        $cities = DB::table('cities')
-            ->whereIn('country_id', $countriesId)->where('status', 'used')
-            ->get();
+        $countries = \DB::table('countries')->where('status', 'used')->get();
+        $countriesId = \DB::table('countries')->where('status', 'used')->pluck('id')->toArray();
+        $cities = \DB::table('cities')->whereIn('country_id', $countriesId)->where('status', 'used')->get();
         $shipping = ShippingTypesAndPrice::where('id', 1)->first();
-        // dd($shipping);
 
-
-        $discount = DB::table('cookie_discount_ids')->where('cookie_id', Cart::getCookieId())->first();
-        // dd($discount);
-
+        $discount = \DB::table('cookie_discount_ids')->where('cookie_id', Cart::getCookieId())->first();
         $discountPrice = null;
-
         if ($discount) {
-            $price = DiscountCode::where('id', $discount->discount_id)->first();
-            $discountPrice = $price->price;
+            $discountPrice = \App\Models\DiscountCode::where('id', $discount->discount_id)->value('price');
         }
 
-        return view('front.checkout.index', [
-            'cart' => $cart,
-            'user' => Auth::guard('web')->user(),
-            'countries' => $countries,
-            'cities' => $cities,
-            'shipping' => $shipping,
+        $cartItems = $cart->get()->map(fn($item) => [
+            'id'             => $item->id,
+            'product_id'     => $item->product_id,
+            'name'           => $item->product?->name,
+            'image'          => $item->product?->image_url,
+            'price'          => (float) $item->product?->price,
+            'discount_price' => $item->product?->discount_price ? (float) $item->product->discount_price : null,
+            'quantity'       => $item->quantity,
+        ]);
+
+        $userAddresses = Auth::guard('web')->check()
+            ? Auth::guard('web')->user()->addresses()->with(['country', 'city'])->get()->map(fn($a) => [
+                'id'           => $a->id,
+                'address_title'=> $a->address_title,
+                'first_name'   => $a->first_name,
+                'family_name'  => $a->family_name,
+                'phone_number' => $a->phone_number,
+                'address'      => $a->address,
+                'country_id'   => $a->country_id,
+                'city_id'      => $a->city_id,
+                'main_address' => $a->main_address,
+            ])
+            : collect();
+
+        return \Inertia\Inertia::render('Checkout/Index', [
+            'cartItems'     => $cartItems,
+            'total'         => $cart->total(),
+            'totalBefore'   => $cart->totalBeforeDiscount(),
+            'countries'     => $countries,
+            'cities'        => $cities,
+            'shipping'      => $shipping,
             'discountPrice' => $discountPrice,
-            'productWeight' => \array_sum($productWeight)
+            'userAddresses' => $userAddresses,
         ]);
     }
 }
