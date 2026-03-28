@@ -298,14 +298,15 @@ const addrForm = ref({
 
 const filteredCities = computed(() =>
     addrForm.value.country_id
-        ? cities.value.filter(c => c.country_id === addrForm.value.country_id)
+        // eslint-disable-next-line eqeqeq
+        ? cities.value.filter(c => c.country_id == addrForm.value.country_id)
         : cities.value
 );
 
-// City-based shipping price
 const cityShippingPrice = computed(() => {
     if (!addrForm.value.city_id) return 0;
-    const city = cities.value.find(c => c.id === addrForm.value.city_id);
+    // eslint-disable-next-line eqeqeq
+    const city = cities.value.find(c => c.id == addrForm.value.city_id);
     return city?.shipping_price || 0;
 });
 
@@ -341,9 +342,13 @@ async function submit() {
     };
 
     if (shippingOption.value === 'noShipping') {
-        payload.shipping = 'noShipping';
-    } else {
-        payload[shippingOption.value] = shippingOption.value;
+        payload.pickup_from_store = true;
+    } else if (shippingOption.value === 'fixed_shipping') {
+        payload.fixed_shipping = true;
+    } else if (shippingOption.value === 'shipping_based_on_weight') {
+        payload.shipping_based_on_weight = true;
+    } else if (shippingOption.value === 'shipping_based_on_city') {
+        payload.shipping_based_on_city = true;
     }
 
     if (user.value && form.value.user_address !== 'add_address') {
@@ -363,6 +368,7 @@ async function submit() {
     }
 
     try {
+    console.log(payload);
         const { data } = await axios.post('/checkout', payload);
         if (data.redirect) window.location.href = data.redirect;
         else router.visit('/');
