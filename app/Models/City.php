@@ -22,7 +22,9 @@ class City extends Model
         return $this->hasMany(ShippingLocation::class);
     }
 
-    public function getCurrentNameLangAttribute()
+    protected $appends = ['name'];
+
+    public function getNameAttribute()
     {
         $locale = app()->getLocale();
         if ($locale === 'ar' || empty($this->name_en)) {

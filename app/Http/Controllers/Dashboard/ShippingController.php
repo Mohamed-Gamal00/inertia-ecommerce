@@ -77,6 +77,7 @@ class ShippingController extends Controller
     $data['add_price_based_on_city'] = $request->has('add_price_based_on_city') ? (bool)$request->post('add_price_based_on_city') : false;
 
     $data['price'] = $request->input('price', []);
+    // dd($data);
 
     $this->shippingRepository->updateShippingData($data, $id);
 

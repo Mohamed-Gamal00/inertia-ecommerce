@@ -1,11 +1,11 @@
 <template>
-  <v-app>      <!-- مكونات ثابتة -->
+  <v-app>
       <CartDrawer />
       <AppHeader />
       <QuickView />
 
       <!-- المحتوى الرئيسي -->
-      <v-main >
+      <v-main class="pa-0">
         <v-container fluid>
             <slot></slot>
         </v-container>
@@ -18,11 +18,13 @@
 </template>
 
 <script setup>
-import AppHeader from "../components/layout/AppHeader.vue";
-import AppFooter from "../components/layout/AppFooter.vue";
-import QuickView from "../components/layout/QuickView.vue";
-
-import CartDrawer from "../components/layout/CartDrawer.vue";
+import AppHeader from "../layouts/AppHeader.vue";
+import AppFooter from "../layouts/AppFooter.vue";
+import QuickView from "../components/Shared/QuickView.vue";
+import CartDrawer from "../components/Shared/CartDrawer.vue";
+import { usePage } from "@inertiajs/vue3";
+import { computed } from "vue";
+const user = computed(() => usePage().props.auth.user);
 </script>
 
 <style scoped>

@@ -1,0 +1,29 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration {
+    public function up(): void
+    {
+        if (!Schema::hasTable('currencies')) {
+            Schema::create('currencies', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('name_ar')->nullable();
+                $table->string('code')->nullable();
+                $table->string('symbol')->nullable();
+                $table->decimal('price_in_default_currency', 10, 4)->nullable();
+                $table->boolean('default_currency')->default(false);
+                $table->enum('status', ['used', 'not_used'])->default('not_used');
+                $table->timestamps();
+            });
+        }
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('currencies');
+    }
+};
