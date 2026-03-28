@@ -1,156 +1,89 @@
 <template>
-    <v-card class="mx-auto my-12 product-card" max-width="374">
-        <v-hover v-slot="{ isHovering, props: hoverProps }">
-            <div
-                class="img-parent position-relative"
-                style="height: 200px; overflow: hidden"
-            >
-                <img
-                    :src="currentImage"
-                    :alt="item.name_en"
-                    class="w-100"
-                    :style="{
-                        height: '100%',
-                        transition: 'all 0.3s ease-in-out',
-                        cursor: 'pointer',
-                        scale: isHovering ? 1.05 : 1,
-                        objectFit: 'cover',
-                      }"
-                    v-bind="hoverProps"
-                />
+    <div class="pc" @mouseenter="hovered = true" @mouseleave="hovered = false">
 
-                <!-- 🔥 زر المفضلة -->
-                <v-btn
-                    icon
-                    size="small"
-                    class="favorite-btn"
-                    variant="flat"
-                    :color="isFavorite ? 'red' : 'white'"
-                    @click.stop="toggleFavorite"
-                >
-                    <v-icon :color="isFavorite ? 'red' : 'grey-darken-3'">
-                        {{ isFavorite ? 'mdi-heart' : 'mdi-heart-outline' }}
-                    </v-icon>
-                </v-btn>
+        <!-- Image area -->
+        <div class="pc-img-wrap">
+            <img :src="currentImage || item.image_url" :alt="item.name" class="pc-img" />
 
-                <v-btn
-                    density="compact"
-                    color="primary"
+            <!-- Discount badge -->
+            <div v-if="discountPercent" class="pc-badge">-{{ discountPercent }}%</div>
 
-                    height="32"
-                    variant="tonal"
-                    class="bg-white quick-view-btn"
-                    prepend-icon= "mdi-eye"
-                    style="
-                        text-transform: none;
-                        position: absolute;
-                        left: 50%;
-                        top: 50%;
-                        transform: translate(-50%, -50%);
-                        font-size: 12px;
-                        opacity: 0;
-                        transition: opacity 0.2s ease-in-out;
-                    "
-                    @click="$emit('quick-view', item)"
-                >
-                    Quick View
-                </v-btn>
+            <!-- Wishlist -->
+            <button class="pc-wish" :class="{ 'pc-wish--active': isFavorite }" @click.stop="toggleFavorite">
+                <v-icon size="16">{{ isFavorite ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
+            </button>
+
+            <!-- Quick view overlay -->
+            <div class="pc-overlay" :class="{ 'pc-overlay--show': hovered }">
+                <button class="pc-qv-btn" @click.stop="$emit('quick-view', item)">
+                    <v-icon size="15" class="me-1">mdi-eye-outline</v-icon>
+                    عرض سريع
+                </button>
             </div>
-        </v-hover>
 
-        <v-card-item>
-            <v-card-title>{{ item.name }}</v-card-title>
+            <!-- Color thumbnails -->
+            <div v-if="item.images?.length" class="pc-thumbs">
+                <div
+                    v-for="(pic, i) in item.images.slice(0, 4)"
+                    :key="i"
+                    class="pc-thumb"
+                    :class="{ 'pc-thumb--active': currentImage === pic.image_url }"
+                    @click.stop="currentImage = pic.image_url"
+                >
+                    <img :src="pic.image_url" alt="thumb" />
+                </div>
+            </div>
+        </div>
 
-            <v-card-subtitle v-if="item.parent">
-                <span class="me-1">{{ item.parent?.name_en || item.parent?.name }}</span>
-                <v-icon color="error" icon="mdi-fire-circle" size="small"></v-icon>
-            </v-card-subtitle>
-        </v-card-item>
+        <!-- Info area -->
+        <div class="pc-info">
+            <!-- Category -->
+            <div v-if="item.parent" class="pc-cat">
+                {{ item.parent.name_en || item.parent.name }}
+            </div>
 
-        <v-card-text>
-            <v-row align="center" class="mx-0">
-                <v-rating
-                    :model-value="4.5"
-                    color="amber"
-                    density="compact"
-                    size="small"
-                    half-increments
-                    readonly
-                ></v-rating>
-                <div class="text-grey ms-4">4.5 (413)</div>
-            </v-row>
-        </v-card-text>
+            <!-- Name -->
+            <div class="pc-name">{{ item.name }}</div>
 
-        <v-divider class="mx-4 mb-1"></v-divider>
+            <!-- Rating -->
+            <div class="pc-rating">
+                <v-rating :model-value="4.5" half-increments readonly color="amber" density="compact" size="x-small" />
+                <span class="pc-rating-count">(24)</span>
+            </div>
 
-        <v-card-text class="pl-0 pt-0">
-            <template v-if="item.discount_price && item.discount_price < item.price">
-                <del class="text-grey">${{ item.price }}</del>
-                <span class="text-red ml-2" style="font-weight: 900; font-size: 16px">
-          ${{ Math.ceil(item.discount_price) }}
-        </span>
-            </template>
-            <template v-else>
-        <span class="text-dark" style="font-weight: 900; font-size: 16px">
-          ${{ Math.ceil(item.price) }}
-        </span>
-            </template>
-        </v-card-text>
+            <!-- Price -->
+            <div class="pc-price-row">
+                <template v-if="item.discount_price && item.discount_price < item.price">
+                    <span class="pc-price-new">${{ Math.ceil(item.discount_price) }}</span>
+                    <span class="pc-price-old">${{ item.price }}</span>
+                </template>
+                <template v-else>
+                    <span class="pc-price-new">${{ Math.ceil(item.price) }}</span>
+                </template>
+            </div>
 
-        <v-btn-toggle v-model="currentImage">
-            <v-btn
-                v-for="(pic, i) in item.images"
-                :key="i"
-                :value="pic.image_url"
-                size="x-small"
-                rounded="xl"
-                :ripple="false"
+            <!-- Add to cart -->
+            <button
+                class="pc-cart-btn"
+                :class="{ 'pc-cart-btn--loading': addingToCart }"
+                :disabled="addingToCart || item.quantity < 1"
+                @click.stop="addToCart"
             >
-                <img
-                    :src="pic.image_url"
-                    width="30"
-                    height="30"
-                    style="border: 1px solid rgba(110, 110, 110, 0.377); border-radius: 50%;"
-                    alt="img"
-                />
-            </v-btn>
-        </v-btn-toggle>
+                <v-icon size="15" class="me-1">mdi-cart-plus</v-icon>
+                {{ item.quantity < 1 ? 'نفذت الكمية' : 'أضف للسلة' }}
+            </button>
+        </div>
 
-        <v-card-actions class="flex-column gap-1 pa-2">
-            <v-btn
-                color="primary"
-                block
-                variant="elevated"
-                height="40"
-                style="border-radius:20px; text-transform:none"
-                :loading="addingToCart"
-                @click="addToCart"
-            >
-                <v-icon start>mdi-cart-plus</v-icon>
-                أضف للسلة
-            </v-btn>
-            <v-btn
-                color="deep-purple-lighten-2"
-                block
-                variant="tonal"
-                height="40"
-                style="border-radius:20px; text-transform:none"
-                :href="item.slug ? route('productss.show', item.slug) : '#'"
-            >
-                تفاصيل المنتج
-            </v-btn>
-        </v-card-actions>
-
-        <!-- 🔥 Snackbar لرسايل النجاح أو الخطأ -->
+        <!-- Snackbar -->
         <v-snackbar v-model="snackbar" location="top right" :color="snackbarColor" timeout="2000">
             {{ snackbarMessage }}
         </v-snackbar>
-    </v-card>
+    </div>
 </template>
 
 <script setup>
-import { ref, inject } from 'vue';
-import { Link, router, usePage } from '@inertiajs/vue3';
+import { ref, computed, inject } from 'vue';
+import { router, usePage } from '@inertiajs/vue3';
 import { route } from 'ziggy-js';
 import axios from 'axios';
 
@@ -163,20 +96,24 @@ const Emitter = inject('Emitter');
 
 const { props: pageProps } = usePage();
 const user = pageProps.auth?.user;
-const currentImage = ref(props.item.image_url);
-const isFavorite = ref(props.item.is_in_wishlist || false);
-const addingToCart = ref(false);
-const snackbar = ref(false);
+
+const hovered       = ref(false);
+const currentImage  = ref(props.item.image_url);
+const isFavorite    = ref(props.item.is_in_wishlist || false);
+const addingToCart  = ref(false);
+const snackbar      = ref(false);
 const snackbarMessage = ref('');
-const snackbarColor = ref('success');
+const snackbarColor   = ref('success');
+
+const discountPercent = computed(() => {
+    if (!props.item.discount_price || !props.item.price) return 0;
+    return Math.round(((props.item.price - props.item.discount_price) / props.item.price) * 100);
+});
 
 async function addToCart() {
     addingToCart.value = true;
     try {
-        const { data } = await axios.post('/cart/add', {
-            product_id: props.item.id,
-            quantity: 1,
-        });
+        const { data } = await axios.post('/cart/add', { product_id: props.item.id, quantity: 1 });
         Emitter.emit('cart-item-added', data.items);
         snackbarMessage.value = 'تم إضافة المنتج للسلة';
         snackbarColor.value = 'success';
@@ -190,26 +127,15 @@ async function addToCart() {
 }
 
 function toggleFavorite() {
-    if (!user) {
-        router.visit(route('login'));
-        return;
-    }
-
+    if (!user) { router.visit(route('login')); return; }
     const action = isFavorite.value ? 'wishlist.remove' : 'wishlist.add';
     router.post(route(action, props.item.id), {}, {
         preserveState: true,
         preserveScroll: true,
         onSuccess: () => {
             isFavorite.value = !isFavorite.value;
-            snackbarMessage.value = isFavorite.value
-                ? 'تم إضافة المنتج إلى قائمة الأمنيات'
-                : 'تم إزالة المنتج من قائمة الأمنيات';
+            snackbarMessage.value = isFavorite.value ? 'تمت الإضافة للمفضلة' : 'تمت الإزالة من المفضلة';
             snackbarColor.value = 'success';
-            snackbar.value = true;
-        },
-        onError: (errors) => {
-            snackbarMessage.value = 'حدث خطأ، حاول مرة أخرى';
-            snackbarColor.value = 'error';
             snackbar.value = true;
         },
     });
@@ -217,21 +143,209 @@ function toggleFavorite() {
 </script>
 
 <style scoped>
-.product-card:hover .quick-view-btn {
-    opacity: 1 !important;
+.pc {
+    background: white;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+    transition: box-shadow 0.25s, transform 0.25s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
 }
 
-.favorite-btn {
+.pc:hover {
+    box-shadow: 0 8px 28px rgba(0,0,0,0.10);
+    transform: translateY(-3px);
+}
+
+/* Image */
+.pc-img-wrap {
+    position: relative;
+    overflow: hidden;
+    background: #f8f9fb;
+    aspect-ratio: 1 / 1;
+}
+
+.pc-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.pc:hover .pc-img { transform: scale(1.06); }
+
+/* Discount badge */
+.pc-badge {
     position: absolute;
     top: 10px;
     right: 10px;
-    z-index: 10;
-    background-color: rgba(255, 255, 255, 0.85) !important;
-    transition: all 0.2s ease-in-out;
+    background: #ef4444;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 20px;
+    z-index: 2;
 }
 
-.favorite-btn:hover {
-    background-color: white !important;
-    transform: scale(1.1);
+/* Wishlist */
+.pc-wish {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    transition: transform 0.15s, background 0.15s;
+    z-index: 2;
+    color: #9ca3af;
 }
+
+.pc-wish:hover { transform: scale(1.1); }
+.pc-wish--active { background: #fee2e2; color: #ef4444; }
+
+/* Quick view overlay */
+.pc-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background: linear-gradient(to top, rgba(0,0,0,0.45), transparent);
+    opacity: 0;
+    transition: opacity 0.25s;
+    z-index: 2;
+}
+
+.pc-overlay--show { opacity: 1; }
+
+.pc-qv-btn {
+    background: white;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #1a237e;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background 0.15s;
+}
+
+.pc-qv-btn:hover { background: #e8eaf6; }
+
+/* Thumbnails */
+.pc-thumbs {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    display: flex;
+    gap: 4px;
+    z-index: 2;
+}
+
+.pc-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    border: 1.5px solid #e5e7eb;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    background: white;
+}
+
+.pc-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.pc-thumb--active { border-color: #3949ab; }
+
+/* Info */
+.pc-info {
+    padding: 12px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+}
+
+.pc-cat {
+    font-size: 10px;
+    font-weight: 700;
+    color: #3949ab;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.pc-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #111827;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.pc-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.pc-rating-count { font-size: 11px; color: #9ca3af; }
+
+.pc-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-top: 2px;
+}
+
+.pc-price-new { font-size: 16px; font-weight: 800; color: #1a237e; }
+.pc-price-old { font-size: 12px; color: #9ca3af; text-decoration: line-through; }
+
+/* Cart button */
+.pc-cart-btn {
+    margin-top: 8px;
+    width: 100%;
+    height: 36px;
+    border-radius: 8px;
+    border: 1.5px solid #3949ab;
+    background: transparent;
+    color: #3949ab;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s;
+}
+
+.pc-cart-btn:hover:not(:disabled) {
+    background: #3949ab;
+    color: white;
+}
+
+.pc-cart-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: #9ca3af;
+    color: #9ca3af;
+}
+
+.pc-cart-btn--loading { opacity: 0.7; }
 </style>

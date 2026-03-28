@@ -153,24 +153,79 @@ h<template>
                         <div class="section-title mt-4 mb-2">ملاحظة</div>
                         <div class="note-box">{{ selected.note }}</div>
                     </template>
+
+                    <!-- Return request -->
+                    <div v-if="!selected.return_order" class="mt-5">
+                        <v-divider class="mb-4" />
+                        <div class="d-flex align-center justify-space-between">
+                            <div>
+                                <div class="font-weight-bold" style="font-size:13px">هل تريد إرجاع هذا الطلب؟</div>
+                                <div class="text-grey text-caption">سيتم مراجعة طلبك من قِبل الفريق</div>
+                            </div>
+                            <v-btn
+                                color="orange"
+                                variant="tonal"
+                                rounded="lg"
+                                size="small"
+                                style="text-transform:none"
+                                :loading="returning"
+                                prepend-icon="mdi-arrow-u-left-top"
+                                @click="requestReturn(selected.id)"
+                            >
+                                طلب إرجاع
+                            </v-btn>
+                        </div>
+                    </div>
+                    <div v-else class="mt-4">
+                        <v-alert type="warning" variant="tonal" density="compact" rounded="lg" icon="mdi-arrow-u-left-top">
+                            تم تقديم طلب إرجاع لهذا الطلب وهو قيد المراجعة
+                        </v-alert>
+                    </div>
                 </v-card-text>
             </v-card>
         </v-dialog>
+
+        <v-snackbar v-model="snackbar" location="top right" :color="snackbarColor" timeout="2500">
+            {{ snackbarMsg }}
+        </v-snackbar>
     </div>
 </template>
 
 <script setup>
 import { computed, ref } from 'vue';
+import axios from 'axios';
 
 const props = defineProps({ user: { type: Object, required: true } });
 
-const orders  = computed(() => props.user.orders || []);
-const dialog  = ref(false);
-const selected = ref(null);
+const orders = computed(() => (props.user.orders || []).filter(o => !o.return_order));
+const dialog    = ref(false);
+const selected  = ref(null);
+const returning = ref(false);
+const snackbar  = ref(false);
+const snackbarMsg   = ref('');
+const snackbarColor = ref('success');
 
 function open(order) {
     selected.value = order;
     dialog.value = true;
+}
+
+async function requestReturn(orderId) {
+    returning.value = true;
+    try {
+        await axios.post('/user_return_orders/store', { return_order_id: orderId });
+        const order = orders.value.find(o => o.id === orderId);
+        if (order) order.return_order = true;
+        if (selected.value?.id === orderId) selected.value.return_order = true;
+        snackbarMsg.value = 'تم تقديم طلب الإرجاع بنجاح';
+        snackbarColor.value = 'success';
+    } catch (e) {
+        snackbarMsg.value = e.response?.data?.message || 'حدث خطأ';
+        snackbarColor.value = 'error';
+    } finally {
+        returning.value = false;
+        snackbar.value = true;
+    }
 }
 
 const statusMap = {

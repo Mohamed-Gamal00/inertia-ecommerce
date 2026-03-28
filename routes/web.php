@@ -124,8 +124,8 @@ Route::middleware('auth:web')->group(function () {
 
 
     // /* المرتجعات */
-    // Route::get('/user_return_orders', [ReturnProductsController::class, 'index'])->name('user.return_products');
-    // Route::post('/user_return_orders/store', [ReturnProductsController::class, 'store'])->name('user.return_products.store');
+    Route::get('/user_return_orders', [\App\Http\Controllers\Inertia\ReturnProductsController::class, 'index'])->name('user.return_products');
+    Route::post('/user_return_orders/store', [\App\Http\Controllers\Inertia\ReturnProductsController::class, 'store'])->name('user.return_products.store');
 
 
     #################################################--Comments Routes
