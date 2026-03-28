@@ -16,9 +16,9 @@
                 <v-col
                     v-for="cat in categories"
                     :key="cat.title"
-                    cols="6"
-                    sm="6"
-                    md="4"
+                    cols="4"
+                    sm="4"
+                    md="3"
                     lg="2"
                     xl="2"
                     class="d-flex justify-center"
@@ -26,37 +26,24 @@
                     <v-card
                         class="text-center py-3 px-2"
                         elevation="0"
-                        style="max-width: 200px"
+                        style="max-width: 160px; width:100%"
                     >
                         <v-hover v-slot="{ isHovering, props }">
                             <div
                                 class="img-parent"
-                                style="
-                                    overflow: hidden;
-                                    width: 150px;
-                                    height: 150px;
-                                    margin: auto;
-                                    border-radius: 50%;
-                                "
+                                style="overflow: hidden; width: 100px; height: 100px; margin: auto; border-radius: 50%;"
                             >
                                 <img
                                     :src="cat.image"
                                     alt="image"
-                                    :style="`
-              cursor: pointer;
-              height:100%;
-              width:100%;
-              object-fit: cover;
-              transition: all 0.3s ease-in-out;
-              scale: ${isHovering ? 1.05 : 1};
-            `"
+                                    :style="`cursor:pointer; height:100%; width:100%; object-fit:cover; transition:all 0.3s ease-in-out; scale:${isHovering ? 1.05 : 1};`"
                                     v-bind="props"
                                 />
                             </div>
                         </v-hover>
-                        <v-card-text class="mt-2 font-weight-medium">{{
-                            cat.title
-                        }}</v-card-text>
+                        <v-card-text class="mt-1 font-weight-medium pa-1" style="font-size:12px">
+                            {{ cat.title }}
+                        </v-card-text>
                     </v-card>
                 </v-col>
             </v-row>
