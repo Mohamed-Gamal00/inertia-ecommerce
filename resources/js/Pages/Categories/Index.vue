@@ -1,237 +1,82 @@
-
 <template>
-  <v-container>
-    <h1 class="text-h5 mb-4">الأقسام</h1>
+    <div style="background:#f5f6fa; min-height:100vh; padding-bottom:48px">
 
-    <v-row>
-      <v-col
-        v-for="category in categories"
-        :key="category.id"
-        cols="12"
-        sm="6"
-        md="4"
-      >
-        <Link
-          :href="route('categories.show', category.slug)"
-          class="no-underline"
-        >
-          <v-card class="pa-4 text-center hover:bg-grey-lighten-4">
-            <v-card-title>{{ category.name }}</v-card-title>
-          </v-card>
-        </Link>
-      </v-col>
-    </v-row>
-  </v-container>
+        <!-- Header -->
+        <div style="background:linear-gradient(135deg,#1a237e,#3949ab); padding:40px 16px 50px">
+            <h1 class="text-white font-weight-bold text-center" style="font-size:28px">
+                جميع الأقسام
+            </h1>
+            <p class="text-center mt-2" style="color:rgba(255,255,255,0.75); font-size:14px">
+                تصفح {{ categories.length }} قسم متاح
+            </p>
+        </div>
+
+        <!-- Categories -->
+        <div style="padding:32px 16px">
+            <div v-if="categories.length" style="display:flex; flex-wrap:wrap; justify-content:center; align-items:flex-start; gap:16px">
+                <a
+                    v-for="cat in categories"
+                    :key="cat.id"
+                    :href="`/categories/${cat.slug}`"
+                    style="display:block; width:160px; text-decoration:none; flex-shrink:0"
+                >
+                    <div class="cat-card">
+                        <div class="cat-img-wrap">
+                            <img v-if="cat.image_url" :src="cat.image_url" :alt="cat.name" />
+                            <v-icon v-else size="40" color="primary">mdi-shape-outline</v-icon>
+                        </div>
+                        <div style="font-size:13px; font-weight:600; color:#111827; text-align:center; margin-top:10px; line-height:1.3">
+                            {{ cat.name }}
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div v-else style="text-align:center; padding:64px 0">
+                <v-icon size="64" color="grey-lighten-1">mdi-shape-outline</v-icon>
+                <p style="margin-top:12px; color:#9ca3af">لا توجد أقسام متاحة</p>
+            </div>
+        </div>
+
+    </div>
 </template>
 
 <script setup>
-import { Link } from "@inertiajs/vue3";
-
-defineProps({
-  categories: Array
-});
+defineProps({ categories: Array });
 </script>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- <template>
-  <div class="products-category">
-    <h1 class="text-center mt-10">{{ $route.params.title }}</h1>
-    <v-container>
-      <v-card elevation="0" class="pt-5" min-height="700px">
-        <v-row v-if="loading">
-          <v-col cols="3" v-for="num in 4" :key="num">
-            <v-skeleton-loader type="image,article,button"> </v-skeleton-loader>
-          </v-col>
-        </v-row>
-        <v-row v-if="!loading">
-          <v-col
-            cols="3"
-            v-for="item in categoryProducts.products"
-            :key="item.id"
-            class="px-5"
-          >
-            <v-lazy>
-              <v-card elevation="0">
-                <v-hover v-slot="{ isHovering, props }">
-                  <div
-                    class="img-parent position-relative"
-                    style="height: 160px; overflow: hidden"
-                  >
-                    <img
-                      :src="
-                        showenItem[item.title]
-                          ? showenItem[item.title]
-                          : item.thumbnail
-                      "
-                      :alt="item.brand"
-                      class="w-100"
-                      :style="`height: 100%;transition: all 0.3s ease-in-out;cursor:pointer;scale:${
-                        isHovering ? 1.05 : 1
-                      }`"
-                      v-bind="props"
-                    />
-                    <v-btn
-                      density="compact"
-                      width="80"
-                      height="30"
-                      variant="outlined"
-                      class="bg-white quick-view-btn"
-                      style="
-                        text-transform: none;
-                        position: absolute;
-                        left: 50%;
-                        top: 50%;
-                        transform: translate(-50%, -50%);
-                        font-size: 12px;
-                        transition: 0.2 all ease-in-out;
-                        opacity: 0;
-                      "
-                      @click="openQuickView(item)"
-                    >
-                      Quic View
-                    </v-btn>
-                  </div>
-                </v-hover>
-
-                <v-card-text class="pl-0 pb-1">
-                  {{
-                    `(${item.title})${item.description}`.length <= 40
-                      ? `(${item.title})${item.description}`
-                      : `(${item.title})${item.description}`.substring(0, 40) +
-                        "..."
-                  }}
-
-                </v-card-text>
-                <v-rating
-                  v-model="item.rating"
-                  half-increments
-                  readonly
-                  color="yellow-darken-2"
-                  size="x-small"
-                  density="compact"
-                ></v-rating>
-                <v-card-text class="pl-0 pt-0">
-                  <del>${{ item.price }}</del>
-
-                  from
-                  <span
-                    class="text-red"
-                    style="font-weight: 900; font-size: 16px"
-                  >
-                    ${{
-                      Math.ceil(
-                        item.price -
-                          item.price * (item.discountPercentage / 100)
-                      )
-                    }}
-                  </span>
-                </v-card-text>
-                <v-btn-toggle v-model="showenItem[item.title]">
-                  <v-btn
-                    v-for="(pic, i) in item.images"
-                    :value="pic"
-                    :key="i"
-                    size="x-small"
-                    rounded="xl"
-                    :ripple="false"
-                  >
-                    <img
-                      :src="pic"
-                      width="30"
-                      height="30"
-                      style="
-                        border: 1px solid rgba(110, 110, 110, 0.377);
-                        border-radius: 50%;
-                      "
-                      alt="img"
-                  /></v-btn>
-                </v-btn-toggle>
-                <div class="mt-5">
-                  <v-btn
-                    style="text-transform: none; border-radius: 30px"
-                    width="220"
-                    height="40"
-                    variant="outlined"
-                    class="py-3 px-12"
-                    @click="
-                      $router.push({
-                        name: 'products_details',
-                        params: { productId: item.id },
-                      })
-                    "
-                    >Choose Options</v-btn
-                  >
-                </div>
-              </v-card>
-            </v-lazy>
-          </v-col>
-        </v-row>
-      </v-card>
-    </v-container>
-  </div>
-</template>
-
-<script>
-import { productModules } from "@/stores/products";
-import { mapActions, mapState } from "pinia";
-import { VSkeletonLoader } from "vuetify/lib/labs/components.mjs";
-
-export default {
-  inject: ["Emitter"],
-  components: { VSkeletonLoader },
-  data() {
-    return {
-      showenItem: {},
-      loading: false,
-    };
-  },
-  methods: {
-    ...mapActions(productModules, ["getProductsByCategory"]),
-    openQuickView(product) {
-      this.Emitter.emit("openQuickView", product);
-    },
-  },
-  computed: {
-    ...mapState(productModules, ["categoryProducts"]),
-  },
-  watch: {
-    async $route() {
-      document.documentElement.scrollTo(0, 0);
-      this.loading = true;
-
-      await this.getProductsByCategory(this.$route.params.category);
-      this.loading = false;
-    },
-  },
-  async mounted() {
-    this.loading = true;
-    await this.getProductsByCategory(this.$route.params.category);
-    this.loading = false;
-  },
-};
-</script>
-
-<style lang="scss" scoped>
-.products-category {
-  .img-parent:hover {
-    .quick-view-btn {
-      opacity: 1 !important;
-    }
-  }
+<style scoped>
+.cat-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 16px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    cursor: pointer;
 }
-</style> -->
+
+.cat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(57,73,171,0.12);
+    border-color: #3949ab;
+}
+
+.cat-img-wrap {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #e8eaf6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #e5e7eb;
+    margin: 0 auto;
+    transition: border-color 0.2s;
+}
+
+.cat-card:hover .cat-img-wrap { border-color: #3949ab; }
+
+.cat-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+</style>

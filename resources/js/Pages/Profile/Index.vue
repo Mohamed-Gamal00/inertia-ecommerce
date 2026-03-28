@@ -135,10 +135,10 @@ const tab  = ref('account');
 
 const tabs = computed(() => [
     { value: 'account',   label: 'بياناتي',   icon: 'mdi-account-outline',    color: 'primary' },
-    { value: 'orders',    label: 'طلباتي',    icon: 'mdi-package-variant',     color: 'blue',   badge: user.value?.orders?.length || null },
+    { value: 'orders',    label: 'طلباتي',    icon: 'mdi-package-variant',     color: 'blue',   badge: user.value?.orders?.filter(o => !o.return_order)?.length || null },
     { value: 'wishlist',  label: 'المفضلة',   icon: 'mdi-heart-outline',       color: 'red',    badge: user.value?.wishlist_products?.length || null },
-    { value: 'addresses', label: 'عناويني',   icon: 'mdi-map-marker-outline',  color: 'green' },
-    { value: 'returns',   label: 'المرتجعات', icon: 'mdi-arrow-u-left-top',    color: 'orange' },
+    { value: 'addresses', label: 'عناويني',   icon: 'mdi-map-marker-outline',  color: 'green',  badge: user.value?.addresses?.length || null },
+    { value: 'returns',   label: 'المرتجعات', icon: 'mdi-arrow-u-left-top',    color: 'orange', badge: user.value?.orders?.filter(o => o.return_order)?.length || null },
 ]);
 
 const activeTab = computed(() => tabs.value.find(t => t.value === tab.value));

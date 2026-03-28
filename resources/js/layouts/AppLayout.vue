@@ -5,10 +5,8 @@
       <QuickView />
 
       <!-- المحتوى الرئيسي -->
-      <v-main class="pa-0">
-        <v-container fluid>
-            <slot></slot>
-        </v-container>
+      <v-main>
+        <slot></slot>
       </v-main>
 
       <!-- الفوتر -->
