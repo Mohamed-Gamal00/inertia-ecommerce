@@ -28,7 +28,12 @@ class AppServiceProvider extends ServiceProvider
         require_once app_path('Helper/TextTranslate.php');
 
         Inertia::share([
-            'categories' => fn() => MainCategory::select('id', 'name', 'slug')->get(),
+            'categories' => fn() => MainCategory::select('id', 'name', 'slug', 'image')->get()->map(fn($c) => [
+                'id'        => $c->id,
+                'name'      => $c->name,
+                'slug'      => $c->slug,
+                'image_url' => $c->image ? asset('storage/' . $c->image) : null,
+            ]),
             'auth' => fn() => [
                 'user' => auth('web')->user() ? [
                     'id'          => auth('web')->user()->id,

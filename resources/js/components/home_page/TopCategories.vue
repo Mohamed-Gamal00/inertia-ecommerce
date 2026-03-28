@@ -1,113 +1,88 @@
 <template>
-    <div class="top_cat">
-        <div class="cyber-banner">
-            <!--      <img src="@/assets/images/cyber-banner.webp" class="w-100" alt="banner" />-->
-        </div>
-    </div>
-    <div class="categories pt-13">
-        <div class="title d-flex justify-center align-center px-5 mb-3">
-            <h3 class="text-center flex-grow-1" style="font-weight: 900">
-                Top Categpries
+    <div class="categories pt-12 pb-6">
+        <div class="title d-flex justify-center align-center px-5 mb-6">
+            <h3 class="text-center flex-grow-1 font-weight-bold" style="font-size:22px">
+                الأقسام الرئيسية
             </h3>
-            <a href="#" class="text-black">Shop All</a>
+            <a href="/categories" class="text-decoration-none text-primary" style="font-size:14px; font-weight:600">
+                عرض الكل
+            </a>
         </div>
+
         <v-container fluid>
-            <v-row>
-                <v-col
+            <div v-if="categories.length" style="display:flex; flex-wrap:wrap; justify-content:center; align-items:flex-start; gap:12px; padding:8px 0">
+                <a
                     v-for="cat in categories"
-                    :key="cat.title"
-                    cols="4"
-                    sm="4"
-                    md="3"
-                    lg="2"
-                    xl="2"
-                    class="d-flex justify-center"
+                    :key="cat.id"
+                    :href="`/categories/${cat.slug}`"
+                    style="display:block; width:120px; text-decoration:none; flex-shrink:0; text-align:center"
                 >
-                    <v-card
-                        class="text-center py-3 px-2"
-                        elevation="0"
-                        style="max-width: 160px; width:100%"
-                    >
-                        <v-hover v-slot="{ isHovering, props }">
-                            <div
-                                class="img-parent"
-                                style="overflow: hidden; width: 100px; height: 100px; margin: auto; border-radius: 50%;"
-                            >
-                                <img
-                                    :src="cat.image"
-                                    alt="image"
-                                    :style="`cursor:pointer; height:100%; width:100%; object-fit:cover; transition:all 0.3s ease-in-out; scale:${isHovering ? 1.05 : 1};`"
-                                    v-bind="props"
-                                />
-                            </div>
-                        </v-hover>
-                        <v-card-text class="mt-1 font-weight-medium pa-1" style="font-size:12px">
-                            {{ cat.title }}
-                        </v-card-text>
-                    </v-card>
-                </v-col>
-            </v-row>
+                    <div class="cat-circle">
+                        <img v-if="cat.image_url" :src="cat.image_url" :alt="cat.name" />
+                        <v-icon v-else size="36" color="primary">mdi-shape-outline</v-icon>
+                    </div>
+                    <div class="cat-name">{{ cat.name }}</div>
+                </a>
+            </div>
         </v-container>
     </div>
 </template>
 
-<script>
-export default {
-    data() {
-        return {
-            categories: [
-                {
-                    title: "Moblie phones",
-                    image: "https://new-ella-demo.myshopify.com/cdn/shop/files/mobile-phones.png?v=1646386792",
-                },
-                {
-                    title: "Laptops & Tablets",
-                    image: "https://new-ella-demo.myshopify.com/cdn/shop/files/laptops-tablets.png?v=1646386795",
-                },
-                {
-                    title: "Televisions",
-                    image: "https://new-ella-demo.myshopify.com/cdn/shop/files/televisions.png?v=1646386798",
-                },
-                {
-                    title: "PCs & Accessories",
-                    image: "https://new-ella-demo.myshopify.com/cdn/shop/files/home-20-categories-1-4_170x.png?v=1646386801",
-                },
-                {
-                    title: "Audio & Video",
-                    image: "https://new-ella-demo.myshopify.com/cdn/shop/files/home-20-categories-1-5_170x.png?v=1646386804",
-                },
-                {
-                    title: "Gaming & Accessories",
-                    image: "https://new-ella-demo.myshopify.com/cdn/shop/files/home-20-categories-1-6_170x.png?v=1646386806",
-                },
-                {
-                    title: "Moblie phones",
-                    image: "https://new-ella-demo.myshopify.com/cdn/shop/files/home-20-categories-1-1_170x.png?v=1646386792",
-                },
-                {
-                    title: "PCs & Accessories",
-                    image: "https://new-ella-demo.myshopify.com/cdn/shop/files/home-20-categories-1-4_170x.png?v=1646386801",
-                },
-                {
-                    title: "Audio & Video",
-                    image: "https://new-ella-demo.myshopify.com/cdn/shop/files/home-20-categories-1-5_170x.png?v=1646386804",
-                },
-                {
-                    title: "Gaming & Accessories",
-                    image: "https://new-ella-demo.myshopify.com/cdn/shop/files/home-20-categories-1-6_170x.png?v=1646386806",
-                },
-                {
-                    title: "Moblie phones",
-                    image: "https://new-ella-demo.myshopify.com/cdn/shop/files/home-20-categories-1-1_170x.png?v=1646386792",
-                },
-                {
-                    title: "Laptops & Tablets",
-                    image: "https://new-ella-demo.myshopify.com/cdn/shop/files/laptops-tablets.png?v=1646386795",
-                },
-            ],
-        };
-    },
-};
+<script setup>
+import { computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+
+const categories = computed(() => usePage().props.categories ?? []);
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped>
+.cat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.2s;
+}
+
+.cat-item:hover { transform: translateY(-4px); }
+
+.cat-circle {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #e8eaf6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #e5e7eb;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.cat-item:hover .cat-circle {
+    border-color: #3949ab;
+    box-shadow: 0 4px 16px rgba(57, 73, 171, 0.2);
+}
+
+.cat-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cat-name {
+    margin-top: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #374151;
+    text-align: center;
+    max-width: 90px;
+    line-height: 1.3;
+}
+
+@media (max-width: 599px) {
+    .cat-circle { width: 72px; height: 72px; }
+    .cat-name { font-size: 11px; max-width: 72px; }
+}
+</style>
