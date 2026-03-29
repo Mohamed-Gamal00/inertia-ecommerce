@@ -41,6 +41,28 @@ Route::middleware('auth:web')->group(function () {
 
 Route::get('/', [\App\Http\Controllers\Inertia\HomeController::class, 'index'])->name('home');
 
+// Offers
+Route::get('/offers', [\App\Http\Controllers\Inertia\OfferProductController::class, 'index'])->name('offers');
+
+// Contact Us
+Route::get('/contact-us', [\App\Http\Controllers\Inertia\ContactUsController::class, 'index'])->name('contact.index');
+Route::post('/contact-us', [\App\Http\Controllers\Inertia\ContactUsController::class, 'store'])->name('contact.store');
+
+// Bulk Order (طلبات الجملة)
+Route::get('/bulk-order', [\App\Http\Controllers\Inertia\BulkOrderController::class, 'index'])->name('bulk.index');
+Route::post('/bulk-order', [\App\Http\Controllers\Inertia\BulkOrderController::class, 'store'])->name('bulk.store');
+
+// Representative Order (طلبات المناديب)
+Route::get('/representative-order', [\App\Http\Controllers\Inertia\RepresentativeOrderController::class, 'index'])->name('representative.index');
+Route::post('/representative-order', [\App\Http\Controllers\Inertia\RepresentativeOrderController::class, 'store'])->name('representative.store');
+
+// Static Pages
+Route::get('/shipping-policy',    [\App\Http\Controllers\Inertia\StaticPageController::class, 'shipping_policy'])->name('shipping.policy');
+Route::get('/terms-conditions',   [\App\Http\Controllers\Inertia\StaticPageController::class, 'terms_conditions'])->name('terms.conditions');
+Route::get('/privacy-policy',     [\App\Http\Controllers\Inertia\StaticPageController::class, 'privacy_policy'])->name('privacy.policy');
+Route::get('/exchanges-returns',  [\App\Http\Controllers\Inertia\StaticPageController::class, 'exchanges_returns'])->name('exchanges.returns');
+Route::get('/faq',                [\App\Http\Controllers\Inertia\StaticPageController::class, 'questions'])->name('faq');
+
 // Cart routes (web - cookie based, works for guests and users)
 Route::post('/cart/add', [\App\Http\Controllers\Inertia\CartController::class, 'store'])->name('cart.add');
 Route::get('/cart', [\App\Http\Controllers\Inertia\CartController::class, 'index'])->name('cart.index');

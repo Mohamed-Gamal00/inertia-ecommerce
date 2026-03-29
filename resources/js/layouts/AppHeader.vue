@@ -220,6 +220,7 @@ const menu = [
     { title: 'الرئيسية',  href: '/',          icon: 'mdi-home-outline' },
     { title: 'المنتجات',  href: '/products',   icon: 'mdi-shopping-outline' },
     { title: 'العروض',    href: '/offers',     icon: 'mdi-tag-outline' },
+    { title: 'تواصل معنا', href: '/contact-us', icon: 'mdi-email-outline' },
 ];
 
 function isActive(href) {
