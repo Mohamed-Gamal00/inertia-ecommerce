@@ -44,6 +44,10 @@ Route::get('/', [\App\Http\Controllers\Inertia\HomeController::class, 'index'])-
 // Offers
 Route::get('/offers', [\App\Http\Controllers\Inertia\OfferProductController::class, 'index'])->name('offers');
 
+// Brands
+Route::get('/brands', [\App\Http\Controllers\Inertia\BrandsController::class, 'index'])->name('brands.index');
+Route::get('/brands/{id}', [\App\Http\Controllers\Inertia\BrandsController::class, 'show'])->name('brands.show');
+
 // Contact Us
 Route::get('/contact-us', [\App\Http\Controllers\Inertia\ContactUsController::class, 'index'])->name('contact.index');
 Route::post('/contact-us', [\App\Http\Controllers\Inertia\ContactUsController::class, 'store'])->name('contact.store');
