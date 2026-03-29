@@ -7,31 +7,31 @@ use App\Models\Admin;
 use App\Models\ContactUs;
 use App\Notifications\ContactFormSubmitted;
 use App\Notifications\NewMessageEmail;
-use App\Notifications\OrderCreatedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
+use Inertia\Inertia;
 
 class ContactUsController extends Controller
 {
     public function index()
     {
-        return view('front.contact_us.index');
+        return Inertia::render('ContactUs/Index');
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'full_name' => 'required|string|max:255',
+            'full_name'     => 'required|string|max:255',
             'contact_email' => 'required|email',
-            'phone_number' => 'required|numeric',
-            'text' => 'required|string'
+            'phone_number'  => 'required|numeric',
+            'text'          => 'required|string',
         ]);
 
         $form = ContactUs::create([
-            'name' => $request->full_name,
+            'name'         => $request->full_name,
             'phone_number' => $request->phone_number,
-            'email' => $request->contact_email,
-            'message' => $request->text
+            'email'        => $request->contact_email,
+            'message'      => $request->text,
         ]);
 
         $admins = Admin::all();
@@ -41,14 +41,10 @@ class ContactUsController extends Controller
             try {
                 if (filter_var($admin->email, FILTER_VALIDATE_EMAIL)) {
                     Notification::send($admin, new NewMessageEmail($form));
-                } else {
-                    \Log::warning('Invalid email address: ' . $admin->email);
                 }
-            } catch (\Exception $e) {
-                \Log::error('Error sending email to admin ' . $admin->email . ': ' . $e->getMessage());
-            }
+            } catch (\Exception $e) {}
         }
 
-        return \redirect()->back()->with('success', 'تم الارسال بنجاح');
+        return redirect()->back()->with('success', 'تم الإرسال بنجاح، سنتواصل معك قريباً.');
     }
 }

@@ -5,39 +5,24 @@ namespace App\Http\Controllers\Inertia;
 use App\Http\Controllers\Controller;
 use App\Models\CommonQuestion;
 use App\Models\Page;
-use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class StaticPageController extends Controller
 {
-
-    public function shipping_policy()
+    public function page($id, $view)
     {
-        $page = Page::where('id', 2)->first();
-        return view('front.static_pages.shipping_policy', compact('page'));
+        $page = Page::find($id);
+        return Inertia::render('StaticPages/Page', ['page' => $page, 'view' => $view]);
     }
 
-    public function terms_conditions()
-    {
-        $page = Page::where('id', 1)->first();
-        return view('front.static_pages.terms_conditions', compact('page'));
-    }
-
-    public function privacy_policy()
-    {
-        $page = Page::where('id', 3)->first();
-        return view('front.static_pages.privacy_policy', compact('page'));
-    }
-
-    public function Exchanges_and_returns()
-    {
-        $page = Page::where('id', 5)->first();
-        return view('front.static_pages.Exchanges_and_returns', compact('page'));
-    }
+    public function shipping_policy()   { return $this->page(2, 'shipping_policy'); }
+    public function terms_conditions()  { return $this->page(1, 'terms_conditions'); }
+    public function privacy_policy()    { return $this->page(3, 'privacy_policy'); }
+    public function exchanges_returns() { return $this->page(5, 'exchanges_returns'); }
 
     public function questions()
     {
         $questions = CommonQuestion::all();
-        // dd($questions);
-        return view('front.static_pages.questions', compact('questions'));
+        return Inertia::render('StaticPages/Questions', ['questions' => $questions]);
     }
 }
