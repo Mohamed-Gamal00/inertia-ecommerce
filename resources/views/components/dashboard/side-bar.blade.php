@@ -24,10 +24,8 @@
                 <li><a href="{{ route('main_choices.index') }}">الخيارات</a></li>
 
 
-                <li><a href="{{ route('products_settings.index') }}">خيارات المنتج</a></li>
 
 
-                <li><a href="{{ route('filters.index') }}">التصنيفات</a></li>
 
 
                 <li><a href="{{ route('colors.index') }}">الألوان</a></li>
@@ -80,7 +78,7 @@
 
                 <li><a href="{{ route('return_orders.index') }}">ارجاع الطلبات</a></li>
 
-                <li><a href="{{ route('payments.index') }}">المدفوعات</a></li>
+                {{-- <li><a href="{{ route('payments.index') }}">المدفوعات</a></li> --}}
 
                 <li><a href="{{ route('bulk_orders.index') }}">طلبات الشراء بالجملة</a></li>
 
@@ -135,7 +133,7 @@
                 <li><a href="{{ route('shipping.index') }}">الشحن</a></li>
 
 
-                <li><a href="{{ route('shipping_companies.index') }}">شركات الشحن</a></li>
+
 
 
                 <li><a href="{{ route('user_news.create') }}">النشرة البريدية</a></li>
