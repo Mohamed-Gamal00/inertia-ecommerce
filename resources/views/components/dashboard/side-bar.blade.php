@@ -39,13 +39,22 @@
                 <span>الشركات</span>
             </a>
             <ul class="sub-menu" aria-expanded="false">
-
                 <li><a href="{{ route('companies.create') }}">اضافة</a></li>
-
-
                 <li><a href="{{ route('companies.index') }}">مشاهدة</a></li>
-
             </ul>
+        </li>
+
+        <li>
+            <a href="{{ route('vendors.index') }}" class="waves-effect">
+                <i class="mdi mdi-store-outline"></i>
+                <span>البائعون</span>
+                @php
+                    $pendingVendors = \App\Models\Company::where('is_vendor', true)->where('status', 'pending')->count();
+                @endphp
+                @if($pendingVendors > 0)
+                    <span class="badge rounded-pill bg-warning text-dark float-end">{{ $pendingVendors }}</span>
+                @endif
+            </a>
         </li>
 
         <li>

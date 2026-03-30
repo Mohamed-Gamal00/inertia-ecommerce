@@ -9,6 +9,7 @@ use App\Http\Resources\ShippingResource;
 use App\Models\Order;
 use App\Models\ShippingTypesAndPrice;
 use App\Services\CheckOut\CheckoutServices;
+use App\Support\CartSingleVendor;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\DB;
@@ -44,6 +45,10 @@ class CheckoutController extends Controller
             if ($cartItems->isEmpty()) {
                 return ApiResponse::sendResponse(200, 'لا يمكن اتمام الطلب والسلة فارغة');
             }
+
+            CartSingleVendor::assertCheckoutCartSingleVendor($cartItems);
+        } catch (\InvalidArgumentException $e) {
+            return ApiResponse::sendResponse(422, $e->getMessage());
         } catch (\Exception $e) {
             return ApiResponse::sendResponse(400, $e->getMessage());
         }
@@ -54,7 +59,12 @@ class CheckoutController extends Controller
         try {
             $this->checkOutservice->checkJoinNews($request, $user);
 
-            $order = $this->checkOutservice->createOrder($request, $user, $shipping_price);
+            $order = $this->checkOutservice->createOrder(
+                $request,
+                $user,
+                $shipping_price,
+                CartSingleVendor::resolveCompanyId($cartItems)
+            );
 
 
             $this->checkOutservice->createOrderItems($order, $user);

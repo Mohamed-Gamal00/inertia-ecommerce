@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\CartResource;
 use App\Models\Cart;
 use App\Models\Product;
+use App\Support\CartSingleVendor;
 use Illuminate\Http\Request;
 
 class GuestCartController extends Controller
@@ -73,6 +74,14 @@ class GuestCartController extends Controller
 //        return $item;
         // Check if product is already in the cart
         if (!$item) {
+            $guestLines = Cart::with('product')->withoutGlobalScope('cookie_id')
+                ->where('guest_id', $guest_id)
+                ->where('status', 0)
+                ->get();
+            if ($message = CartSingleVendor::validateCartLinesForProduct($guestLines, $product)) {
+                return response()->json(['message' => $message], 422);
+            }
+
             // Create new cart item
             $cart = Cart::create([
                 'guest_id' => $guest_id,
