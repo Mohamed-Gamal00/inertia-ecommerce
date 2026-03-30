@@ -9,6 +9,6 @@
         <img src="{{ $logoUrl }}" alt="logo" height="40" width="40">
     </span>
     <span class="logo-lg">
-        <img src="{{ $logoUrl }}" alt="logo" style="object-fit: cover;" height="100" width="100%">
+        <img src="{{ $logoUrl }}" alt="logo" style="object-fit: cover;" height="50" width="100%">
     </span>
 </a>

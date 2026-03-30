@@ -327,10 +327,32 @@ async function submit() {
         errors.value = { terms: 'يجب الموافقة على الشروط والأحكام' };
         return;
     }
+
+    // Validate guest / new address fields
+    const isGuest = !user.value;
+    const needsAddressForm = isGuest || form.value.user_address === 'add_address';
+
+    if (needsAddressForm) {
+        const fieldErrors = {};
+        if (!addrForm.value.first_name?.trim())   fieldErrors['addr.billing.first_name']   = ['الاسم الأول مطلوب'];
+        if (!addrForm.value.last_name?.trim())    fieldErrors['addr.billing.last_name']    = ['اسم العائلة مطلوب'];
+        if (!addrForm.value.phone_number?.trim()) fieldErrors['addr.billing.phone_number'] = ['رقم الجوال مطلوب'];
+        if (!addrForm.value.address?.trim())      fieldErrors['addr.billing.address']      = ['العنوان مطلوب'];
+        if (!addrForm.value.country_id)           fieldErrors['addr.billing.country_id']   = ['الدولة مطلوبة'];
+        if (!addrForm.value.city_id)              fieldErrors['addr.billing.city_id']      = ['المدينة مطلوبة'];
+        if (isGuest && !addrForm.value.email?.trim()) fieldErrors['guest_email'] = ['البريد الإلكتروني مطلوب'];
+
+        if (Object.keys(fieldErrors).length) {
+            errors.value = fieldErrors;
+            // Scroll to the form
+            document.querySelector('.co-field-group')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+    }
+
     submitting.value = true;
     errors.value = {};
 
-    const isGuest = !user.value;
     const addrType = isGuest ? 'billing' : 'shipping';
 
     const payload = {
@@ -368,7 +390,6 @@ async function submit() {
     }
 
     try {
-    console.log(payload);
         const { data } = await axios.post('/checkout', payload);
         if (data.redirect) window.location.href = data.redirect;
         else router.visit('/');

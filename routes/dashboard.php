@@ -90,10 +90,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
 
 
     //-----------------------------------------------------------------------------/ShippingCompany
-    // Route::get('/shipping_companies', [ShippingCompanyController::class, 'index'])->name('shipping.index');
-
-    Route::resource('/shipping_companies', ShippingCompanyController::class);
-    Route::get('/get-cities/{countryId}', [ShippingCompanyController::class, 'getCities']);
+    // Route::resource('/shipping_companies', ShippingCompanyController::class);
+    // Route::get('/get-cities/{countryId}', [ShippingCompanyController::class, 'getCities']);
 
     //-----------------------------------------------------------------------------/softDelete Products
     Route::get('/products/trash', [productsController::class, 'trash'])->name('products.trash');
@@ -107,13 +105,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::resource('/main_choices', ChoiceController::class);
 
     //----------------------------------------------/Filters Settings
-    Route::get('/sub_filters/{id}/view', [MainCategoriesSettingsController::class, 'subFilterView'])->name('sub_filters.index');
-    Route::post('/sub_filters/store', [MainCategoriesSettingsController::class, 'subFilterStore'])->name('sub_filters.store');
-    Route::delete('/sub_filters/{id}/delete', [MainCategoriesSettingsController::class, 'subFilterDestroy'])->name('sub_filters.delete');
-    Route::get('/sub_filters/{id}/edit', [MainCategoriesSettingsController::class, 'subFilterEdit'])->name('sub_filters.edit');
-    Route::put('/sub_filters/{id}/update', [MainCategoriesSettingsController::class, 'subFilterUpdate'])->name('sub_filters.update');
 
-    Route::resource('/filters', MainCategoriesSettingsController::class);
 
     //----------------------------------------------/Products routes
     // Route::post('/header_banner/delete', [HeaderBanerController::class, 'frontHeaderRemoveImage'])->name('headerImage.remove');
@@ -128,11 +120,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::resource('/products', ProductsController::class);
 
     //----------------------------------------------/Products Settings routes
-    Route::get('/products_settings/{id}/filters', [ProductSettingsController::class, 'productFilters'])->name('products.filters');
-    Route::put('/products_settings/{id}/update', [ProductSettingsController::class, 'productFiltersUpdate'])->name('products.filters.update');
-    Route::delete('/products_settings/destroy_all', [ProductSettingsController::class, 'destroyAll'])->name('destroy.all');
 
-    Route::resource('/products_settings', ProductSettingsController::class);
 
     //----------------------------------------------/Companies routes
     Route::resource('/companies', CompaniesController::class);
@@ -179,7 +167,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::resource('bulk_orders', BulkOrderController::class);
 
     //----------------------------------------------/payments
-    Route::get('/payments', [\App\Http\Controllers\Dashboard\PaymentController::class, 'index'])->name('payments.index');
+    // Route::get('/payments', [\App\Http\Controllers\Dashboard\PaymentController::class, 'index'])->name('payments.index');
 
     //----------------------------------------------/Countries and Cities
     Route::get('/countries/{countryId}/cities', [CountriesController::class, 'getCitiesByCountry']);

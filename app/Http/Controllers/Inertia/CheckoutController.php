@@ -82,7 +82,65 @@ class CheckoutController extends Controller
     {
         $request->headers->set('Accept', 'application/json');
 
-        $user = Auth::guard('web')->user();
+        $user   = Auth::guard('web')->user();
+        $isNew  = isset($request->addr['shipping']) || isset($request->addr['billing']);
+        $isGuest = !$user;
+
+        // ===== Validation =====
+
+        // Terms always required
+        $request->validate(['terms' => 'required'], [
+            'terms.required' => 'يجب الموافقة على الشروط والأحكام',
+        ]);
+
+        // Authenticated user with existing address
+        if ($user && !$isNew) {
+            $request->validate([
+                'user_address' => 'required|exists:user_addresses,id',
+            ], [
+                'user_address.required' => 'برجاء اختيار عنوان أو إضافة عنوان جديد',
+                'user_address.exists'   => 'العنوان المحدد غير موجود',
+            ]);
+        }
+
+        // New address fields (guest billing or user adding new shipping)
+        if ($isNew) {
+            $addrType = $isGuest ? 'billing' : 'shipping';
+            $request->validate([
+                "addr.{$addrType}.first_name"   => ['required', 'string', 'max:255'],
+                "addr.{$addrType}.last_name"    => ['required', 'string', 'max:255'],
+                "addr.{$addrType}.phone_number" => ['required', 'string', 'max:20'],
+                "addr.{$addrType}.address"      => ['required', 'string', 'max:500'],
+                "addr.{$addrType}.country_id"   => ['required', 'exists:countries,id'],
+                "addr.{$addrType}.city_id"      => ['required', 'exists:cities,id'],
+            ], [
+                "addr.{$addrType}.first_name.required"   => 'الاسم الأول مطلوب',
+                "addr.{$addrType}.last_name.required"    => 'اسم العائلة مطلوب',
+                "addr.{$addrType}.phone_number.required" => 'رقم الجوال مطلوب',
+                "addr.{$addrType}.address.required"      => 'العنوان التفصيلي مطلوب',
+                "addr.{$addrType}.country_id.required"   => 'الدولة مطلوبة',
+                "addr.{$addrType}.country_id.exists"     => 'الدولة المحددة غير صحيحة',
+                "addr.{$addrType}.city_id.required"      => 'المدينة مطلوبة',
+                "addr.{$addrType}.city_id.exists"        => 'المدينة المحددة غير صحيحة',
+            ]);
+
+            if ($isGuest) {
+                $request->validate([
+                    'guest_email' => ['required', 'email'],
+                ], [
+                    'guest_email.required' => 'البريد الإلكتروني مطلوب',
+                    'guest_email.email'    => 'البريد الإلكتروني غير صحيح',
+                ]);
+            }
+        }
+
+        // Payment method
+        $request->validate([
+            'payment_method' => ['required', 'in:cash_on_delivery,card_payment'],
+        ], [
+            'payment_method.required' => 'طريقة الدفع مطلوبة',
+            'payment_method.in'       => 'طريقة الدفع غير صحيحة',
+        ]);
 
         // handle requests
         try {
