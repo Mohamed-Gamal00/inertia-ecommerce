@@ -138,6 +138,23 @@
                 <v-col cols="12" md="4">
                     <div class="co-card">
 
+                        <!-- Validation summary from backend -->
+                        <v-alert
+                            v-if="Object.keys(errors).length && !errors.terms"
+                            type="error"
+                            variant="tonal"
+                            rounded="lg"
+                            density="compact"
+                            class="mb-4"
+                        >
+                            <div class="font-weight-bold mb-1">يرجى تصحيح الأخطاء التالية:</div>
+                            <ul class="mb-0 ps-3" style="font-size:13px">
+                                <li v-for="(msgs, field) in errors" :key="field">
+                                    {{ Array.isArray(msgs) ? msgs[0] : msgs }}
+                                </li>
+                            </ul>
+                        </v-alert>
+
                         <!-- Guest: login or guest toggle -->
                         <template v-if="!user">
                             <div class="co-card-title">تسجيل الدخول أو التسجيل</div>
