@@ -8,6 +8,7 @@ use App\Models\DiscountCode;
 use App\Models\ShippingTypesAndPrice;
 use App\Repositories\Cart\CartRepository;
 use App\Services\CheckOut\CheckoutServices;
+use App\Support\CartSingleVendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -27,6 +28,12 @@ class CheckoutController extends Controller
     {
         if ($cart->get()->count() == 0) {
             return redirect()->route('home');
+        }
+
+        try {
+            CartSingleVendor::assertCheckoutCartSingleVendor($cart->get());
+        } catch (\InvalidArgumentException $e) {
+            return redirect()->route('home')->withErrors(['cart' => $e->getMessage()]);
         }
 
         foreach ($cart->get() as $item) {
@@ -97,6 +104,12 @@ class CheckoutController extends Controller
                 return response()->json(['message' => 'لا يمكن اتمام الطلب والسلة فارغة'], 422);
             }
 
+            try {
+                CartSingleVendor::assertCheckoutCartSingleVendor($cartItems);
+            } catch (\InvalidArgumentException $e) {
+                return response()->json(['message' => $e->getMessage()], 422);
+            }
+
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }
@@ -106,7 +119,12 @@ class CheckoutController extends Controller
         try {
             $this->checkoutService->checkJoinNews($request, $user);
 
-            $order = $this->checkoutService->createOrder($request, $user, $shipping_price);
+            $order = $this->checkoutService->createOrder(
+                $request,
+                $user,
+                $shipping_price,
+                CartSingleVendor::resolveCompanyId($cartItems)
+            );
 
             $this->checkoutService->createOrderItems($order, $user);
 

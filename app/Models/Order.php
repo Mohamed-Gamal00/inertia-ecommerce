@@ -5,8 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\OrderAddress;
-
 
 class Order extends Model
 {
@@ -14,6 +12,7 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
+        'company_id',
         'cookie_id',
         'payment_method',
         'status',
@@ -43,15 +42,21 @@ class Order extends Model
         if ($number) {
             return $number + 1; // this will be the next number
         }
-        return $year . '000001';
+
+        return $year.'000001';
     }
 
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id')
             ->withDefault([
-                'first_name' => 'زائر'
+                'first_name' => 'زائر',
             ]);
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id', 'id');
     }
 
     public function products()
@@ -87,6 +92,20 @@ class Order extends Model
         });
     }
 
+    /**
+     * Orders that include this vendor's products (by company_id on order or on line items).
+     */
+    public function scopeVisibleToVendorCompany(Builder $builder, int $vendorCompanyId): void
+    {
+        $builder->where(function (Builder $q) use ($vendorCompanyId) {
+            $q->where('company_id', $vendorCompanyId)
+                ->orWhere(function (Builder $q2) use ($vendorCompanyId) {
+                    $q2->whereNull('company_id')
+                        ->whereHas('orderItems.product', fn ($p) => $p->where('company_id', $vendorCompanyId));
+                });
+        });
+    }
+
     public function billingAddress()
     {
         // will return colleciton
@@ -102,7 +121,6 @@ class Order extends Model
         return $this->hasOne(OrderAddress::class, 'order_id', 'order')
             ->where('type', '=', 'shipping');
     }
-
 
     public function choices()
     {

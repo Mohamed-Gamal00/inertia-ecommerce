@@ -79,7 +79,7 @@ class ProductsController extends Controller
         // $categories = MainCategory::whereNull('parent_id')->get();
         $subCategories = MainCategory::whereNull('parent_id')->with('children')->get();
         // return $choices;
-        $companies = Company::all();
+        $companies = Company::where('is_vendor', true)->orderBy('name')->get();
         $colors = Color::all();
         $availability_status = ProductAvailability::all();
 
@@ -135,7 +135,7 @@ class ProductsController extends Controller
         $subCategories = MainCategory::whereNull('parent_id')->with('children')->get();
         $productChoices = $product->choices->pluck('id')->toArray();
         // dd($productChoices);
-        $companies = Company::all();
+        $companies = Company::where('is_vendor', true)->orderBy('name')->get();
         $colors = Color::all();
         $availability_status = ProductAvailability::all();
 
