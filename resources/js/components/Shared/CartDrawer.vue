@@ -164,7 +164,7 @@ onMounted(() => {
     Emitter.on('cart-item-added', (items) => {
         cartItems.value = items;
         Emitter.emit('cart-updated', items.length);
-        drawer.value = true;
+        // Don't auto-open drawer — let the fly animation handle the feedback
     });
 });
 </script>

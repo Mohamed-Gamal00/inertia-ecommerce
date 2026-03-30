@@ -76,12 +76,8 @@ class CheckoutServices
         }
         // شحن بناء علي الوزن
         elseif ($request->has('shipping_based_on_weight') && $shipping->add_wight_price == 1) {
-            $cartItems = Cart::withoutGlobalScope('cookie_id')
-                ->where('user_id', $user->id)
-                ->where('status', 0)
-                ->get();
-
-            $totalWeight = $cartItems->sum(fn ($item) => ($item->product->weight ?? 0) * $item->quantity);
+            $cartItems = $this->getCartItems($user);
+            $totalWeight = $cartItems->sum(fn($item) => ($item->product->weight ?? 0) * $item->quantity);
             $shippingPrice = $totalWeight * $shipping->weight_price;
         }
         // شحن بناء علي المدينة
@@ -117,23 +113,20 @@ class CheckoutServices
         $addedTax = ($totalPrice * ($valueAddedTax / 100));
 
         return Order::create([
-            'user_id' => $user->id,
-            'company_id' => $companyId,
-            'payment_method' => $request->payment_method,
-            'order_status_id' => OrderStatus::where('default_status', true)->first()->id,
-            'note' => $request->note,
-            'shipping_price' => $shippingPrice,
+            'user_id'             => $user?->id,
+            'payment_method'      => $request->payment_method,
+            'order_status_id'     => OrderStatus::where('default_status', true)->first()->id,
+            'note'                => $request->note,
+            'shipping_price'      => $shippingPrice,
             'totalBeforeDiscount' => $totalBeforeDiscount,
-            'total_price' => $totalPrice + $addedTax,
+            'total_price'         => $totalPrice + $addedTax,
+            'cookie_id'           => $user ? null : Cart::getCookieId(),
         ]);
     }
 
     public function createOrderItems($order, $user)
     {
-        $cartItems = Cart::withoutGlobalScope('cookie_id')
-            ->where('user_id', $user->id)
-            ->where('status', 0)
-            ->get();
+        $cartItems = $this->getCartItems($user);
 
         foreach ($cartItems as $cartItem) {
             $orderItem = OrderItem::create([
@@ -158,8 +151,7 @@ class CheckoutServices
     public function calculateTotal($user): float
     {
         // السعر بعد الخصم لو فيه خصم
-        return Cart::with('product')->withoutGlobalScope('cookie_id')
-            ->where('user_id', $user->id)->where('status', 0)->get()
+        return $this->getCartItems($user)
             ->sum(function ($item) {
                 if ($item->product->discount_price) {
                     return $item->quantity * ($item->discounted_price ?? $item->product->discount_price);
@@ -171,8 +163,7 @@ class CheckoutServices
 
     public function calculateTotalBeforeDiscount($user): float
     {
-        return Cart::with('product')->withoutGlobalScope('cookie_id')
-            ->where('user_id', $user->id)->where('status', 0)->get()
+        return $this->getCartItems($user)
             ->sum(function ($item) {
                 if ($item->product->discount_price) {
                     return $item->quantity * $item->product->discount_price;
@@ -253,11 +244,15 @@ class CheckoutServices
 
     public function getCartItems($user)
     {
-        return Cart::withoutGlobalScope('cookie_id')
-            ->where('user_id', $user->id)
-            ->where('status', 0)
-            ->with('product')
-            ->get();
+        $query = Cart::with('product')->withoutGlobalScope('cookie_id')->where('status', 0);
+
+        if ($user) {
+            $query->where('user_id', $user->id);
+        } else {
+            $query->where('cookie_id', Cart::getCookieId());
+        }
+
+        return $query->get();
     }
 
     public function disActiveProduct($cartItems)
@@ -274,10 +269,15 @@ class CheckoutServices
     public function updateProductStatue($user)
     {
         // تحويل حالة السلة من نشطة (0) إلى منتهية (1) بعد إتمام الطلب
-        Cart::withoutGlobalScope('cookie_id')
-            ->where('user_id', $user->id)
-            ->where('status', 0)
-            ->update(['status' => 1]);
+        $query = Cart::withoutGlobalScope('cookie_id')->where('status', 0);
+
+        if ($user) {
+            $query->where('user_id', $user->id);
+        } else {
+            $query->where('cookie_id', Cart::getCookieId());
+        }
+
+        $query->update(['status' => 1]);
     }
 
     public function sendNotificationToAdmin($order)

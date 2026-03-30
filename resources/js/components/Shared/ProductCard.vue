@@ -1,5 +1,5 @@
 <template>
-    <div class="pc" @mouseenter="hovered = true" @mouseleave="hovered = false">
+    <div class="pc" @mouseenter="hovered = true" @mouseleave="hovered = false" :data-product-id="item.id">
 
         <!-- Image area -->
         <div class="pc-img-wrap">
@@ -86,6 +86,7 @@ import { ref, computed, inject } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import { route } from 'ziggy-js';
 import axios from 'axios';
+import { useCartFly } from '../../composables/useCartFly';
 
 const props = defineProps({
     item: { type: Object, required: true },
@@ -93,6 +94,7 @@ const props = defineProps({
 
 const emit = defineEmits(['quick-view']);
 const Emitter = inject('Emitter');
+const { flyToCart } = useCartFly();
 
 const { props: pageProps } = usePage();
 const user = pageProps.auth?.user;
@@ -115,6 +117,11 @@ async function addToCart() {
     try {
         const { data } = await axios.post('/cart/add', { product_id: props.item.id, quantity: 1 });
         Emitter.emit('cart-item-added', data.items);
+
+        // Fly animation — use the product image element
+        const cardEl = document.querySelector(`[data-product-id="${props.item.id}"]`);
+        flyToCart(cardEl);
+
         snackbarMessage.value = 'تم إضافة المنتج للسلة';
         snackbarColor.value = 'success';
     } catch (e) {

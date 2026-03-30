@@ -64,7 +64,7 @@
             />
 
             <!-- Cart icon -->
-            <v-btn icon variant="text" @click="openCart" class="ms-1" color="white">
+            <v-btn icon variant="text" @click="openCart" class="ms-1" color="white" data-cart-icon>
                 <v-badge :content="cartCount || ''" :model-value="cartCount > 0" color="red" floating>
                     <v-icon>mdi-cart-outline</v-icon>
                 </v-badge>
@@ -265,6 +265,19 @@ onBeforeUnmount(() => Emitter.off('cart-updated', updateCart));
     background: rgba(255,255,255,0.2);
     color: #ffffff;
     font-weight: 600;
+}
+
+/* Cart bounce animation */
+@keyframes cartBounce {
+    0%   { transform: scale(1); }
+    30%  { transform: scale(1.4) rotate(-10deg); }
+    60%  { transform: scale(0.9) rotate(5deg); }
+    80%  { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+:global(.cart-bounce) {
+    animation: cartBounce 0.6s ease !important;
 }
 
 .search-field :deep(.v-field) {
