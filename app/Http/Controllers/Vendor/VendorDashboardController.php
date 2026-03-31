@@ -112,6 +112,41 @@ class VendorDashboardController extends Controller
         return view('vendor.profile', ['vendor' => $this->vendor()]);
     }
 
+    // Customers
+    public function customers()
+    {
+        $vendor = $this->vendor();
+
+        // Get unique users who ordered vendor's products
+        $customers = \App\Models\User::whereHas('orders.orderItems.product', fn($q) =>
+            $q->where('company_id', $vendor->id)
+        )
+        ->withCount(['orders as vendor_orders_count' => fn($q) =>
+            $q->whereHas('orderItems.product', fn($q2) =>
+                $q2->where('company_id', $vendor->id)
+            )
+        ])
+        ->with(['orders' => fn($q) =>
+            $q->whereHas('orderItems.product', fn($q2) =>
+                $q2->where('company_id', $vendor->id)
+            )->latest()->take(1)
+        ])
+        ->latest()
+        ->paginate(20);
+
+        // Total revenue per customer
+        $revenueByUser = \App\Models\OrderItem::whereHas('product', fn($q) =>
+            $q->where('company_id', $vendor->id)
+        )
+        ->join('orders', 'order_items.order_id', '=', 'orders.id')
+        ->whereNotNull('orders.user_id')
+        ->selectRaw('orders.user_id, SUM(order_items.price) as total_spent')
+        ->groupBy('orders.user_id')
+        ->pluck('total_spent', 'user_id');
+
+        return view('vendor.customers.index', compact('customers', 'revenueByUser'));
+    }
+
     public function profileUpdate(\Illuminate\Http\Request $request)
     {
         $vendor = $this->vendor();

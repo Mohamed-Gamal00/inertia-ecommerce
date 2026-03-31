@@ -42,6 +42,7 @@ Route::prefix('vendor')->name('vendor.')->middleware('vendor')->group(function (
 
     Route::get('/profile', [VendorDashboardController::class, 'profile'])->name('profile');
     Route::put('/profile',   [VendorDashboardController::class, 'profileUpdate'])->name('profile.update');
+    Route::get('/customers', [VendorDashboardController::class, 'customers'])->name('customers');
 
     // Discount Codes
     Route::get('/discount-codes/search-products', [VendorDiscountCodeController::class, 'searchProducts'])->name('discount_code.search-products');

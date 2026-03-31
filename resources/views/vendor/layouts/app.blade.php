@@ -185,6 +185,13 @@
                     <li class="menu-title">الحساب</li>
 
                     <li>
+                        <a href="{{ route('vendor.customers') }}" class="waves-effect {{ request()->routeIs('vendor.customers') ? 'active' : '' }}">
+                            <i class="mdi mdi-account-group-outline"></i>
+                            <span>عملائي</span>
+                        </a>
+                    </li>
+
+                    <li>
                         <a href="{{ route('vendor.profile') }}" class="waves-effect {{ request()->routeIs('vendor.profile') ? 'active' : '' }}">
                             <i class="mdi mdi-account-outline"></i>
                             <span>الملف الشخصي</span>
