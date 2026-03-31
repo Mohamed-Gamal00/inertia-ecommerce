@@ -146,8 +146,10 @@
 <script setup>
 import { ref, computed, inject, onMounted } from 'vue';
 import axios from 'axios';
+import { useCartFly } from '../../composables/useCartFly';
 
 const Emitter = inject('Emitter');
+const { flyToCart } = useCartFly();
 
 const dialog     = ref(false);
 const loading    = ref(false);
@@ -180,6 +182,7 @@ async function addToCart() {
             quantity: quantity.value,
         });
         Emitter.emit('cart-item-added', data.items);
+        flyToCart(document.querySelector('.v-dialog .qv-main-img'));
         snackbarMessage.value = 'تم إضافة المنتج للسلة';
         snackbarColor.value = 'success';
         dialog.value = false;
