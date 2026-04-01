@@ -199,6 +199,95 @@
             </div>
         </v-container>
 
+        <!-- Reviews Section -->
+        <v-container class="pb-6">
+            <div class="reviews-section">
+                <div class="d-flex align-center justify-space-between mb-4">
+                    <h3 class="font-weight-bold" style="font-size:18px">
+                        التقييمات والمراجعات
+                        <span v-if="reviewsCount" class="text-grey-darken-1 font-weight-regular" style="font-size:14px">
+                            ({{ reviewsCount }})
+                        </span>
+                    </h3>
+                    <div v-if="reviewsAvg" class="d-flex align-center gap-2">
+                        <v-rating :model-value="reviewsAvg" half-increments readonly color="amber" density="compact" size="small" />
+                        <span class="font-weight-bold" style="font-size:15px">{{ reviewsAvg?.toFixed(1) }}</span>
+                    </div>
+                </div>
+
+                <!-- Write review (logged in only) -->
+                <div v-if="user" class="review-form mb-5">
+                    <div class="font-weight-bold mb-2" style="font-size:14px">اكتب تقييمك</div>
+                    <div class="d-flex align-center gap-2 mb-3">
+                        <v-rating v-model="newRate" color="amber" density="compact" size="small" hover />
+                        <span class="text-grey" style="font-size:12px">{{ rateLabels[newRate - 1] || 'اختر تقييمك' }}</span>
+                    </div>
+                    <v-textarea
+                        v-model="newComment"
+                        placeholder="شاركنا رأيك في هذا المنتج..."
+                        variant="outlined"
+                        density="compact"
+                        rounded="lg"
+                        rows="3"
+                        hide-details="auto"
+                        bg-color="grey-lighten-5"
+                        class="mb-3"
+                        :error-messages="reviewError"
+                    />
+                    <v-btn
+                        color="primary"
+                        rounded="lg"
+                        style="text-transform:none"
+                        :loading="submittingReview"
+                        :disabled="!newRate || !newComment"
+                        @click="submitReview"
+                    >
+                        إرسال التقييم
+                    </v-btn>
+                </div>
+                <div v-else class="review-login-prompt">
+                    <v-icon size="18" color="grey" class="me-2">mdi-account-outline</v-icon>
+                    <a href="/login" class="text-primary text-decoration-none font-weight-bold">سجّل دخولك</a>
+                    لكتابة تقييم
+                </div>
+
+                <!-- Reviews list -->
+                <div v-if="reviews.length" class="reviews-list">
+                    <div v-for="r in reviews" :key="r.id" class="review-item">
+                        <div class="d-flex align-center gap-3 mb-2">
+                            <div class="review-avatar">{{ r.user_name?.charAt(0) }}</div>
+                            <div>
+                                <div class="font-weight-bold" style="font-size:13px">{{ r.user_name }}</div>
+                                <div class="text-grey" style="font-size:11px">{{ r.created_at }}</div>
+                            </div>
+                            <v-rating :model-value="r.rate" readonly color="amber" density="compact" size="x-small" class="ms-auto" />
+                        </div>
+                        <p style="font-size:13px; color:#374151; line-height:1.7; margin:0">{{ r.comment }}</p>
+                    </div>
+                </div>
+                <div v-else-if="!loadingReviews" class="text-center py-6 text-grey" style="font-size:13px">
+                    لا توجد تقييمات بعد — كن أول من يقيّم هذا المنتج
+                </div>
+            </div>
+        </v-container>
+
+        <!-- Recently Viewed -->
+        <v-container v-if="recentlyViewed.length" class="pb-10">
+            <div class="d-flex align-center justify-space-between mb-4">
+                <h3 class="font-weight-bold" style="font-size:18px">شاهدت مؤخراً</h3>
+                <a href="/products" class="text-primary text-decoration-none" style="font-size:13px">عرض الكل</a>
+            </div>
+            <v-row>
+                <v-col
+                    v-for="item in recentlyViewed"
+                    :key="item.id"
+                    cols="6" sm="4" md="3" lg="2"
+                >
+                    <ProductCard :item="item" @quick-view="p => Emitter.emit('openQuickView', p)" />
+                </v-col>
+            </v-row>
+        </v-container>
+
         <v-snackbar v-model="snackbar" location="top right" :color="snackbarColor" timeout="2000">
             {{ snackbarMessage }}
         </v-snackbar>
@@ -206,13 +295,16 @@
 </template>
 
 <script setup>
-import { ref, computed, inject } from 'vue';
+import { ref, computed, inject, onMounted } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
+import { useRecentlyViewed } from '../../composables/useRecentlyViewed';
+import ProductCard from '../../components/Shared/ProductCard.vue';
 
 const { props } = usePage();
 const product = props.product;
 const Emitter = inject('Emitter');
+const { add: addToRecent, getExcluding } = useRecentlyViewed();
 
 const activeImage = ref(product.image_url);
 const quantity    = ref(1);
@@ -221,6 +313,58 @@ const btnLoading  = ref(false);
 const snackbar    = ref(false);
 const snackbarMessage = ref('');
 const snackbarColor   = ref('success');
+const recentlyViewed  = ref([]);
+
+onMounted(() => {
+    // Track this product as viewed
+    addToRecent(product);
+    // Load recently viewed (excluding current)
+    recentlyViewed.value = getExcluding(product.id);
+    // Load reviews
+    loadReviews();
+});
+
+// Reviews
+const reviews        = ref([]);
+const reviewsAvg     = ref(0);
+const reviewsCount   = ref(0);
+const loadingReviews = ref(false);
+const newRate        = ref(0);
+const newComment     = ref('');
+const submittingReview = ref(false);
+const reviewError    = ref('');
+const user = usePage().props.auth?.user;
+const rateLabels = ['سيء', 'مقبول', 'جيد', 'جيد جداً', 'ممتاز'];
+
+async function loadReviews() {
+    loadingReviews.value = true;
+    try {
+        const { data } = await axios.get(`/reviews/${product.id}`);
+        reviews.value      = data.reviews;
+        reviewsAvg.value   = data.avg;
+        reviewsCount.value = data.count;
+    } catch {}
+    loadingReviews.value = false;
+}
+
+async function submitReview() {
+    reviewError.value = '';
+    submittingReview.value = true;
+    try {
+        await axios.post('/reviews', {
+            product_id: product.id,
+            rate:       newRate.value,
+            comment:    newComment.value,
+        });
+        newRate.value    = 0;
+        newComment.value = '';
+        await loadReviews();
+    } catch (e) {
+        reviewError.value = e.response?.data?.message || 'حدث خطأ';
+    } finally {
+        submittingReview.value = false;
+    }
+}
 
 const discountPercent = computed(() => {
     if (!product.discount_price || !product.price) return 0;
@@ -440,5 +584,55 @@ async function addToCart() {
     border-radius: 12px;
     padding: 14px;
     height: 100%;
+}
+
+/* Reviews */
+.reviews-section {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    padding: 24px;
+}
+
+.review-form {
+    background: #f8f9fb;
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+}
+
+.review-login-prompt {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    color: #6b7280;
+    background: #f8f9fb;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    border: 1px solid #e5e7eb;
+}
+
+.reviews-list { display: flex; flex-direction: column; gap: 16px; }
+
+.review-item {
+    padding: 16px;
+    border: 1px solid #f3f4f6;
+    border-radius: 12px;
+    background: #fafafa;
+}
+
+.review-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #e8eaf6;
+    color: #1a237e;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 </style>

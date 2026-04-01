@@ -3,15 +3,15 @@
       <CartDrawer />
       <AppHeader />
       <QuickView />
+      <BackToTop />
+      <CompareBar />
+      <ToastContainer />
 
-      <!-- المحتوى الرئيسي -->
       <v-main>
         <slot></slot>
       </v-main>
 
-      <!-- الفوتر -->
       <AppFooter />
-
   </v-app>
 </template>
 
@@ -20,15 +20,16 @@ import AppHeader from "../layouts/AppHeader.vue";
 import AppFooter from "../layouts/AppFooter.vue";
 import QuickView from "../components/Shared/QuickView.vue";
 import CartDrawer from "../components/Shared/CartDrawer.vue";
+import BackToTop from "../components/Shared/BackToTop.vue";
+import CompareBar from "../components/Shared/CompareBar.vue";
+import ToastContainer from "../components/Shared/ToastContainer.vue";
 import { usePage } from "@inertiajs/vue3";
 import { computed } from "vue";
 const user = computed(() => usePage().props.auth.user);
 </script>
 
 <style scoped>
-.min-h-screen {
-  min-height: 100vh;
-}
+.min-h-screen { min-height: 100vh; }
 </style>
 
 <style>
@@ -40,10 +41,7 @@ const user = computed(() => usePage().props.auth.user);
     100% { transform: scale(1); }
 }
 .cart-bounce { animation: cartBounce 0.6s ease !important; }
-</style>
 
-<style>
-/* Cart magic animations */
 @keyframes cartMagic {
     0%   { transform: scale(1) rotate(0deg); }
     20%  { transform: scale(1.4) rotate(-12deg); }
