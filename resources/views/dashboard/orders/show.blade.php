@@ -199,9 +199,22 @@
                 <h5 class="card-title fw-bold mb-4">
                     <i class="mdi mdi-account me-2 text-primary"></i>
                     بيانات العميل
+                    @if(!$order->user_id)
+                        <span class="badge bg-secondary ms-2" style="font-size:11px">زائر</span>
+                    @endif
                 </h5>
 
                 @php $addr = $order->addresses->first(); @endphp
+
+                @if($order->user_id && $order->user)
+                <div class="mb-3 p-2 rounded" style="background:#f0f2ff; border:1px solid #c5cae9">
+                    <div class="text-muted small mb-1">عميل مسجل</div>
+                    <a href="{{ route('clients.edit', $order->user_id) }}" class="fw-bold text-primary text-decoration-none">
+                        <i class="mdi mdi-account-circle me-1"></i>
+                        {{ $order->user->first_name }} {{ $order->user->family_name }}
+                    </a>
+                </div>
+                @endif
 
                 @if($addr)
                 <ul class="list-unstyled mb-0">
