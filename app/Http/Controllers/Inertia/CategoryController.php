@@ -32,7 +32,14 @@ class CategoryController extends Controller
         $products = $category->products()->with(['images', 'parent'])->withIsInWishlist($user)->latest()->get();
 
         return \Inertia\Inertia::render('Categories/Show', [
-            'category' => $category,
+            'category' => [
+                'id'          => $category->id,
+                'name'        => $category->name,
+                'name_en'     => $category->name_en,
+                'slug'        => $category->slug,
+                'description' => $category->description,
+                'image_url'   => $category->image_url,
+            ],
             'products' => $products,
         ]);
     }

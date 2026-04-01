@@ -1,5 +1,6 @@
 <script setup>
 import { defineProps, computed } from 'vue'
+import SeoHead from '../components/Shared/SeoHead.vue';
 
 const props = defineProps({
     products: {
@@ -12,6 +13,7 @@ const props = defineProps({
 
 <template>
     <div class="home">
+        <SeoHead />
         <UpperPanner />
         <TheFeatures />
         <TopOffers />

@@ -1,5 +1,6 @@
 <template>
     <div style="background:#f5f6fa; min-height:100vh; padding-bottom:48px">
+        <SeoHead :title="filters.q ? `نتائج: ${filters.q}` : 'جميع المنتجات'" />
 
         <!-- Header -->
         <div style="background:linear-gradient(135deg,#1a237e,#3949ab); padding:32px 16px 44px">
@@ -112,6 +113,7 @@
 import { ref, computed, watch, inject } from 'vue';
 import { router } from '@inertiajs/vue3';
 import ProductCard from '../../components/Shared/ProductCard.vue';
+import SeoHead from '../../components/Shared/SeoHead.vue';
 
 const props = defineProps({
     products:   Object,

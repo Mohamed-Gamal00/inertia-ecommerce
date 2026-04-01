@@ -1,5 +1,10 @@
 <template>
     <div class="pd-page">
+        <SeoHead
+            :title="product.name"
+            :description="product.description"
+            :image="product.image_url"
+        />
 
         <!-- Breadcrumb -->
         <div class="pd-breadcrumb">
@@ -300,6 +305,7 @@ import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { useRecentlyViewed } from '../../composables/useRecentlyViewed';
 import ProductCard from '../../components/Shared/ProductCard.vue';
+import SeoHead from '../../components/Shared/SeoHead.vue';
 
 const { props } = usePage();
 const product = props.product;
