@@ -1,5 +1,10 @@
 <template>
     <div style="background:#f5f6fa; min-height:100vh; padding-bottom:48px">
+        <SeoHead
+            :title="category.name"
+            :description="category.description || `تصفح ${products.length} منتج في قسم ${category.name}`"
+            :image="category.image_url"
+        />
 
         <!-- Header -->
         <div style="background:linear-gradient(135deg,#1a237e,#3949ab); padding:40px 16px 50px">
@@ -42,8 +47,9 @@
 <script setup>
 import { inject } from 'vue';
 import ProductCard from '../../components/Shared/ProductCard.vue';
+import SeoHead from '../../components/Shared/SeoHead.vue';
 
-defineProps({ category: Object, products: Array });
+const props = defineProps({ category: Object, products: Array });
 
 const Emitter = inject('Emitter');
 function openQuickView(product) {

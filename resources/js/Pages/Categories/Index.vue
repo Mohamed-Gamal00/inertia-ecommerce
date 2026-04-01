@@ -3,6 +3,7 @@
 
         <!-- Header -->
         <div style="background:linear-gradient(135deg,#1a237e,#3949ab); padding:40px 16px 50px">
+            <SeoHead title="جميع الأقسام" />
             <h1 class="text-white font-weight-bold text-center" style="font-size:28px">
                 جميع الأقسام
             </h1>
@@ -42,6 +43,7 @@
 </template>
 
 <script setup>
+import SeoHead from '../../components/Shared/SeoHead.vue';
 defineProps({ categories: Array });
 </script>
 

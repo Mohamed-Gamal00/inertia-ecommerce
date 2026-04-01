@@ -189,7 +189,7 @@
                                 <x-form.input type="text" name="sms_sender" :value="$setting->sms_sender" />
                             </div>
                         </div>
-                        
+
                         <x-dashboard.image-preview image="{{ asset('storage/' . $setting->image) }}" fileName="image"
                             heigh="32" width="32" title="ايقونة تبويب المتجر في المتصفح" />
 
@@ -200,6 +200,204 @@
                     </div><!-- end cardbody -->
                 </div><!-- end card -->
             </div> <!-- end col -->
+        </div>
+
+        {{-- ═══════════════════════════════════════════════════════
+             SEO SETTINGS CARD
+        ════════════════════════════════════════════════════════ --}}
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white d-flex align-items-center gap-2">
+                        <i class="mdi mdi-magnify fs-5"></i>
+                        <h5 class="mb-0 fw-bold">إعدادات SEO وتحسين محركات البحث</h5>
+                    </div>
+                    <div class="card-body">
+
+                        {{-- ── Basic Meta ── --}}
+                        <h6 class="fw-bold text-muted mb-3 border-bottom pb-2">
+                            <i class="mdi mdi-tag-outline me-1"></i> البيانات الأساسية
+                        </h6>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label fw-bold">
+                                عنوان الصفحة (Meta Title)
+                                <small class="d-block text-muted fw-normal" style="font-size:11px">الحد الأقصى 160 حرف</small>
+                            </label>
+                            <div class="col-sm-10">
+                                <input type="text" name="seo_meta_title" class="form-control"
+                                    value="{{ $setting->seo_meta_title }}"
+                                    maxlength="160" placeholder="عنوان يظهر في نتائج جوجل..." />
+                                <div class="form-text">{{ strlen($setting->seo_meta_title ?? '') }}/160 حرف</div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label fw-bold">
+                                وصف الصفحة (Meta Description)
+                                <small class="d-block text-muted fw-normal" style="font-size:11px">الحد الأقصى 320 حرف</small>
+                            </label>
+                            <div class="col-sm-10">
+                                <textarea name="seo_meta_description" class="form-control" rows="3"
+                                    maxlength="320" placeholder="وصف مختصر يظهر تحت العنوان في جوجل...">{{ $setting->seo_meta_description }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <label class="col-sm-2 col-form-label fw-bold">
+                                الكلمات المفتاحية (Keywords)
+                                <small class="d-block text-muted fw-normal" style="font-size:11px">مفصولة بفاصلة</small>
+                            </label>
+                            <div class="col-sm-10">
+                                <input type="text" name="seo_meta_keywords" class="form-control"
+                                    value="{{ $setting->seo_meta_keywords }}"
+                                    placeholder="متجر, تسوق, منتجات, ..." />
+                            </div>
+                        </div>
+
+                        {{-- ── Open Graph ── --}}
+                        <h6 class="fw-bold text-muted mb-3 border-bottom pb-2">
+                            <i class="mdi mdi-share-variant-outline me-1"></i> Open Graph (فيسبوك / واتساب / لينكدإن)
+                        </h6>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label fw-bold">عنوان OG</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="og_title" class="form-control"
+                                    value="{{ $setting->og_title }}" maxlength="160"
+                                    placeholder="يُستخدم عند مشاركة الرابط..." />
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label fw-bold">وصف OG</label>
+                            <div class="col-sm-10">
+                                <textarea name="og_description" class="form-control" rows="2"
+                                    maxlength="320">{{ $setting->og_description }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <label class="col-sm-2 col-form-label fw-bold">صورة OG</label>
+                            <div class="col-sm-10">
+                                @if($setting->og_image)
+                                    <img src="{{ asset('storage/' . $setting->og_image) }}"
+                                        class="img-thumbnail mb-2" style="max-height:120px">
+                                @endif
+                                <input type="file" name="og_image" class="form-control" accept="image/*" />
+                                <div class="form-text">الحجم المثالي: 1200×630 بكسل</div>
+                            </div>
+                        </div>
+
+                        {{-- ── Twitter Card ── --}}
+                        <h6 class="fw-bold text-muted mb-3 border-bottom pb-2">
+                            <i class="mdi mdi-twitter me-1"></i> Twitter Card
+                        </h6>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label fw-bold">نوع البطاقة</label>
+                            <div class="col-sm-10">
+                                <select name="twitter_card" class="form-select">
+                                    <option value="summary_large_image" @selected($setting->twitter_card === 'summary_large_image')>
+                                        summary_large_image (صورة كبيرة)
+                                    </option>
+                                    <option value="summary" @selected($setting->twitter_card === 'summary')>
+                                        summary (صورة صغيرة)
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label fw-bold">عنوان Twitter</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="twitter_title" class="form-control"
+                                    value="{{ $setting->twitter_title }}" maxlength="160" />
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label fw-bold">وصف Twitter</label>
+                            <div class="col-sm-10">
+                                <textarea name="twitter_description" class="form-control" rows="2"
+                                    maxlength="320">{{ $setting->twitter_description }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <label class="col-sm-2 col-form-label fw-bold">صورة Twitter</label>
+                            <div class="col-sm-10">
+                                @if($setting->twitter_image)
+                                    <img src="{{ asset('storage/' . $setting->twitter_image) }}"
+                                        class="img-thumbnail mb-2" style="max-height:120px">
+                                @endif
+                                <input type="file" name="twitter_image" class="form-control" accept="image/*" />
+                            </div>
+                        </div>
+
+                        {{-- ── Technical SEO ── --}}
+                        <h6 class="fw-bold text-muted mb-3 border-bottom pb-2">
+                            <i class="mdi mdi-cog-outline me-1"></i> الإعدادات التقنية
+                        </h6>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label fw-bold">
+                                Google Analytics ID
+                                <small class="d-block text-muted fw-normal" style="font-size:11px">مثال: G-XXXXXXXXXX</small>
+                            </label>
+                            <div class="col-sm-10">
+                                <input type="text" name="google_analytics_id" class="form-control"
+                                    value="{{ $setting->google_analytics_id }}" placeholder="G-XXXXXXXXXX" />
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label fw-bold">
+                                Google Tag Manager ID
+                                <small class="d-block text-muted fw-normal" style="font-size:11px">مثال: GTM-XXXXXXX</small>
+                            </label>
+                            <div class="col-sm-10">
+                                <input type="text" name="google_tag_manager_id" class="form-control"
+                                    value="{{ $setting->google_tag_manager_id }}" placeholder="GTM-XXXXXXX" />
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label fw-bold">
+                                Google Site Verification
+                                <small class="d-block text-muted fw-normal" style="font-size:11px">كود التحقق من Search Console</small>
+                            </label>
+                            <div class="col-sm-10">
+                                <input type="text" name="google_site_verification" class="form-control"
+                                    value="{{ $setting->google_site_verification }}" />
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label fw-bold">
+                                Canonical URL
+                                <small class="d-block text-muted fw-normal" style="font-size:11px">الرابط الأساسي للموقع</small>
+                            </label>
+                            <div class="col-sm-10">
+                                <input type="url" name="canonical_url" class="form-control"
+                                    value="{{ $setting->canonical_url }}" placeholder="https://yourstore.com" />
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label fw-bold">Robots Index</label>
+                            <div class="col-sm-10">
+                                <select name="robots_index" class="form-select">
+                                    @foreach(['index,follow' => 'index, follow (الافتراضي — مرئي لجوجل)', 'noindex,nofollow' => 'noindex, nofollow (مخفي تماماً)', 'index,nofollow' => 'index, nofollow', 'noindex,follow' => 'noindex, follow'] as $val => $label)
+                                        <option value="{{ $val }}" @selected($setting->robots_index === $val)>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                    </div><!-- end card-body -->
+                </div><!-- end card -->
+            </div>
         </div>
 
         <div class="row">
