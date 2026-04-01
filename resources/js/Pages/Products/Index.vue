@@ -24,7 +24,6 @@
                         v-model="localSearch"
                         placeholder="ابحث في المنتجات..."
                         class="filter-search-input"
-                        @keyup.enter="applyFilters"
                     />
                 </div>
 
@@ -125,11 +124,11 @@ const Emitter = inject('Emitter');
 const page = ref(props.products.current_page);
 
 // Local filter state
-const localSearch = ref(props.filters?.q || '');
+const localSearch = ref(props.filters?.q    || '');
 const localSort   = ref(props.filters?.sort || 'latest');
-const localMin    = ref(props.filters?.min || '');
-const localMax    = ref(props.filters?.max || '');
-const localCat    = ref(props.filters?.cat || '');
+const localMin    = ref(props.filters?.min  || '');
+const localMax    = ref(props.filters?.max  || '');
+const localCat    = ref(props.filters?.cat  || '');
 
 const hasFilters = computed(() =>
     props.filters?.q || props.filters?.cat ||
@@ -146,6 +145,13 @@ function applyFilters() {
         category:  localCat.value || undefined,
     }, { preserveState: true, replace: true });
 }
+
+// Live search — debounced 350ms, same as navbar
+let debounceTimer = null;
+watch(localSearch, () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => applyFilters(), 350);
+});
 
 function clearFilters() {
     localSearch.value = '';
