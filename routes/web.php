@@ -43,6 +43,8 @@ Route::middleware('auth:web')->group(function () {
 Route::get('/search', [\App\Http\Controllers\Inertia\SearchController::class, 'search'])->name('search');
 // Reviews (public read)
 Route::get('/reviews/{productId}', [\App\Http\Controllers\Inertia\ReviewController::class, 'index'])->name('reviews.index');
+// Compare
+Route::get('/compare', [\App\Http\Controllers\Inertia\CompareController::class, 'index'])->name('compare');
 
 Route::get('/', [\App\Http\Controllers\Inertia\HomeController::class, 'index'])->name('home');
 
