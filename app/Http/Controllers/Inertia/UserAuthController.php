@@ -10,6 +10,7 @@ use App\Models\Country;
 use App\Models\User;
 use App\Models\User_verfication;
 use App\Models\UserAddress;
+use App\Services\CheckOut\CheckoutServices;
 use App\Services\SMSGateways\moraSms;
 use App\Services\VerificationServices;
 use Illuminate\Http\Request;
@@ -22,11 +23,13 @@ class UserAuthController extends Controller
 {
     public $sms_service;
     public $moraSms;
+    protected CheckoutServices $checkoutServices;
 
-    public function __construct(VerificationServices $services, moraSms $moraSmsGateway)
+    public function __construct(VerificationServices $services, moraSms $moraSmsGateway, CheckoutServices $checkoutServices)
     {
-        $this->sms_service = $services;
-        $this->moraSms = $moraSmsGateway;
+        $this->sms_service      = $services;
+        $this->moraSms          = $moraSmsGateway;
+        $this->checkoutServices = $checkoutServices;
     }
 
     /* ================== AUTH VIEWS ================== */
@@ -92,6 +95,9 @@ class UserAuthController extends Controller
             Auth::guard('web')->login($user);
         });
 
+        // Merge any guest cart items into the newly registered user's cart
+        $this->checkoutServices->mergeGuestCart(Auth::guard('web')->id());
+
         return redirect()->route('home');
     }
 
@@ -102,9 +108,12 @@ class UserAuthController extends Controller
             'password' => 'required',
         ]);
 
-        // dd($credentials);
         if (Auth::guard('web')->attempt($credentials)) {
             $request->session()->regenerate();
+
+            // Merge any guest cart items into the now-authenticated user's cart
+            $this->checkoutServices->mergeGuestCart(Auth::guard('web')->id());
+
             return redirect()->route('home');
         }
 

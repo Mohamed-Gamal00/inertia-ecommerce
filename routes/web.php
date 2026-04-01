@@ -39,6 +39,13 @@ Route::middleware('auth:web')->group(function () {
     })->name('account');
 });
 
+// Search
+Route::get('/search', [\App\Http\Controllers\Inertia\SearchController::class, 'search'])->name('search');
+// Reviews (public read)
+Route::get('/reviews/{productId}', [\App\Http\Controllers\Inertia\ReviewController::class, 'index'])->name('reviews.index');
+// Compare
+Route::get('/compare', [\App\Http\Controllers\Inertia\CompareController::class, 'index'])->name('compare');
+
 Route::get('/', [\App\Http\Controllers\Inertia\HomeController::class, 'index'])->name('home');
 
 // Offers
@@ -114,6 +121,7 @@ Route::middleware('auth:web')->group(function () {
 
     Route::post('/wishlist/add/{product}', [\App\Http\Controllers\Inertia\WishListController::class, 'add'])->name('wishlist.add');
     Route::post('/wishlist/remove/{product}', [\App\Http\Controllers\Inertia\WishListController::class, 'remove'])->name('wishlist.remove');
+    Route::post('/reviews', [\App\Http\Controllers\Inertia\ReviewController::class, 'store'])->name('reviews.store');
 
     //    Route::get('/user_wishlist', [UserProfileController::class, 'userWishList'])->name('user.wishlist');
     // Route::get('/user_info', [UserProfileController::class, 'userInfo'])->name('user.info');

@@ -14,6 +14,7 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
+        'guest_id',
         'cookie_id',
         'payment_method',
         'status',
@@ -52,6 +53,39 @@ class Order extends Model
             ->withDefault([
                 'first_name' => 'زائر'
             ]);
+    }
+
+    public function guest()
+    {
+        return $this->belongsTo(\App\Models\Guest::class, 'guest_id', 'id');
+    }
+
+    /**
+     * Get the display name for the order owner (user or guest).
+     */
+    public function getCustomerNameAttribute(): string
+    {
+        if ($this->user_id && $this->user) {
+            return trim($this->user->first_name . ' ' . $this->user->family_name);
+        }
+        if ($this->guest_id && $this->guest) {
+            return trim($this->guest->first_name . ' ' . $this->guest->family_name) ?: 'زائر';
+        }
+        // fallback: read from order address
+        $addr = $this->addresses()->first();
+        return $addr ? trim($addr->first_name . ' ' . $addr->last_name) : 'زائر';
+    }
+
+    public function getCustomerEmailAttribute(): string
+    {
+        if ($this->user_id && $this->user) {
+            return $this->user->email ?? '—';
+        }
+        if ($this->guest_id && $this->guest) {
+            return $this->guest->email ?? '—';
+        }
+        $addr = $this->addresses()->first();
+        return $addr?->email ?? '—';
     }
 
     public function products()

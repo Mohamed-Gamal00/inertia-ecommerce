@@ -49,19 +49,7 @@
             <v-spacer />
 
             <!-- Search bar (desktop) -->
-            <v-text-field
-                v-model="search"
-                placeholder="ابحث عن منتج..."
-                hide-details
-                single-line
-                variant="outlined"
-                density="compact"
-                rounded="lg"
-                prepend-inner-icon="mdi-magnify"
-                class="d-none d-md-flex search-field"
-                style="max-width:260px"
-                bg-color="grey-lighten-5"
-            />
+            <GlobalSearch class="d-none d-md-flex" />
 
             <!-- Cart icon -->
             <v-btn icon variant="text" @click="openCart" class="ms-1" color="white" data-cart-icon>
@@ -206,6 +194,7 @@
 <script setup>
 import { ref, inject, computed, onMounted, onBeforeUnmount } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
+import GlobalSearch from '../components/Shared/GlobalSearch.vue';
 
 const Emitter = inject('Emitter');
 const mobileDrawer = ref(false);
