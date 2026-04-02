@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\DiscountCode;
 use App\Models\OrderAddress;
 
 
@@ -15,6 +16,7 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'guest_id',
+        'discount_code_id',
         'cookie_id',
         'payment_method',
         'status',
@@ -58,6 +60,11 @@ class Order extends Model
     public function guest()
     {
         return $this->belongsTo(\App\Models\Guest::class, 'guest_id', 'id');
+    }
+
+    public function discountCode()
+    {
+        return $this->belongsTo(DiscountCode::class, 'discount_code_id', 'id');
     }
 
     /**

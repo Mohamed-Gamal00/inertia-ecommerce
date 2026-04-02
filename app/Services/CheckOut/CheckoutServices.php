@@ -125,6 +125,7 @@ class CheckoutServices
         return Order::create([
             'user_id'             => $user?->id,
             'guest_id'            => $guestId,
+            'discount_code_id'    => session('applied_discount_code_id'),
             'payment_method'      => $request->payment_method,
             'order_status_id'     => OrderStatus::where('default_status', true)->first()->id,
             'note'                => $request->note,

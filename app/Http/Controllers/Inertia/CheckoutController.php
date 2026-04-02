@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\DiscountCode;
 use App\Models\ShippingTypesAndPrice;
+use App\Models\UserDiscountCode;
 use App\Repositories\Cart\CartRepository;
 use App\Services\CheckOut\CheckoutServices;
 use Illuminate\Http\Request;
@@ -165,7 +166,6 @@ class CheckoutController extends Controller
             $this->checkoutService->checkJoinNews($request, $user);
 
             $order = $this->checkoutService->createOrder($request, $user, $shipping_price);
-
             $this->checkoutService->createOrderItems($order, $user);
 
             $this->checkoutService->isAddingNewAddress($order, $request, $user);
@@ -177,6 +177,9 @@ class CheckoutController extends Controller
 
             $this->checkoutService->sendNotificationToAdmin($order);
 
+            // Clear applied discount from session
+            session()->forget('applied_discount_code_id');
+
             DB::commit();
 
             return $this->checkoutService->checkPaymentMethod($request, $order);
@@ -185,5 +188,87 @@ class CheckoutController extends Controller
             DB::rollBack();
             return response()->json(['message' => 'فشل إنشاء الطلب', 'error' => $e->getMessage()], 500);
         }
+    }
+
+    /**
+     * Validate and apply a discount code — returns JSON for the Vue checkout page.
+     */
+    public function applyDiscount(Request $request)
+    {
+        $request->validate(['discount_code' => 'required|string']);
+
+        $user = Auth::guard('web')->user();
+
+        // 1. Guests cannot use discount codes
+        if (!$user) {
+            return response()->json([
+                'message'       => 'يجب تسجيل الدخول أولاً لاستخدام كود الخصم',
+                'requires_login' => true,
+            ], 401);
+        }
+
+        $code = DiscountCode::where('code', $request->discount_code)
+            ->where('status', 'active')
+            ->where('number_of_used', '>', 0)
+            ->first();
+
+        if (!$code) {
+            return response()->json(['message' => 'الكود غير صالح أو انتهت صلاحيته'], 422);
+        }
+
+        // 2. If code is product-specific, check that at least one cart item matches
+        $cartItems = $this->checkoutService->getCartItems($user);
+        $isGlobal  = $code->products()->count() === 0;
+
+        if (!$isGlobal) {
+            $codeProductIds  = $code->products->pluck('id')->toArray();
+            $cartProductIds  = $cartItems->pluck('product_id')->toArray();
+            $hasMatchingItem = count(array_intersect($codeProductIds, $cartProductIds)) > 0;
+
+            if (!$hasMatchingItem) {
+                return response()->json([
+                    'message' => 'هذا الكود لا ينطبق على أي منتج في سلتك',
+                ], 422);
+            }
+        }
+
+        $cookieId    = Cart::getCookieId();
+        $alreadyUsed = UserDiscountCode::where('cookie_id', $cookieId)
+            ->where('discount_id', $code->id)
+            ->exists();
+
+        if ($alreadyUsed) {
+            return response()->json(['message' => 'لقد استخدمت هذا الكود بالفعل'], 422);
+        }
+
+        // Register usage & decrement
+        UserDiscountCode::create(['cookie_id' => $cookieId, 'discount_id' => $code->id]);
+        $code->decrement('number_of_used');
+
+        // Apply discount to matching cart items only
+        foreach ($cartItems as $item) {
+            if ($isGlobal || $code->products->contains($item->product_id)) {
+                $discountAmount = $code->discount_type === 'percentage'
+                    ? (($item->product->discount_price ?? $item->product->price) * $code->price) / 100
+                    : $code->price;
+
+                $original               = $item->product->discount_price ?? $item->product->price;
+                $item->discounted_price = max(0, $original - $discountAmount);
+                $item->save();
+            }
+        }
+
+        $newTotal = $this->checkoutService->calculateTotal($user);
+
+        // Store in session so createOrder can attach it to the order
+        session(['applied_discount_code_id' => $code->id]);
+
+        return response()->json([
+            'message'        => 'تم تطبيق كود الخصم بنجاح',
+            'discount_code'  => $code->code,
+            'discount_value' => (float) $code->price,
+            'discount_type'  => $code->discount_type,
+            'new_total'      => (float) $newTotal,
+        ]);
     }
 }

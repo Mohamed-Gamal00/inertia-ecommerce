@@ -83,6 +83,7 @@ Route::delete('/cart/{id}', [\App\Http\Controllers\Inertia\CartController::class
 // Checkout
 Route::get('/checkout', [\App\Http\Controllers\Inertia\CheckoutController::class, 'create'])->name('checkout');
 Route::post('/checkout', [\App\Http\Controllers\Inertia\CheckoutController::class, 'store'])->name('checkout.store');
+Route::post('/checkout/apply-discount', [\App\Http\Controllers\Inertia\CheckoutController::class, 'applyDiscount'])->name('checkout.discount');
 
 // Payment page (web)
 Route::get('/payment/{order_number}', [\App\Http\Controllers\Api\PaymentController::class, 'index'])->name('user.payment');

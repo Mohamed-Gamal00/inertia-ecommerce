@@ -56,20 +56,57 @@
                         </v-col>
                     </v-row>
 
-                    <!-- Discount codes -->
+                    <!-- Discount code -->
                     <div class="co-card mb-4">
-                        <div class="co-card-title">قسيمة / كود خصم</div>
+                        <div class="co-card-title">كود الخصم</div>
                         <v-divider class="mb-3" />
 
-                        <div class="co-discount-row mb-3">
-                            <span class="co-discount-label">الرجاء ادخال رمز قسيمة التخفيض</span>
-                            <v-text-field v-model="couponCode" placeholder="الرجاء ادخال رمز قسيمة التخفيض" variant="outlined" density="compact" hide-details rounded="lg" bg-color="grey-lighten-5" style="flex:1" />
-                            <v-btn variant="outlined" color="primary" rounded="lg" height="40" style="text-transform:none; min-width:80px">إضافة</v-btn>
+                        <!-- Applied badge -->
+                        <div v-if="appliedDiscount" class="co-discount-applied mb-3">
+                            <v-icon size="18" color="success" class="me-1">mdi-check-circle</v-icon>
+                            <span>تم تطبيق كود <strong>{{ appliedDiscount.code }}</strong> —
+                                خصم {{ appliedDiscount.type === 'percentage' ? appliedDiscount.value + '%' : appliedDiscount.value + ' ر.س' }}
+                            </span>
+                            <button class="co-discount-remove" @click="removeDiscount">
+                                <v-icon size="14">mdi-close</v-icon>
+                            </button>
                         </div>
-                        <div class="co-discount-row">
-                            <span class="co-discount-label">الرجاء ادخال رمز كود الخصم</span>
-                            <v-text-field v-model="discountCode" placeholder="الرجاء ادخال رمز كود الخصم" variant="outlined" density="compact" hide-details rounded="lg" bg-color="grey-lighten-5" style="flex:1" />
-                            <v-btn variant="outlined" color="primary" rounded="lg" height="40" style="text-transform:none; min-width:80px">إضافة</v-btn>
+
+                        <div v-else class="co-discount-input-row">
+                            <v-text-field
+                                v-model="discountInput"
+                                placeholder="أدخل كود الخصم"
+                                variant="outlined"
+                                density="compact"
+                                hide-details
+                                rounded="lg"
+                                bg-color="grey-lighten-5"
+                                style="flex:1"
+                                dir="ltr"
+                                :error="!!discountError"
+                                @keyup.enter="applyDiscount"
+                            />
+                            <v-btn
+                                color="primary"
+                                rounded="lg"
+                                height="40"
+                                style="text-transform:none; min-width:90px"
+                                :loading="discountLoading"
+                                @click="applyDiscount"
+                            >
+                                تطبيق
+                            </v-btn>
+                        </div>
+                        <div v-if="discountError" class="mt-2">
+                            <div v-if="discountError === '__login__'" class="co-discount-login-msg">
+                                <v-icon size="16" color="warning" class="me-1">mdi-account-lock-outline</v-icon>
+                                يجب
+                                <a href="/login" class="text-primary fw-bold mx-1">تسجيل الدخول</a>
+                                أو
+                                <a href="/register" class="text-primary fw-bold mx-1">إنشاء حساب</a>
+                                لاستخدام كود الخصم
+                            </div>
+                            <div v-else class="text-red text-caption">{{ discountError }}</div>
                         </div>
                     </div>
 
@@ -98,6 +135,13 @@
                         <div class="co-sum-row">
                             <span>مجموع المنتجات</span>
                             <span>{{ totalItemsCount }} قطعة</span>
+                        </div>
+                        <div v-if="appliedDiscount" class="co-sum-row" style="color:#16a34a">
+                            <span>
+                                <v-icon size="14" color="success" class="me-1">mdi-tag-outline</v-icon>
+                                خصم ({{ appliedDiscount.code }})
+                            </span>
+                            <span>- {{ discountSaving }} ر.س</span>
                         </div>
                         <div class="co-sum-row co-sum-total">
                             <span>الإجمالي</span>
@@ -283,8 +327,10 @@ const userAddresses = ref(props.userAddresses || []);
 
 const submitting     = ref(false);
 const errors         = ref({});
-const couponCode     = ref('');
-const discountCode   = ref('');
+const discountInput  = ref('');
+const discountError  = ref('');
+const discountLoading = ref(false);
+const appliedDiscount = ref(null); // { code, value, type }
 const joinNews       = ref(false);
 const guestMode      = ref('guest');
 const shippingOption = ref(
@@ -336,8 +382,52 @@ const shippingCost = computed(() => {
 });
 
 const grandTotal = computed(() =>
-    Math.ceil(Number(cartTotal.value) + Number(shippingCost.value) - Number(discountPrice.value))
+    Math.ceil(Number(cartTotal.value) + Number(shippingCost.value) - Number(discountSaving.value))
 );
+
+async function applyDiscount() {
+    if (!discountInput.value.trim()) return;
+    discountError.value   = '';
+    discountLoading.value = true;
+    try {
+        const { data } = await axios.post('/checkout/apply-discount', {
+            discount_code: discountInput.value.trim(),
+        });
+        appliedDiscount.value = {
+            code:  data.discount_code,
+            value: data.discount_value,
+            type:  data.discount_type,
+        };
+        discountPrice.value = data.discount_type === 'percentage'
+            ? Math.ceil(cartTotal.value * data.discount_value / 100)
+            : data.discount_value;
+        discountInput.value = '';
+    } catch (e) {
+        const res = e.response?.data;
+        if (res?.requires_login) {
+            discountError.value = '__login__';
+        } else {
+            discountError.value = res?.message || 'حدث خطأ';
+        }
+    } finally {
+        discountLoading.value = false;
+    }
+}
+
+function removeDiscount() {
+    appliedDiscount.value = null;
+    discountPrice.value   = 0;
+    discountInput.value   = '';
+    discountError.value   = '';
+}
+
+const discountSaving = computed(() => {
+    if (!appliedDiscount.value) return 0;
+    if (appliedDiscount.value.type === 'percentage') {
+        return Math.ceil(cartTotal.value * appliedDiscount.value.value / 100);
+    }
+    return appliedDiscount.value.value;
+});
 
 async function submit() {
     if (!form.value.terms) {
@@ -460,8 +550,48 @@ async function submit() {
 .co-radio-item input { accent-color: #3949ab; }
 
 /* Discount */
-.co-discount-row { display: flex; align-items: center; gap: 10px; }
-.co-discount-label { font-size: 12px; color: #374151; font-weight: 600; min-width: 150px; }
+.co-discount-login-msg {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: #92400e;
+}
+
+.co-discount-input-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.co-discount-applied {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: #15803d;
+}
+
+.co-discount-remove {
+    margin-right: auto;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    padding: 0;
+}
+.co-discount-remove:hover { color: #ef4444; }
 
 /* Cart item */
 .co-item {
