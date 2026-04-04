@@ -19,6 +19,11 @@
                     عرض سريع
                 </button>
             </div>
+            <!-- Mobile quick-view button — always visible on touch devices -->
+            <button class="pc-qv-mobile" @click.stop="$emit('quick-view', item)" title="عرض سريع">
+                <v-icon size="15">mdi-eye-outline</v-icon>
+                عرض سريع
+            </button>
             <div v-if="item.quantity < 1" class="pc-oos-layer">نفذت الكمية</div>
         </div>
 
@@ -55,8 +60,13 @@
             </div>
         </div>
 
-        <v-snackbar v-model="snackbar" location="top right" :color="snackbarColor" timeout="2000">
+        <v-snackbar v-model="snackbar" location="top right" :color="snackbarColor" timeout="3000">
             {{ snackbarMessage }}
+            <template v-if="snackbarColor === 'warning'" #actions>
+                <v-btn variant="text" color="white" size="small" href="/login" style="font-weight:700">
+                    تسجيل الدخول
+                </v-btn>
+            </template>
         </v-snackbar>
     </div>
 </template>
@@ -110,7 +120,12 @@ async function addToCart() {
 }
 
 function toggleFavorite() {
-    if (!user) { router.visit(route('login')); return; }
+    if (!user) {
+        snackbarMessage.value = 'يجب تسجيل الدخول أولاً لإضافة المنتج للمفضلة';
+        snackbarColor.value = 'warning';
+        snackbar.value = true;
+        return;
+    }
     const action = isFavorite.value ? 'wishlist.remove' : 'wishlist.add';
     router.post(route(action, props.item.id), {}, {
         preserveState: true, preserveScroll: true,
@@ -226,8 +241,36 @@ function toggleFavorite() {
     align-items: center;
 }
 
-.pc-oos-layer {
+/* Mobile quick-view button — hidden on desktop (hover handles it), shown on touch */
+.pc-qv-mobile {
+    display: none;
     position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a237e;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 3px 12px rgba(26,35,126,0.35);
+    z-index: 4;
+    white-space: nowrap;
+    letter-spacing: 0.2px;
+}
+
+@media (hover: none) {
+    /* touch device — show mobile QV button, hide hover overlay */
+    .pc-qv-mobile { display: flex; }
+    .pc-qv-layer  { display: none; }
+}
+
+.pc-oos-layer {    position: absolute;
     inset: 0;
     background: rgba(0,0,0,0.45);
     display: flex;
