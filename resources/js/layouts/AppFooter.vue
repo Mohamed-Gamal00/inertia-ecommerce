@@ -175,14 +175,18 @@ const subscribeMsg = ref('');
 const siteName     = computed(() => usePage().props.seo?.site_name || 'متجري');
 
 async function subscribe() {
-    if (!email.value) return;
+    if (!email.value.trim()) return;
     subscribing.value = true;
+    subscribeMsg.value = '';
     try {
-        await axios.post('/api/subscribe', { email: email.value });
-    } catch {}
-    subscribeMsg.value = '✓ تم الاشتراك بنجاح!';
-    email.value = '';
-    subscribing.value = false;
+        const { data } = await axios.post('/subscribe', { email: email.value.trim() });
+        subscribeMsg.value = data.message;
+        email.value = '';
+    } catch (e) {
+        subscribeMsg.value = e.response?.data?.message || 'حدث خطأ، حاول مرة أخرى';
+    } finally {
+        subscribing.value = false;
+    }
 }
 </script>
 

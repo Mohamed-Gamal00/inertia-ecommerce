@@ -4,106 +4,149 @@
 
 @section('breadcrumb')
     @parent
-    <li class="breadcrumb-item active" aria-current="page">النشرة البريدية</li>
+    <li class="breadcrumb-item active">النشرة البريدية</li>
 @endsection
 
 @section('section')
 
-    <x-alert type="success" />
-    <div class="row">
-        <label for="example-number-input" class="col-sm-8 col-form-label fw-bold">عدد المشتركين في
-            النشرة البريدية هو
-            : {{ $users->count() }}</label>
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    {{-- Form Start --}}
-                    <form action="{{ route('user_news.send') }}" method="post">
-                        @csrf
-                        <div class="row mb-3">
-                            <label for="example-text-input" class="col-sm-2 col-form-label fw-bold">العنوان</label>
-                            <div class="col-sm-10">
-                                <x-form.input type="text" name="title" />
-                            </div>
-                        </div>
+<x-alert type="success" />
+<x-alert type="danger" />
 
-                        <div class="row mb-3">
-                            <label for="example-number-input" class="col-sm-2 col-form-label fw-bold">الوصف</label>
-                            <div class="col-sm-10">
-                                <textarea class="form-control" rows="7" name="body"></textarea>
-                                @error('body')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
+<div class="row g-4">
 
-                            </div>
-                        </div>
-
-
-                        <button class="btn btn-primary" type="submit">ارسال</button>
-
-                        <div class="row mt-5">
-                            <div class="col-12">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h4 class="card-title" style="font-family: Noto Kufi Arabic">المشتركين</h4>
-                                        <div data-repeater-list="group-a">
-                                            <div class="row" data-repeater-item>
-
-
-                                                <div class="form-check mt-2">
-                                                    <input class="form-check-input" type="checkbox" id="selectAllCheckbox">
-                                                    <label class="form-check-label fw-bold" for="selectAllCheckbox">
-                                                        تحديد الكل
-                                                    </label>
-                                                </div>
-
-                                                @forelse ($users as $user)
-                                                    <div class="mb-3 col-lg-2">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input checkbox-item" type="checkbox"
-                                                                value="{{ $user->id }}" name="users[]"
-                                                                id="user_{{ $user->id }}">
-                                                            <label class="form-check-label fw-bold"
-                                                                for="user_{{ $user->id }}">
-                                                                {{ $user->email }}
-                                                            </label>
-
-                                                        </div>
-                                                        @error('users')
-                                                            <div class="text-danger">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                @empty
-                                                    <div>لا يوجد مشتركين</div>
-                                                @endforelse
-
-                                            </div>
-                                            <!-- end row -->
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-
-                    </form>
-
-
-                </div><!-- end cardbody -->
-            </div><!-- end card -->
-        </div> <!-- end col -->
-
+    {{-- ── Stats card ── --}}
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center gap-4 flex-wrap">
+                <div class="rounded-circle bg-primary bg-opacity-10 p-3">
+                    <i class="mdi mdi-email-newsletter text-primary fs-3"></i>
+                </div>
+                <div>
+                    <div class="text-muted small">إجمالي المشتركين</div>
+                    <div class="fw-bold fs-4">{{ $users->count() }} مشترك</div>
+                </div>
+                <div class="ms-auto">
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2" style="font-size:13px">
+                        <i class="mdi mdi-check-circle-outline me-1"></i>
+                        النشرة البريدية نشطة
+                    </span>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script>
-        document.getElementById('selectAllCheckbox').addEventListener('change', function() {
-            const checkboxes = document.querySelectorAll('.checkbox-item');
-            checkboxes.forEach((checkbox) => {
-                checkbox.checked = this.checked;
-            });
-        });
-    </script>
-    {{-- Form End --}}
+    {{-- ── Compose form ── --}}
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-transparent border-bottom fw-bold">
+                <i class="mdi mdi-send-outline me-2 text-primary"></i>
+                إرسال نشرة بريدية
+            </div>
+            <div class="card-body">
+                <form action="{{ route('user_news.send') }}" method="post">
+                    @csrf
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">عنوان الرسالة</label>
+                        <input type="text" name="title" class="form-control @error('title') is-invalid @enderror"
+                            placeholder="مثال: عروض نهاية الأسبوع 🎉" value="{{ old('title') }}" />
+                        @error('title')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">نص الرسالة</label>
+                        <textarea name="body" rows="6" class="form-control @error('body') is-invalid @enderror"
+                            placeholder="اكتب محتوى النشرة هنا...">{{ old('body') }}</textarea>
+                        @error('body')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    {{-- Subscriber selection --}}
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <label class="form-label fw-semibold mb-0">اختر المشتركين</label>
+                            <div class="form-check mb-0">
+                                <input class="form-check-input" type="checkbox" id="selectAll">
+                                <label class="form-check-label fw-semibold text-primary" for="selectAll">
+                                    تحديد الكل ({{ $users->count() }})
+                                </label>
+                            </div>
+                        </div>
+
+                        @error('users')
+                            <div class="text-danger small mb-2">{{ $message }}</div>
+                        @enderror
+
+                        <div class="border rounded p-3" style="max-height:220px; overflow-y:auto; background:#f8f9fb">
+                            @forelse($users as $user)
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input subscriber-cb" type="checkbox"
+                                        name="users[]" value="{{ $user->id }}" id="u_{{ $user->id }}">
+                                    <label class="form-check-label" for="u_{{ $user->id }}" dir="ltr">
+                                        {{ $user->subscription_email }}
+                                    </label>
+                                </div>
+                            @empty
+                                <p class="text-muted mb-0 text-center py-3">لا يوجد مشتركين بعد</p>
+                            @endforelse
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary px-5">
+                        <i class="mdi mdi-send me-1"></i>
+                        إرسال النشرة
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- ── Subscribers list ── --}}
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-transparent border-bottom fw-bold">
+                <i class="mdi mdi-account-group-outline me-2 text-primary"></i>
+                قائمة المشتركين
+            </div>
+            <div class="card-body p-0">
+                @if($users->count())
+                <div style="max-height:420px; overflow-y:auto">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light sticky-top">
+                            <tr>
+                                <th class="ps-3">#</th>
+                                <th>البريد الإلكتروني</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($users as $i => $user)
+                            <tr>
+                                <td class="ps-3 text-muted small">{{ $i + 1 }}</td>
+                                <td dir="ltr" style="font-size:13px">{{ $user->subscription_email }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                @else
+                <div class="text-center py-5 text-muted">
+                    <i class="mdi mdi-email-off-outline fs-1 d-block mb-2"></i>
+                    لا يوجد مشتركين حتى الآن
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    document.getElementById('selectAll').addEventListener('change', function () {
+        document.querySelectorAll('.subscriber-cb').forEach(cb => cb.checked = this.checked);
+    });
+</script>
 
 @endsection

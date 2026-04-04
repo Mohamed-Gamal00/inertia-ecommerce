@@ -40,12 +40,12 @@ class NewsNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $user = $this->user;
         return (new MailMessage)
             ->subject($this->title)
-            ->with($this->body)
-            ->action('مشاهدة المنتجات', url('/'))
-            ->line('نشكرك لزيارة متجرنا');
+            ->greeting('مرحباً!')
+            ->line($this->body)
+            ->action('تسوق الآن', url('/'))
+            ->line('نشكرك لاشتراكك في نشرتنا البريدية.');
     }
 
     /**

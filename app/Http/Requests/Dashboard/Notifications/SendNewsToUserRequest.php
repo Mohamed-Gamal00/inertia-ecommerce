@@ -21,12 +21,11 @@ class SendNewsToUserRequest extends FormRequest
      */
   public function rules()
   {
-    $rules = [
-      'title' => 'required|string|max:255',
-      'body' => 'required|string',
-      'users' => 'required',
+    return [
+      'title'    => 'required|string|max:255',
+      'body'     => 'required|string',
+      'users'    => 'required|array|min:1',
+      'users.*'  => 'required|integer|exists:send_news_to_users,id',
     ];
-
-    return $rules;
   }
 }
