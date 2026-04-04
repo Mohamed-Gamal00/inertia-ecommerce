@@ -4,7 +4,7 @@
         <div class="auth-left d-none d-md-flex">
             <div class="auth-left-content">
                 <v-icon size="56" color="white" class="mb-4">mdi-storefront</v-icon>
-                <h1 class="text-white font-weight-bold mb-3" style="font-size:32px">متجري</h1>
+                <h1 class="text-white font-weight-bold mb-3" style="font-size:32px">{{ siteName }}</h1>
                 <p class="text-white" style="opacity:0.85; font-size:15px; max-width:280px; line-height:1.8">
                     تسوق بسهولة وأمان. آلاف المنتجات بأفضل الأسعار تنتظرك.
                 </p>
@@ -23,7 +23,7 @@
                 <!-- Mobile logo -->
                 <div class="d-flex d-md-none align-center mb-6">
                     <v-icon size="32" color="primary" class="me-2">mdi-storefront</v-icon>
-                    <span class="font-weight-bold text-h6">متجري</span>
+                    <span class="font-weight-bold text-h6">{{ siteName }}</span>
                 </div>
 
                 <h2 class="font-weight-bold mb-1" style="font-size:26px">مرحباً بعودتك 👋</h2>
@@ -100,10 +100,13 @@
 
 <script setup>
 import { ref } from 'vue';
-import { useForm } from '@inertiajs/vue3';
+import { useForm, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import { route } from 'ziggy-js';
 
 defineOptions({ layout: null });
+
+const siteName = computed(() => usePage().props.seo?.site_name || 'متجري');
 
 const form = useForm({ email: '', password: '' });
 const loading = ref(false);

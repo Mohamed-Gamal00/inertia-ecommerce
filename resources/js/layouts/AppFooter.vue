@@ -17,7 +17,7 @@
                     <div class="footer-brand">
                         <div class="brand-logo">
                             <v-icon size="28" color="white">mdi-storefront</v-icon>
-                            <span>متجري</span>
+                            <span>{{ siteName }}</span>
                         </div>
                         <p class="brand-desc">
                             وجهتك الأولى للتسوق الإلكتروني. نقدم أفضل المنتجات بأعلى جودة وأنسب الأسعار مع توصيل سريع وموثوق.
@@ -149,7 +149,7 @@
         <div class="footer-bottom">
             <div class="footer-container">
                 <div class="footer-bottom-inner">
-                    <span>© {{ new Date().getFullYear() }} متجري — جميع الحقوق محفوظة</span>
+                    <span>© {{ new Date().getFullYear() }} {{ siteName }} — جميع الحقوق محفوظة</span>
                     <div class="bottom-links">
                         <Link href="/terms-conditions">الشروط</Link>
                         <span>·</span>
@@ -165,13 +165,14 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
+import { Link, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 
 const email        = ref('');
 const subscribing  = ref(false);
 const subscribeMsg = ref('');
+const siteName     = computed(() => usePage().props.seo?.site_name || 'متجري');
 
 async function subscribe() {
     if (!email.value) return;

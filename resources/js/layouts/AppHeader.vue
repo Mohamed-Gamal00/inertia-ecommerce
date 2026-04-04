@@ -9,7 +9,7 @@
             <!-- Logo -->
             <Link href="/" class="d-flex align-center text-decoration-none me-4">
                 <v-icon color="white" size="28" class="me-1">mdi-storefront</v-icon>
-                <span class="font-weight-bold text-white" style="font-size:18px">متجري</span>
+                <span class="font-weight-bold text-white" style="font-size:18px">{{ siteName }}</span>
             </Link>
 
             <!-- Desktop nav links -->
@@ -109,7 +109,7 @@
     <v-navigation-drawer v-model="mobileDrawer" temporary location="right" width="280">
         <div class="pa-4 d-flex align-center border-b">
             <v-icon color="primary" class="me-2">mdi-storefront</v-icon>
-            <span class="font-weight-bold text-primary">متجري</span>
+            <span class="font-weight-bold text-primary">{{ siteName }}</span>
             <v-spacer />
             <v-btn icon variant="text" size="small" @click="mobileDrawer = false">
                 <v-icon>mdi-close</v-icon>
@@ -204,6 +204,7 @@ const cartCount = ref(0);
 const { props } = usePage();
 const categories = computed(() => usePage().props.categories ?? []);
 const user = computed(() => usePage().props.auth?.user);
+const siteName = computed(() => usePage().props.seo?.site_name || 'متجري');
 
 const menu = [
     { title: 'الرئيسية',  href: '/',          icon: 'mdi-home-outline' },
