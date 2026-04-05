@@ -167,7 +167,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::resource('bulk_orders', BulkOrderController::class);
 
     //----------------------------------------------/payments
-    // Route::get('/payments', [\App\Http\Controllers\Dashboard\PaymentController::class, 'index'])->name('payments.index');
+    Route::get('/payments', [\App\Http\Controllers\Dashboard\PaymentController::class, 'index'])->name('payments.index');
 
     //----------------------------------------------/Countries and Cities
     Route::get('/countries/{countryId}/cities', [CountriesController::class, 'getCitiesByCountry']);

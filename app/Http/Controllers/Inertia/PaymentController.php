@@ -6,90 +6,101 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Setting;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Inertia\Inertia;
 
 class PaymentController extends Controller
 {
-    public function index($order_number)
+    /**
+     * Show the Moyasar payment form for a given order number.
+     */
+    public function show($order_number)
     {
-        $order = Order::where('number', $order_number)->first();
-        $publishable_key = Setting::all()->pluck('publishable_key')->first(); // This will get the first 'publishable_key' if present
-        if ($order) {
-            if ($order->payment_status == 'paid') {
-                // Flash message to session
-                session()->flash('success', 'This order has already been paid.');
-            }
+        $order = Order::where('number', $order_number)
+            ->with(['addresses', 'orderItems'])
+            ->firstOrFail();
 
-            return view('front.profile.user-payment', compact('order', 'publishable_key'));
-        } else {
-            return "Order does not exist.";
+        // Already paid — redirect to success
+        if ($order->payment_status === 'paid') {
+            return redirect()->route('home')
+                ->with('success', 'هذا الطلب تم دفعه بالفعل.');
         }
+
+        $setting        = Setting::first();
+        $publishable_key = $setting?->publishable_key;
+
+        $callbackUrl = url("/payment/{$order->number}/callback");
+
+        return Inertia::render('Payment/Index', [
+            'order'           => [
+                'id'             => $order->id,
+                'number'         => $order->number,
+                'total_price'    => (float) $order->total_price,
+                'shipping_price' => (float) ($order->shipping_price ?? 0),
+                'payment_status' => $order->payment_status,
+            ],
+            'publishable_key' => $publishable_key,
+            'callback_url'    => $callbackUrl,
+        ]);
     }
 
-    public function callback($number)
+    /**
+     * Handle Moyasar callback after payment attempt.
+     */
+    public function callback(Request $request, $order_number)
     {
+        $order = Order::where('number', $order_number)
+            ->with('orderItems')
+            ->firstOrFail();
 
+        // Already paid — go straight to success page
+        if ($order->payment_status === 'paid') {
+            return Inertia::render('Payment/Success', [
+                'order' => $this->orderData($order),
+            ]);
+        }
 
-        $order = Order::where('number', $number)->first();
-        if ($order->payment_status == 'paid') {
-            return redirect()->route('user.payment', [$order->number])->with('success', 'This order has already been paid');
-        }
-        if (!$order) {
-            return redirect()->route('user.orders')->with('error', 'Order not found.');
-        }
-        $id = request()->query('id');
-        $secret_key = Setting::all()->pluck('secret_key')->first();
-        $token = base64_encode($secret_key . ':');
+        $paymentId  = $request->query('id');
+        $setting    = Setting::first();
+        $secret_key = $setting?->secret_key;
+        $token      = base64_encode($secret_key . ':');
 
         $payment = Http::baseUrl('https://api.moyasar.com/v1')
-            ->withHeaders([
-                'Authorization' => "Basic {$token}",
-            ])
-            ->get("payments/{$id}")
+            ->withHeaders(['Authorization' => "Basic {$token}"])
+            ->get("payments/{$paymentId}")
             ->json();
 
-        // Check if the response contains an authentication error
+        // Auth error
         if (isset($payment['type']) && $payment['type'] === 'authentication_error') {
-            return redirect()->route('user.payment', [$number])
-                ->with('danger', __('general.Invalid_authorization_credentials'));
-        }
-//        dd($payment);
-        if ($payment['status'] === 'paid') {
-            $order->payment_status = 'paid';
-            $order->save();
-
-
-            if (Auth::guard('web')->check()) {
-                return redirect()->route('user.orders', [$order->number])->with('success', 'عملية دفع ناجحة');
-            } else {
-                if ($order->guest_id != null || $order->user_id != null) {
-                    return response()->json(['status' => 'success', 'message' => 'Payment successful', 'order_number' => $order->number], 200);
-                } elseif ($order->cookie_id != null) {
-                    return redirect()->route('guest.orders', [$order->number])->with('success', 'عملية دفع ناجحة');
-                } else {
-                    return response()->json(['status' => 'success', 'message' => 'no action', 'order_number' => $order->number], 200);
-                }
-            }
-        } elseif ($payment['status'] === 'failed') {
-            $order->payment_status = 'failed';
-            $order->save();
-            if (Auth::guard('web')->check()) {
-                return redirect()->route('user.orders', [$order->number])->with('success', 'فشل عملية الدفع');
-            } else {
-                if ($order->guest_id != null || $order->user_id != null) {
-                    return response()->json(['status' => 'success', 'message' => 'Payment faild', 'order_number' => $order->number], 200);
-                } elseif ($order->cookie_id != null) {
-                    return redirect()->route('guest.orders', [$order->number])->with('success', 'فشل عملية الدفع');
-                } else {
-                    return response()->json(['status' => 'success', 'message' => 'no action', 'order_number' => $order->number], 200);
-                }
-            }
-
-        } else {
-            return response()->json(['status' => 'success', 'message' => 'Payment failed', 'order_number' => $order->number], 200);
-
+            return Inertia::render('Payment/Failed', [
+                'order'   => $this->orderData($order),
+                'message' => 'بيانات بوابة الدفع غير صحيحة. يرجى التواصل مع الدعم.',
+            ]);
         }
 
+        $status = $payment['status'] ?? 'failed';
+        $order->update(['payment_status' => $status === 'paid' ? 'paid' : 'failed']);
+
+        if ($status === 'paid') {
+            return Inertia::render('Payment/Success', [
+                'order' => $this->orderData($order),
+            ]);
+        }
+
+        return Inertia::render('Payment/Failed', [
+            'order'   => $this->orderData($order),
+            'message' => $payment['source']['message'] ?? 'فشلت عملية الدفع. يرجى المحاولة مرة أخرى.',
+        ]);
+    }
+
+    private function orderData(Order $order): array
+    {
+        return [
+            'number'         => $order->number,
+            'total_price'    => (float) $order->total_price,
+            'shipping_price' => (float) ($order->shipping_price ?? 0),
+            'payment_status' => $order->payment_status,
+            'items_count'    => $order->orderItems->sum('quantity'),
+        ];
     }
 }

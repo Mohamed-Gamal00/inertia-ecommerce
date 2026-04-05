@@ -87,8 +87,9 @@ Route::get('/checkout', [\App\Http\Controllers\Inertia\CheckoutController::class
 Route::post('/checkout', [\App\Http\Controllers\Inertia\CheckoutController::class, 'store'])->name('checkout.store');
 Route::post('/checkout/apply-discount', [\App\Http\Controllers\Inertia\CheckoutController::class, 'applyDiscount'])->name('checkout.discount');
 
-// Payment page (web)
-Route::get('/payment/{order_number}', [\App\Http\Controllers\Api\PaymentController::class, 'index'])->name('user.payment');
+// Payment page (web) — works for both guests and authenticated users
+Route::get('/payment/{order_number}', [\App\Http\Controllers\Inertia\PaymentController::class, 'show'])->name('user.payment');
+Route::get('/payment/{order_number}/callback', [\App\Http\Controllers\Inertia\PaymentController::class, 'callback'])->name('payment.callback');
 
 
 Route::prefix('products')->group(function () {
