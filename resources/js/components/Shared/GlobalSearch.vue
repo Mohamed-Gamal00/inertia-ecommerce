@@ -104,7 +104,10 @@ function onInput() {
         try {
             const { data } = await axios.get('/search', {
                 params: { q: query.value },
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
             });
             results.value = data;
         } catch { results.value = []; }

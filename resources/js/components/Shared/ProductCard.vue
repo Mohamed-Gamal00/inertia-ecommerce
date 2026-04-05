@@ -1,7 +1,7 @@
 <template>
     <div
         class="pc"
-        :class="{ 'pc--hovered': hovered }"
+        :class="{ 'pc--hovered': hovered && item.quantity > 0, 'pc--oos': item.quantity < 1 }"
         :data-product-id="item.id"
         @mouseenter="hovered = true"
         @mouseleave="hovered = false"
@@ -9,22 +9,27 @@
         <!-- Image -->
         <div class="pc-img-wrap">
             <img :src="item.image_url" :alt="item.name" class="pc-img" />
-            <span v-if="discountPercent" class="pc-badge">-{{ discountPercent }}%</span>
+            <span v-if="discountPercent && item.quantity > 0" class="pc-badge">-{{ discountPercent }}%</span>
             <button class="pc-wish" :class="{ 'pc-wish--on': isFavorite }" @click.stop="toggleFavorite">
                 <v-icon size="14">{{ isFavorite ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
             </button>
-            <div class="pc-qv-layer" :class="{ show: hovered }">
+            <div v-if="item.quantity > 0" class="pc-qv-layer" :class="{ show: hovered }">
                 <button class="pc-qv-pill" @click.stop="$emit('quick-view', item)">
                     <v-icon size="13" class="me-1">mdi-eye-outline</v-icon>
                     عرض سريع
                 </button>
             </div>
-            <!-- Mobile quick-view button — always visible on touch devices -->
-            <button class="pc-qv-mobile" @click.stop="$emit('quick-view', item)" title="عرض سريع">
+            <button v-if="item.quantity > 0" class="pc-qv-mobile" @click.stop="$emit('quick-view', item)" title="عرض سريع">
                 <v-icon size="15">mdi-eye-outline</v-icon>
                 عرض سريع
             </button>
-            <div v-if="item.quantity < 1" class="pc-oos-layer">نفذت الكمية</div>
+            <!-- OOS overlay -->
+            <div v-if="item.quantity < 1" class="pc-oos-overlay">
+                <span class="pc-oos-text">
+                    <v-icon size="16" class="me-1">mdi-package-variant-remove</v-icon>
+                    نفذت الكمية
+                </span>
+            </div>
         </div>
 
         <!-- Body -->
@@ -270,17 +275,44 @@ function toggleFavorite() {
     .pc-qv-layer  { display: none; }
 }
 
-.pc-oos-layer {    position: absolute;
+/* Out-of-stock overlay */
+.pc-oos-overlay {
+    position: absolute;
     inset: 0;
-    background: rgba(0,0,0,0.45);
+    background: rgba(0, 0, 0, 0.55);
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 6;
+}
+
+.pc-oos-text {
+    background: #ef4444;
     color: white;
     font-size: 12px;
-    font-weight: 700;
-    z-index: 4;
+    font-weight: 800;
+    padding: 6px 16px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    letter-spacing: 0.4px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
 }
+
+/* Out-of-stock card state */
+.pc--oos {
+    cursor: not-allowed;
+}
+
+.pc--oos .pc-img { filter: grayscale(60%); }
+.pc--oos .pc-price-new { color: #9ca3af; }
+.pc--oos .pc-cart-btn {
+    background: #f3f4f6 !important;
+    border-color: #e5e7eb !important;
+    color: #9ca3af !important;
+    cursor: not-allowed !important;
+}
+.pc--oos .pc-wish { pointer-events: none; opacity: 0.4; }
 
 .pc-body {
     padding: 10px 12px 12px;

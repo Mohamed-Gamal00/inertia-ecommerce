@@ -41,6 +41,8 @@ Route::middleware('auth:web')->group(function () {
 
 // Newsletter subscription
 Route::post('/subscribe', [\App\Http\Controllers\Inertia\NewsletterController::class, 'store'])->name('newsletter.subscribe');
+// Search (live JSON for navbar + full page redirect)
+Route::get('/search', [\App\Http\Controllers\Inertia\SearchController::class, 'search'])->name('search');
 // Reviews (public read)
 Route::get('/reviews/{productId}', [\App\Http\Controllers\Inertia\ReviewController::class, 'index'])->name('reviews.index');
 // Compare

@@ -27,6 +27,7 @@ class HomeController extends Controller
                 'discount_price' => $p->discount_price,
                 'image_url'      => $p->image_url,
                 'is_in_wishlist' => (bool) $p->is_in_wishlist,
+                'quantity'       => (int) $p->quantity,
                 'images'         => $p->images->map(fn($img) => ['image_url' => $img->image_url])->values(),
                 'parent'         => $p->parent
                     ? ['id' => $p->parent->id, 'name' => $p->parent->name, 'name_en' => $p->parent->name_en]

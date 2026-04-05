@@ -40,8 +40,8 @@ class SearchController extends Controller
             default      => $query->latest(),
         };
 
-        // For live search — return JSON
-        if ($request->wantsJson() || $request->ajax()) {
+        // For live search — return JSON when called via AJAX or explicitly requesting JSON
+        if ($request->wantsJson() || $request->ajax() || $request->hasHeader('X-Requested-With')) {
             return response()->json(
                 $query->take(8)->get()->map(fn($p) => [
                     'id'             => $p->id,
