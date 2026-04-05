@@ -201,16 +201,19 @@
 
                         <!-- Guest: login or guest toggle -->
                         <template v-if="!user">
-                            <div class="co-card-title">تسجيل الدخول أو التسجيل</div>
+                            <div class="co-card-title">تسجيل الدخول أو المتابعة كزائر</div>
                             <v-divider class="mb-3" />
                             <div class="co-radio-group mb-4">
-                                <label class="co-radio-item" :class="{ active: guestMode === 'login' }">
+                                <label class="co-radio-item" :class="{ active: guestMode === 'login' }" @click="goToLogin">
                                     <input type="radio" v-model="guestMode" value="login" />
+                                    <v-icon size="16" class="me-2">mdi-account-circle-outline</v-icon>
                                     <span>تسجيل الدخول</span>
+                                    <v-icon size="14" class="ms-auto">mdi-chevron-left</v-icon>
                                 </label>
                                 <label class="co-radio-item" :class="{ active: guestMode === 'guest' }">
                                     <input type="radio" v-model="guestMode" value="guest" />
-                                    <span>زائر</span>
+                                    <v-icon size="16" class="me-2">mdi-account-outline</v-icon>
+                                    <span>متابعة كزائر</span>
                                 </label>
                             </div>
                         </template>
@@ -249,8 +252,8 @@
                             </label>
                         </template>
 
-                        <!-- Address form: shown for guests always, for users when add_address selected -->
-                        <template v-if="!user || form.user_address === 'add_address'">
+                        <!-- Address form: shown for guests in guest mode, or users adding new address -->
+                        <template v-if="(!user && guestMode === 'guest') || (user && form.user_address === 'add_address')">
                             <div class="co-card-title">التفاصيل</div>
                             <v-divider class="mb-3" />
 
@@ -333,6 +336,10 @@ const discountLoading = ref(false);
 const appliedDiscount = ref(null); // { code, value, type }
 const joinNews       = ref(false);
 const guestMode      = ref('guest');
+
+function goToLogin() {
+    window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
+}
 const shippingOption = ref(
     props.shipping?.add_pickup_from_store ? 'noShipping' :
     props.shipping?.add_normal_price      ? 'fixed_shipping' :
@@ -437,7 +444,7 @@ async function submit() {
 
     // Validate guest / new address fields
     const isGuest = !user.value;
-    const needsAddressForm = isGuest || form.value.user_address === 'add_address';
+    const needsAddressForm = isGuest ? guestMode.value === 'guest' : form.value.user_address === 'add_address';
 
     if (needsAddressForm) {
         const fieldErrors = {};
