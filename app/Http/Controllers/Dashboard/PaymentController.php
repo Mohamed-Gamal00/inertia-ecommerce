@@ -3,58 +3,46 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-use App\Models\Setting;
+use App\Models\PaymentTransaction;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Http;
 
 class PaymentController extends Controller
 {
     public function index(Request $request)
     {
-        $setting    = Setting::first();
-        $secret_key = $setting?->secret_key;
+        $query = PaymentTransaction::with('order')
+            ->latest();
 
-        if (!$secret_key) {
-            return view('dashboard.payments.payments', [
-                'payments' => new LengthAwarePaginator([], 0, 15),
-                'error'    => 'لم يتم إعداد مفتاح بوابة الدفع. يرجى إضافته في الإعدادات.',
-            ]);
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
         }
 
-        $token = base64_encode($secret_key . ':');
-
-        $response = Http::baseUrl('https://api.moyasar.com/v1')
-            ->withHeaders(['Authorization' => "Basic {$token}"])
-            ->get('payments', ['per_page' => 50]);
-
-        if ($response->failed()) {
-            return view('dashboard.payments.payments', [
-                'payments' => new LengthAwarePaginator([], 0, 15),
-                'error'    => 'فشل الاتصال ببوابة الدفع: ' . ($response->json()['message'] ?? $response->status()),
-            ]);
+        // Filter by search (order number or moyasar ID)
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('moyasar_payment_id', 'LIKE', "%{$request->search}%")
+                  ->orWhereHas('order', fn($o) => $o->where('number', 'LIKE', "%{$request->search}%"));
+            });
         }
 
-        $data     = $response->json()['payments'] ?? [];
-        $payments = $this->paginate($data, 15);
+        $transactions = $query->paginate(20)->withQueryString();
 
-        return view('dashboard.payments.payments', compact('payments'));
+        $stats = [
+            'total_paid'   => PaymentTransaction::where('status', 'paid')->sum('amount'),
+            'paid_count'   => PaymentTransaction::where('status', 'paid')->count(),
+            'failed_count' => PaymentTransaction::where('status', 'failed')->count(),
+            'today_paid'   => PaymentTransaction::where('status', 'paid')->whereDate('created_at', today())->sum('amount'),
+        ];
+
+        return view('dashboard.payments.payments', compact('transactions', 'stats'));
     }
 
-    private function paginate($items, $perPage = 15, $page = null)
+    public function show($id)
     {
-        $page    = $page ?: (Paginator::resolveCurrentPage() ?: 1);
-        $items   = Collection::make($items);
-        $options = ['path' => request()->url()];
+        $transaction = PaymentTransaction::with('order.addresses', 'order.orderItems.product')
+            ->findOrFail($id);
 
-        return new LengthAwarePaginator(
-            $items->forPage($page, $perPage),
-            $items->count(),
-            $perPage,
-            $page,
-            $options
-        );
+        return view('dashboard.payments.show', compact('transaction'));
     }
 }

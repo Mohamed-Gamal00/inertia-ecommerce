@@ -67,6 +67,16 @@ class Order extends Model
         return $this->belongsTo(DiscountCode::class, 'discount_code_id', 'id');
     }
 
+    public function transactions()
+    {
+        return $this->hasMany(\App\Models\PaymentTransaction::class, 'order_id', 'id');
+    }
+
+    public function latestTransaction()
+    {
+        return $this->hasOne(\App\Models\PaymentTransaction::class, 'order_id', 'id')->latestOfMany();
+    }
+
     /**
      * Get the display name for the order owner (user or guest).
      */

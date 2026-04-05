@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Inertia;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use App\Models\Order;
+use App\Models\PaymentTransaction;
 use App\Models\Setting;
+use App\Notifications\OrderPaidEmailAdmin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Notification;
 use Inertia\Inertia;
 
 class PaymentController extends Controller
@@ -81,7 +85,33 @@ class PaymentController extends Controller
         $status = $payment['status'] ?? 'failed';
         $order->update(['payment_status' => $status === 'paid' ? 'paid' : 'failed']);
 
+        // ── Save transaction to DB ──
+        $source = $payment['source'] ?? [];
+        PaymentTransaction::create([
+            'order_id'           => $order->id,
+            'moyasar_payment_id' => $payment['id'] ?? null,
+            'status'             => $status,
+            'amount'             => ($payment['amount'] ?? 0) / 100,
+            'currency'           => $payment['currency'] ?? 'SAR',
+            'payment_method'     => $source['type'] ?? null,
+            'card_brand'         => $source['brand'] ?? null,
+            'card_last_four'     => isset($source['number']) ? substr($source['number'], -4) : null,
+            'description'        => $payment['description'] ?? null,
+            'raw_response'       => json_encode($payment),
+            'ip_address'         => $request->ip(),
+        ]);
+
         if ($status === 'paid') {
+            // Send payment confirmation email to all admins
+            $admins = Admin::all();
+            $validAdmins = $admins->filter(fn($a) => filter_var($a->email, FILTER_VALIDATE_EMAIL));
+            foreach ($validAdmins as $admin) {
+                try {
+                    Notification::route('mail', $admin->email)
+                        ->notify(new OrderPaidEmailAdmin($order, $transaction));
+                } catch (\Exception $e) {}
+            }
+
             return Inertia::render('Payment/Success', [
                 'order' => $this->orderData($order),
             ]);

@@ -168,6 +168,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
 
     //----------------------------------------------/payments
     Route::get('/payments', [\App\Http\Controllers\Dashboard\PaymentController::class, 'index'])->name('payments.index');
+    Route::get('/payments/{id}', [\App\Http\Controllers\Dashboard\PaymentController::class, 'show'])->name('payments.show');
 
     //----------------------------------------------/Countries and Cities
     Route::get('/countries/{countryId}/cities', [CountriesController::class, 'getCitiesByCountry']);
