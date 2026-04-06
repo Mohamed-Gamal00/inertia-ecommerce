@@ -37,7 +37,7 @@
 
             <!-- Actions -->
             <div class="result-actions">
-                <a href="/user-profile?tab=orders" class="result-btn result-btn--primary">
+                <a v-if="!order.is_guest" href="/user-profile?tab=orders" class="result-btn result-btn--primary">
                     <v-icon size="16" class="me-1">mdi-clipboard-list-outline</v-icon>
                     عرض طلباتي
                 </a>

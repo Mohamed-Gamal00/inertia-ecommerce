@@ -131,6 +131,7 @@ class PaymentController extends Controller
             'shipping_price' => (float) ($order->shipping_price ?? 0),
             'payment_status' => $order->payment_status,
             'items_count'    => $order->orderItems->sum('quantity'),
+            'is_guest'       => is_null($order->user_id),
         ];
     }
 }
