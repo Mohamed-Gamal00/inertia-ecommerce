@@ -374,9 +374,17 @@ const filteredCities = computed(() =>
 );
 
 const cityShippingPrice = computed(() => {
-    if (!addrForm.value.city_id) return 0;
+    // For saved address: look up city_id from the selected user address
+    let cityId = addrForm.value.city_id;
+
+    if (user.value && form.value.user_address && form.value.user_address !== 'add_address') {
+        const savedAddr = userAddresses.value.find(a => String(a.id) === String(form.value.user_address));
+        if (savedAddr?.city_id) cityId = savedAddr.city_id;
+    }
+
+    if (!cityId) return 0;
     // eslint-disable-next-line eqeqeq
-    const city = cities.value.find(c => c.id == addrForm.value.city_id);
+    const city = cities.value.find(c => c.id == cityId);
     return city?.shipping_price || 0;
 });
 
