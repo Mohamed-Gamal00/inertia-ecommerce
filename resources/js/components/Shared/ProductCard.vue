@@ -34,8 +34,8 @@
 
         <!-- Body -->
         <div class="pc-body">
-            <span v-if="item.parent" class="pc-cat">{{ item.parent.name_en || item.parent.name }}</span>
-            <div class="pc-name">{{ item.name }}</div>
+            <span v-if="item.parent" class="pc-cat">{{ pick(item.parent, 'name') }}</span>
+            <div class="pc-name">{{ pick(item, 'name') }}</div>
             <div class="pc-price-row">
                 <span class="pc-price-new">
                     ${{ Math.ceil(item.discount_price && Number(item.discount_price) < Number(item.price) ? item.discount_price : item.price) }}
@@ -52,7 +52,7 @@
                     @click.stop="addToCart"
                 >
                     <v-icon size="14" class="me-1">{{ justAdded ? 'mdi-check' : 'mdi-cart-plus' }}</v-icon>
-                    {{ item.quantity < 1 ? 'نفذت الكمية' : justAdded ? 'تمت الإضافة ✓' : 'أضف للسلة' }}
+                    {{ item.quantity < 1 ? t('out_of_stock') : justAdded ? t('added_to_cart') : t('add_to_cart') }}
                 </button>
                 <button
                     class="pc-compare-btn"
@@ -83,6 +83,7 @@ import { route } from 'ziggy-js';
 import axios from 'axios';
 import { useCartFly } from '../../composables/useCartFly';
 import { useCompare } from '../../composables/useCompare';
+import { useLocale } from '../../composables/useLocale';
 
 const props = defineProps({ item: { type: Object, required: true } });
 const emit  = defineEmits(['quick-view']);
@@ -90,6 +91,7 @@ const emit  = defineEmits(['quick-view']);
 const Emitter = inject('Emitter');
 const { flyToCart } = useCartFly();
 const { toggle: toggleCompare, isInCompare } = useCompare();
+const { t, pick } = useLocale();
 const user = usePage().props.auth?.user;
 
 const hovered= ref(false);
@@ -113,8 +115,7 @@ async function addToCart() {
         flyToCart(document.querySelector(`[data-product-id="${props.item.id}"]`));
         justAdded.value = true;
         setTimeout(() => { justAdded.value = false; }, 2200);
-        snackbarMessage.value = 'تم إضافة المنتج للسلة';
-        snackbarColor.value = 'success';
+        snackbarMessage.value = 'تم إضافة المنتج للسلة';        snackbarColor.value = 'success';
     } catch (e) {
         snackbarMessage.value = e.response?.data?.message || 'حدث خطأ';
         snackbarColor.value = 'error';
@@ -126,7 +127,7 @@ async function addToCart() {
 
 function toggleFavorite() {
     if (!user) {
-        snackbarMessage.value = 'يجب تسجيل الدخول أولاً لإضافة المنتج للمفضلة';
+        snackbarMessage.value = t('wishlist_login_required');
         snackbarColor.value = 'warning';
         snackbar.value = true;
         return;
@@ -136,7 +137,7 @@ function toggleFavorite() {
         preserveState: true, preserveScroll: true,
         onSuccess: () => {
             isFavorite.value = !isFavorite.value;
-            snackbarMessage.value = isFavorite.value ? 'تمت الإضافة للمفضلة' : 'تمت الإزالة من المفضلة';
+            snackbarMessage.value = isFavorite.value ? t('added_to_wishlist') : t('removed_from_wishlist');
             snackbarColor.value = 'success';
             snackbar.value = true;
         },

@@ -5,7 +5,7 @@
                 ref="inputRef"
                 v-model="query"
                 class="gs-input"
-                placeholder="ابحث عن منتج..."
+                :placeholder="t('search_placeholder')"
                 @input="onInput"
                 @focus="open = true"
                 @keydown.escape="close"
@@ -26,7 +26,7 @@
             >
                 <div v-if="loading" class="gs-state">
                     <v-progress-circular indeterminate size="18" color="primary" />
-                    <span>جاري البحث...</span>
+                    <span>{{ t('searching') }}</span>
                 </div>
 
                 <template v-else-if="results.length">
@@ -40,7 +40,7 @@
                     >
                         <img :src="item.image_url" class="gs-item-img" alt="" />
                         <div class="gs-item-info">
-                            <div class="gs-item-name">{{ item.name }}</div>
+                            <div class="gs-item-name">{{ pick(item, 'name') }}</div>
                             <div class="gs-item-price">
                                 ${{ Math.ceil(item.discount_price || item.price) }}
                                 <span v-if="item.discount_price && item.discount_price < item.price" class="gs-item-old">
@@ -51,14 +51,14 @@
                         <v-icon size="13" color="grey">mdi-chevron-left</v-icon>
                     </a>
                     <a :href="`/products?search=${encodeURIComponent(query)}`" class="gs-view-all" @click="close">
-                        عرض كل نتائج "{{ query }}"
+                        {{ t('search_view_all') }} "{{ query }}"
                         <v-icon size="14">mdi-arrow-left</v-icon>
                     </a>
                 </template>
 
                 <div v-else class="gs-state">
                     <v-icon size="28" color="grey-lighten-1">mdi-magnify-close</v-icon>
-                    <span>لا توجد نتائج لـ "{{ query }}"</span>
+                    <span>{{ t('search_no_results') }} "{{ query }}"</span>
                 </div>
             </div>
         </Teleport>
@@ -69,6 +69,8 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
+import { useLocale } from '../../composables/useLocale';
+const { t, pick } = useLocale();
 
 const query    = ref('');
 const results  = ref([]);

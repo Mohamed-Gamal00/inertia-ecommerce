@@ -21,15 +21,15 @@
                         <div class="d-flex mt-2" style="gap:16px">
                             <div class="stat-chip">
                                 <span class="stat-num">{{ user?.orders?.length || 0 }}</span>
-                                <span class="stat-label">طلب</span>
+                                <span class="stat-label">{{ t('profile_order_label') }}</span>
                             </div>
                             <div class="stat-chip">
                                 <span class="stat-num">{{ user?.addresses?.length || 0 }}</span>
-                                <span class="stat-label">عنوان</span>
+                                <span class="stat-label">{{ t('profile_address_label') }}</span>
                             </div>
                             <div class="stat-chip">
                                 <span class="stat-num">{{ user?.wishlist_products?.length || 0 }}</span>
-                                <span class="stat-label">مفضلة</span>
+                                <span class="stat-label">{{ t('profile_wishlist_label') }}</span>
                             </div>
                         </div>
                     </div>
@@ -67,17 +67,7 @@
                         <v-divider class="mx-3 mb-2" />
 
                         <div class="pa-3">
-                            <v-btn
-                                block
-                                variant="tonal"
-                                color="error"
-                                rounded="lg"
-                                style="text-transform:none"
-                                prepend-icon="mdi-logout"
-                                @click="logout"
-                            >
-                                تسجيل الخروج
-                            </v-btn>
+                        <v-btn block variant="tonal" color="error" rounded="lg" style="text-transform:none" prepend-icon="mdi-logout" @click="logout">{{ t('logout') }}</v-btn>
                         </div>
                     </v-card>
                 </v-col>
@@ -128,17 +118,19 @@ import UserWishlist  from './Partials/UserWishlist.vue';
 import UserOrders    from './Partials/UserOrders.vue';
 import UserAddresses from './Partials/UserAddresses.vue';
 import UserReturns   from './Partials/UserReturns.vue';
+import { useLocale } from '../../composables/useLocale';
+const { t } = useLocale();
 
 const page = usePage();
 const user = computed(() => page.props.user);
 const tab  = ref('account');
 
 const tabs = computed(() => [
-    { value: 'account',   label: 'بياناتي',   icon: 'mdi-account-outline',    color: 'primary' },
-    { value: 'orders',    label: 'طلباتي',    icon: 'mdi-package-variant',     color: 'blue',   badge: user.value?.orders?.filter(o => !o.return_order)?.length || null },
-    { value: 'wishlist',  label: 'المفضلة',   icon: 'mdi-heart-outline',       color: 'red',    badge: user.value?.wishlist_products?.length || null },
-    { value: 'addresses', label: 'عناويني',   icon: 'mdi-map-marker-outline',  color: 'green',  badge: user.value?.addresses?.length || null },
-    { value: 'returns',   label: 'المرتجعات', icon: 'mdi-arrow-u-left-top',    color: 'orange', badge: user.value?.orders?.filter(o => o.return_order)?.length || null },
+    { value: 'account',   label: t('profile_account'),   icon: 'mdi-account-outline',    color: 'primary' },
+    { value: 'orders',    label: t('profile_orders'),    icon: 'mdi-package-variant',     color: 'blue',   badge: user.value?.orders?.filter(o => !o.return_order)?.length || null },
+    { value: 'wishlist',  label: t('profile_wishlist'),  icon: 'mdi-heart-outline',       color: 'red',    badge: user.value?.wishlist_products?.length || null },
+    { value: 'addresses', label: t('profile_addresses'), icon: 'mdi-map-marker-outline',  color: 'green',  badge: user.value?.addresses?.length || null },
+    { value: 'returns',   label: t('profile_returns'),   icon: 'mdi-arrow-u-left-top',    color: 'orange', badge: user.value?.orders?.filter(o => o.return_order)?.length || null },
 ]);
 
 const activeTab = computed(() => tabs.value.find(t => t.value === tab.value));

@@ -8,12 +8,8 @@
             >
                 {{ title }}
             </h2>
-            <Link
-                href="/products"
-                class="text-black"
-                style="font-size: 14px; text-decoration: none"
-            >
-                Shop All
+            <Link href="/products" class="text-black" style="font-size: 14px; text-decoration: none">
+                {{ t('shop_all') }}
             </Link>
         </div>
 
@@ -53,41 +49,24 @@
 
 <script setup>
 import ProductCard from "../../components/Shared/ProductCard.vue";
-import { Link, router } from "@inertiajs/vue3";
+import { Link } from "@inertiajs/vue3";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { ref, inject } from "vue";
+import { useLocale } from "../../composables/useLocale";
 
-const props = defineProps({
-    products: Array,
-    title: String,
-    titleColor: String,
-});
-
+const props = defineProps({ products: Array, title: String, titleColor: String });
 const Emitter = inject("Emitter");
-function openQuickView(product) {
-    Emitter.emit("openQuickView", product);
-}
-
+const { t } = useLocale();
+function openQuickView(product) { Emitter.emit("openQuickView", product); }
 const modules = [Pagination, Navigation, Autoplay];
-
-// ✅ نحتفظ بالـ swiper instance لما يجهز
 const swiperInstance = ref(null);
-
-function onSwiperInit(swiper) {
-    swiperInstance.value = swiper;
-}
-
-function goNext() {
-    swiperInstance.value?.slideNext();
-}
-
-function goPrev() {
-    swiperInstance.value?.slidePrev();
-}
+function onSwiperInit(swiper) { swiperInstance.value = swiper; }
+function goNext() { swiperInstance.value?.slideNext(); }
+function goPrev() { swiperInstance.value?.slidePrev(); }
 </script>
 
 <style lang="scss" scoped>

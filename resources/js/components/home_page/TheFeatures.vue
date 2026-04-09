@@ -26,12 +26,15 @@
 </template>
 
 <script setup>
-const features = [
-    { icon: 'mdi-truck-fast-outline',   color: '#1a237e', title: 'شحن مجاني',       sub: 'على الطلبات فوق 200 ر.س' },
-    { icon: 'mdi-shield-check-outline', color: '#1a237e', title: 'دفع آمن',          sub: 'بيانات مشفرة 100%' },
-    { icon: 'mdi-refresh',              color: '#1a237e', title: 'إرجاع مجاني',      sub: 'خلال 14 يوم من الاستلام' },
-    { icon: 'mdi-headset',              color: '#1a237e', title: 'دعم 24/7',         sub: 'فريق جاهز لمساعدتك' },
-];
+import { computed } from 'vue';
+import { useLocale } from '../../composables/useLocale';
+const { t } = useLocale();
+const features = computed(() => [
+    { icon: 'mdi-truck-fast-outline',   color: '#1a237e', title: t('features_free_shipping'),    sub: t('features_free_shipping_sub') },
+    { icon: 'mdi-shield-check-outline', color: '#1a237e', title: t('features_secure_payment'),   sub: t('features_secure_payment_sub') },
+    { icon: 'mdi-refresh',              color: '#1a237e', title: t('features_free_returns'),     sub: t('features_free_returns_sub') },
+    { icon: 'mdi-headset',              color: '#1a237e', title: t('features_support'),          sub: t('features_support_sub') },
+]);
 </script>
 
 <style scoped>

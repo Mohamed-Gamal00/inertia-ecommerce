@@ -6,7 +6,7 @@
                 <v-icon size="56" color="white" class="mb-4">mdi-storefront</v-icon>
                 <h1 class="text-white font-weight-bold mb-3" style="font-size:32px">{{ siteName }}</h1>
                 <p class="text-white mb-8" style="opacity:0.85; font-size:15px; max-width:280px; line-height:1.8">
-                    انضم إلى آلاف العملاء واستمتع بتجربة تسوق لا مثيل لها.
+                    {{ t('register_tagline') }}
                 </p>
                 <div class="steps">
                     <div class="step-item" v-for="(s, i) in steps" :key="i">
@@ -26,180 +26,58 @@
                     <span class="font-weight-bold text-h6">{{ siteName }}</span>
                 </div>
 
-                <h2 class="font-weight-bold mb-1" style="font-size:26px">إنشاء حساب جديد</h2>
-                <p class="text-grey-darken-1 mb-6" style="font-size:14px">أنشئ حسابك وابدأ التسوق الآن</p>
+                <h2 class="font-weight-bold mb-1" style="font-size:26px">{{ t('register_title') }}</h2>
+                <p class="text-grey-darken-1 mb-6" style="font-size:14px">{{ t('register_subtitle') }}</p>
 
                 <v-form @submit.prevent="submit">
                     <v-row dense>
                         <v-col cols="12" md="6">
-                            <label class="field-label">الاسم الأول</label>
-                            <v-text-field
-                                v-model="form.first_name"
-                                placeholder="محمد"
-                                variant="outlined"
-                                density="comfortable"
-                                hide-details="auto"
-                                class="mt-1 mb-3"
-                                rounded="lg"
-                                bg-color="grey-lighten-5"
-                                :error-messages="form.errors.first_name"
-                            />
+                            <label class="field-label">{{ t('first_name') }}</label>
+                            <v-text-field v-model="form.first_name" variant="outlined" density="comfortable" hide-details="auto" class="mt-1 mb-3" rounded="lg" bg-color="grey-lighten-5" :error-messages="form.errors.first_name" />
                         </v-col>
                         <v-col cols="12" md="6">
-                            <label class="field-label">اسم العائلة</label>
-                            <v-text-field
-                                v-model="form.family_name"
-                                placeholder="أحمد"
-                                variant="outlined"
-                                density="comfortable"
-                                hide-details="auto"
-                                class="mt-1 mb-3"
-                                rounded="lg"
-                                bg-color="grey-lighten-5"
-                                :error-messages="form.errors.family_name"
-                            />
+                            <label class="field-label">{{ t('last_name') }}</label>
+                            <v-text-field v-model="form.family_name" variant="outlined" density="comfortable" hide-details="auto" class="mt-1 mb-3" rounded="lg" bg-color="grey-lighten-5" :error-messages="form.errors.family_name" />
                         </v-col>
                         <v-col cols="12" md="6">
-                            <label class="field-label">رقم الهاتف</label>
-                            <v-text-field
-                                v-model="form.phone_number"
-                                placeholder="05xxxxxxxx"
-                                variant="outlined"
-                                density="comfortable"
-                                hide-details="auto"
-                                class="mt-1 mb-3"
-                                prepend-inner-icon="mdi-phone-outline"
-                                dir="ltr"
-                                rounded="lg"
-                                bg-color="grey-lighten-5"
-                                :error-messages="form.errors.phone_number"
-                            />
+                            <label class="field-label">{{ t('phone') }}</label>
+                            <v-text-field v-model="form.phone_number" placeholder="05xxxxxxxx" variant="outlined" density="comfortable" hide-details="auto" class="mt-1 mb-3" prepend-inner-icon="mdi-phone-outline" dir="ltr" rounded="lg" bg-color="grey-lighten-5" :error-messages="form.errors.phone_number" />
                         </v-col>
                         <v-col cols="12" md="6">
-                            <label class="field-label">البريد الإلكتروني</label>
-                            <v-text-field
-                                v-model="form.email"
-                                placeholder="example@email.com"
-                                variant="outlined"
-                                density="comfortable"
-                                hide-details="auto"
-                                class="mt-1 mb-3"
-                                prepend-inner-icon="mdi-email-outline"
-                                dir="ltr"
-                                rounded="lg"
-                                bg-color="grey-lighten-5"
-                                :error-messages="form.errors.email"
-                            />
+                            <label class="field-label">{{ t('email') }}</label>
+                            <v-text-field v-model="form.email" placeholder="example@email.com" variant="outlined" density="comfortable" hide-details="auto" class="mt-1 mb-3" prepend-inner-icon="mdi-email-outline" dir="ltr" rounded="lg" bg-color="grey-lighten-5" :error-messages="form.errors.email" />
                         </v-col>
                         <v-col cols="12">
-                            <label class="field-label">العنوان</label>
-                            <v-text-field
-                                v-model="form.address"
-                                placeholder="الرياض، حي النزهة"
-                                variant="outlined"
-                                density="comfortable"
-                                hide-details="auto"
-                                class="mt-1 mb-3"
-                                prepend-inner-icon="mdi-map-marker-outline"
-                                rounded="lg"
-                                bg-color="grey-lighten-5"
-                            />
+                            <label class="field-label">{{ t('address') }}</label>
+                            <v-text-field v-model="form.address" variant="outlined" density="comfortable" hide-details="auto" class="mt-1 mb-3" prepend-inner-icon="mdi-map-marker-outline" rounded="lg" bg-color="grey-lighten-5" />
                         </v-col>
                         <v-col cols="12" md="6">
-                            <label class="field-label">الدولة</label>
-                            <v-select
-                                v-model="form.country_id"
-                                :items="countries"
-                                item-title="name_ar"
-                                item-value="id"
-                                placeholder="اختر الدولة"
-                                variant="outlined"
-                                density="comfortable"
-                                hide-details="auto"
-                                class="mt-1 mb-3"
-                                rounded="lg"
-                                bg-color="grey-lighten-5"
-                                :error-messages="form.errors.country_id"
-                                @update:model-value="form.city_id = ''"
-                            />
+                            <label class="field-label">{{ t('country') }}</label>
+                            <v-select v-model="form.country_id" :items="countries" item-title="name_ar" item-value="id" :placeholder="t('select_country')" variant="outlined" density="comfortable" hide-details="auto" class="mt-1 mb-3" rounded="lg" bg-color="grey-lighten-5" :error-messages="form.errors.country_id" @update:model-value="form.city_id = ''" />
                         </v-col>
                         <v-col cols="12" md="6">
-                            <label class="field-label">المدينة</label>
-                            <v-select
-                                v-model="form.city_id"
-                                :items="filteredCities"
-                                item-title="name_ar"
-                                item-value="id"
-                                placeholder="اختر المدينة"
-                                variant="outlined"
-                                density="comfortable"
-                                hide-details="auto"
-                                class="mt-1 mb-3"
-                                rounded="lg"
-                                bg-color="grey-lighten-5"
-                                :error-messages="form.errors.city_id"
-                            />
+                            <label class="field-label">{{ t('city') }}</label>
+                            <v-select v-model="form.city_id" :items="filteredCities" item-title="name_ar" item-value="id" :placeholder="t('select_city')" variant="outlined" density="comfortable" hide-details="auto" class="mt-1 mb-3" rounded="lg" bg-color="grey-lighten-5" :error-messages="form.errors.city_id" />
                         </v-col>
                         <v-col cols="12" md="6">
-                            <label class="field-label">كلمة المرور</label>
-                            <v-text-field
-                                v-model="form.password"
-                                placeholder="••••••••"
-                                :type="showPass ? 'text' : 'password'"
-                                variant="outlined"
-                                density="comfortable"
-                                hide-details="auto"
-                                class="mt-1 mb-3"
-                                prepend-inner-icon="mdi-lock-outline"
-                                :append-inner-icon="showPass ? 'mdi-eye-off' : 'mdi-eye'"
-                                @click:append-inner="showPass = !showPass"
-                                rounded="lg"
-                                bg-color="grey-lighten-5"
-                                :error-messages="form.errors.password"
-                            />
+                            <label class="field-label">{{ t('login_password') }}</label>
+                            <v-text-field v-model="form.password" placeholder="••••••••" :type="showPass ? 'text' : 'password'" variant="outlined" density="comfortable" hide-details="auto" class="mt-1 mb-3" prepend-inner-icon="mdi-lock-outline" :append-inner-icon="showPass ? 'mdi-eye-off' : 'mdi-eye'" @click:append-inner="showPass = !showPass" rounded="lg" bg-color="grey-lighten-5" :error-messages="form.errors.password" />
                         </v-col>
                         <v-col cols="12" md="6">
-                            <label class="field-label">تأكيد كلمة المرور</label>
-                            <v-text-field
-                                v-model="form.password_confirmation"
-                                placeholder="••••••••"
-                                :type="showPass2 ? 'text' : 'password'"
-                                variant="outlined"
-                                density="comfortable"
-                                hide-details="auto"
-                                class="mt-1 mb-3"
-                                prepend-inner-icon="mdi-lock-check-outline"
-                                :append-inner-icon="showPass2 ? 'mdi-eye-off' : 'mdi-eye'"
-                                @click:append-inner="showPass2 = !showPass2"
-                                rounded="lg"
-                                bg-color="grey-lighten-5"
-                            />
+                            <label class="field-label">{{ t('reset_confirm_password') }}</label>
+                            <v-text-field v-model="form.password_confirmation" placeholder="••••••••" :type="showPass2 ? 'text' : 'password'" variant="outlined" density="comfortable" hide-details="auto" class="mt-1 mb-3" prepend-inner-icon="mdi-lock-check-outline" :append-inner-icon="showPass2 ? 'mdi-eye-off' : 'mdi-eye'" @click:append-inner="showPass2 = !showPass2" rounded="lg" bg-color="grey-lighten-5" />
                         </v-col>
                     </v-row>
 
-                    <v-btn
-                        type="submit"
-                        color="primary"
-                        block
-                        height="48"
-                        rounded="lg"
-                        :loading="loading"
-                        class="mt-2"
-                        style="font-size:15px; font-weight:600; text-transform:none"
-                    >
-                        إنشاء الحساب
+                    <v-btn type="submit" color="primary" block height="48" rounded="lg" :loading="loading" class="mt-2" style="font-size:15px; font-weight:600; text-transform:none">
+                        {{ t('register_btn') }}
                     </v-btn>
                 </v-form>
 
-                <v-divider class="my-5">
-                    <span class="text-grey" style="font-size:13px">أو</span>
-                </v-divider>
-
+                <v-divider class="my-5"><span class="text-grey" style="font-size:13px">{{ t('login_or') }}</span></v-divider>
                 <div class="text-center" style="font-size:14px">
-                    لديك حساب بالفعل؟
-                    <a href="/login" class="text-primary font-weight-bold text-decoration-none ms-1">
-                        تسجيل الدخول
-                    </a>
+                    {{ t('register_have_account') }}
+                    <a href="/login" class="text-primary font-weight-bold text-decoration-none ms-1">{{ t('login_btn') }}</a>
                 </div>
             </div>
         </div>
@@ -209,50 +87,35 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
+import { useLocale } from '../../composables/useLocale';
 
 defineOptions({ layout: null });
 
 const siteName = computed(() => usePage().props.seo?.site_name || 'متجري');
+const { t } = useLocale();
 
-const props = defineProps({
-    countries: Array,
-    cities: Array,
-});
+const props = defineProps({ countries: Array, cities: Array });
 
 const form = useForm({
-    first_name: '',
-    family_name: '',
-    phone_number: '',
-    email: '',
-    password: '',
-    password_confirmation: '',
-    address: '',
-    country_id: '',
-    city_id: '',
+    first_name: '', family_name: '', phone_number: '', email: '',
+    password: '', password_confirmation: '', address: '', country_id: '', city_id: '',
 });
 
 const loading = ref(false);
 const showPass = ref(false);
 const showPass2 = ref(false);
 
-const steps = [
-    'أنشئ حسابك في دقيقة واحدة',
-    'تصفح آلاف المنتجات',
-    'استلم طلبك بأمان',
-];
+const steps = computed(() => [
+    t('register_step1'), t('register_step2'), t('register_step3'),
+]);
 
 const filteredCities = computed(() =>
-    form.country_id
-        ? props.cities.filter(c => c.country_id === form.country_id)
-        : props.cities
+    form.country_id ? props.cities.filter(c => c.country_id === form.country_id) : props.cities
 );
 
 const submit = () => {
     loading.value = true;
-    form.post('/register', {
-        preserveState: true,
-        onFinish: () => (loading.value = false),
-    });
+    form.post('/register', { preserveState: true, onFinish: () => (loading.value = false) });
 };
 </script>
 

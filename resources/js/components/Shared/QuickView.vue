@@ -49,16 +49,16 @@
 
                         <!-- Category -->
                         <div class="qv-category" v-if="product.parent">
-                            {{ product.parent.name_en || product.parent.name }}
+                            {{ pick(product.parent, 'name') }}
                         </div>
 
                         <!-- Name -->
-                        <h2 class="qv-name">{{ product.name }}</h2>
+                        <h2 class="qv-name">{{ pick(product, 'name') }}</h2>
 
                         <!-- Rating -->
                         <div class="d-flex align-center mb-3" style="gap:8px">
                             <v-rating :model-value="4.5" half-increments readonly color="amber" density="compact" size="small" />
-                            <span class="text-grey" style="font-size:12px">(24 تقييم)</span>
+                            <span class="text-grey" style="font-size:12px">(24 {{ t('quickview_rating') }})</span>
                         </div>
 
                         <!-- Price -->
@@ -85,50 +85,35 @@
                                 mdi-circle-small
                             </v-icon>
                             <span style="font-size:13px" :class="product.quantity > 0 ? 'text-green' : 'text-red'">
-                                {{ product.quantity > 0 ? 'متوفر في المخزن' : 'غير متوفر' }}
+                                {{ product.quantity > 0 ? t('quickview_in_stock') : t('quickview_out_of_stock') }}
                             </span>
                         </div>
 
                         <!-- Quantity -->
                         <div class="d-flex align-center mb-5" style="gap:12px">
-                            <span style="font-size:13px; font-weight:600; color:#374151">الكمية</span>
+                            <span style="font-size:13px; font-weight:600; color:#374151">{{ t('quickview_quantity') }}</span>
                             <div class="qv-qty">
-                                <button @click="quantity > 1 ? quantity-- : null">
-                                    <v-icon size="16">mdi-minus</v-icon>
-                                </button>
+                                <button @click="quantity > 1 ? quantity-- : null"><v-icon size="16">mdi-minus</v-icon></button>
                                 <span>{{ quantity }}</span>
-                                <button @click="quantity++">
-                                    <v-icon size="16">mdi-plus</v-icon>
-                                </button>
+                                <button @click="quantity++"><v-icon size="16">mdi-plus</v-icon></button>
                             </div>
                             <span class="text-grey" style="font-size:12px">
-                                الإجمالي: <strong>${{ subtotal }}</strong>
+                                {{ t('quickview_total') }}: <strong>${{ subtotal }}</strong>
                             </span>
                         </div>
 
                         <!-- Actions -->
                         <div class="d-flex" style="gap:10px">
-                            <v-btn
-                                color="primary"
-                                rounded="lg"
-                                height="46"
+                            <v-btn color="primary" rounded="lg" height="46"
                                 style="flex:1; text-transform:none; font-size:14px; font-weight:600"
-                                :loading="btnLoading"
-                                :disabled="product.quantity < 1"
-                                prepend-icon="mdi-cart-plus"
-                                @click="addToCart"
-                            >
-                                أضف للسلة
+                                :loading="btnLoading" :disabled="product.quantity < 1"
+                                prepend-icon="mdi-cart-plus" @click="addToCart">
+                                {{ t('quickview_add_to_cart') }}
                             </v-btn>
-                            <v-btn
-                                variant="outlined"
-                                color="primary"
-                                rounded="lg"
-                                height="46"
+                            <v-btn variant="outlined" color="primary" rounded="lg" height="46"
                                 style="text-transform:none; font-size:13px"
-                                :href="product.slug ? `/products/${product.slug}` : '#'"
-                            >
-                                التفاصيل
+                                :href="product.slug ? `/products/${product.slug}` : '#'">
+                                {{ t('quickview_details') }}
                             </v-btn>
                         </div>
 
@@ -147,9 +132,11 @@
 import { ref, computed, inject, onMounted } from 'vue';
 import axios from 'axios';
 import { useCartFly } from '../../composables/useCartFly';
+import { useLocale } from '../../composables/useLocale';
 
 const Emitter = inject('Emitter');
 const { flyToCart } = useCartFly();
+const { t, pick } = useLocale();
 
 const dialog     = ref(false);
 const loading    = ref(false);

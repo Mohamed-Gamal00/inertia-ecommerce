@@ -41,6 +41,14 @@ Route::middleware('auth:web')->group(function () {
 
 // Newsletter subscription
 Route::post('/subscribe', [\App\Http\Controllers\Inertia\NewsletterController::class, 'store'])->name('newsletter.subscribe');
+
+// Language switcher
+Route::post('/locale/{lang}', function (string $lang) {
+    if (in_array($lang, ['ar', 'en'])) {
+        session(['locale' => $lang]);
+    }
+    return back();
+})->name('locale.switch');
 // Search (live JSON for navbar + full page redirect)
 Route::get('/search', [\App\Http\Controllers\Inertia\SearchController::class, 'search'])->name('search');
 // Reviews (public read)

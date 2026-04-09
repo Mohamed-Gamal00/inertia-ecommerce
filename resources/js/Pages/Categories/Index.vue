@@ -1,49 +1,41 @@
+
 <template>
     <div style="background:#f5f6fa; min-height:100vh; padding-bottom:48px">
-
-        <!-- Header -->
         <div style="background:linear-gradient(135deg,#1a237e,#3949ab); padding:40px 16px 50px">
-            <SeoHead title="جميع الأقسام" />
-            <h1 class="text-white font-weight-bold text-center" style="font-size:28px">
-                جميع الأقسام
-            </h1>
+            <SeoHead :title="t('all_categories_title')" />
+            <h1 class="text-white font-weight-bold text-center" style="font-size:28px">{{ t('all_categories_title') }}</h1>
             <p class="text-center mt-2" style="color:rgba(255,255,255,0.75); font-size:14px">
-                تصفح {{ categories.length }} قسم متاح
+                {{ t('browse_categories') }} {{ categories.length }} {{ t('available_categories') }}
             </p>
         </div>
-
-        <!-- Categories -->
         <div style="padding:32px 16px">
             <div v-if="categories.length" style="display:flex; flex-wrap:wrap; justify-content:center; align-items:flex-start; gap:16px">
-                <a
-                    v-for="cat in categories"
-                    :key="cat.id"
-                    :href="`/categories/${cat.slug}`"
-                    style="display:block; width:160px; text-decoration:none; flex-shrink:0"
-                >
+                <a v-for="cat in categories" :key="cat.id" :href="`/categories/${cat.slug}`"
+                    style="display:block; width:160px; text-decoration:none; flex-shrink:0">
                     <div class="cat-card">
                         <div class="cat-img-wrap">
-                            <img v-if="cat.image_url" :src="cat.image_url" :alt="cat.name" />
+                            <img v-if="cat.image_url" :src="cat.image_url" :alt="pick(cat,'name')" />
                             <v-icon v-else size="40" color="primary">mdi-shape-outline</v-icon>
                         </div>
                         <div style="font-size:13px; font-weight:600; color:#111827; text-align:center; margin-top:10px; line-height:1.3">
-                            {{ cat.name }}
+                            {{ pick(cat, 'name') }}
                         </div>
                     </div>
                 </a>
             </div>
-
             <div v-else style="text-align:center; padding:64px 0">
                 <v-icon size="64" color="grey-lighten-1">mdi-shape-outline</v-icon>
-                <p style="margin-top:12px; color:#9ca3af">لا توجد أقسام متاحة</p>
+                <p style="margin-top:12px; color:#9ca3af">{{ t('no_categories') }}</p>
             </div>
         </div>
-
     </div>
 </template>
 
+
 <script setup>
 import SeoHead from '../../components/Shared/SeoHead.vue';
+import { useLocale } from '../../composables/useLocale';
+const { t, pick } = useLocale();
 defineProps({ categories: Array });
 </script>
 
