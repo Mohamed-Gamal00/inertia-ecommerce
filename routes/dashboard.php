@@ -152,6 +152,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::post('/header_banner_en/store', [HeaderBanerController::class, 'frontHeaderStoreAndUpdate_en'])->name('header_banner_en.sotreAndUpdate');
 
     //----------------------------------------------/Animated Advertisements
+    Route::post('advertisements/{advertisement}/toggle', [AdvertisementController::class, 'toggle'])->name('advertisements.toggle');
     Route::resource('advertisements', AdvertisementController::class);
 
     //----------------------------------------------/static pages

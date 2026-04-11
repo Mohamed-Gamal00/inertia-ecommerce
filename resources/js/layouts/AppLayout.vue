@@ -8,6 +8,7 @@
       <ToastContainer />
 
       <v-main>
+        <AdvertisementMarquee />
         <slot></slot>
       </v-main>
 
@@ -23,6 +24,7 @@ import CartDrawer from "../components/Shared/CartDrawer.vue";
 import BackToTop from "../components/Shared/BackToTop.vue";
 import CompareBar from "../components/Shared/CompareBar.vue";
 import ToastContainer from "../components/Shared/ToastContainer.vue";
+import AdvertisementMarquee from "../components/Shared/AdvertisementMarquee.vue";
 import { usePage } from "@inertiajs/vue3";
 import { computed } from "vue";
 const user = computed(() => usePage().props.auth.user);

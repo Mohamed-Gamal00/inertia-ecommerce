@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Advertisement;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -47,6 +48,14 @@ class HandleInertiaRequests extends Middleware
                 : null,
 
             'locale' => app()->getLocale(),
+
+            'advertisements' => fn() => Advertisement::where('is_active', true)
+                ->get()
+                ->map(fn($a) => [
+                    'title' => app()->getLocale() === 'en' && $a->title_en ? $a->title_en : $a->title,
+                ])
+                ->values()
+                ->toArray(),
 
             'flash' => [
                 'success' => $request->session()->get('success'),

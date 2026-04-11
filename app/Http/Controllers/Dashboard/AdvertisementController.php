@@ -74,4 +74,12 @@ class AdvertisementController extends Controller
     return redirect()->route('advertisements.index')
       ->with('success', __('messages.ADVERTISEMENT_DELETED'));
   }
+
+  public function toggle(Advertisement $advertisement)
+  {
+    $advertisement->update(['is_active' => !$advertisement->is_active]);
+    return redirect()->back()->with('success',
+      $advertisement->is_active ? 'تم تفعيل الإعلان' : 'تم إيقاف الإعلان'
+    );
+  }
 }
