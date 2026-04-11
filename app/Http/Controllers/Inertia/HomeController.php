@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Inertia;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\HeaderBannerResource;
+use App\Models\Design;
 use App\Models\HeaderBanner;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
@@ -38,9 +39,16 @@ class HomeController extends Controller
 
         $banners = HeaderBannerResource::collection(HeaderBanner::all())->resolve();
 
+        $homeDesigns = Design::where('page_name', 'home')
+            ->whereIn('title', ['home_band_left', 'home_band_right', 'home_tv_banner'])
+            ->get()
+            ->keyBy('title')
+            ->map(fn($d) => $d->image_url);
+
         return Inertia::render('Home', [
-            'products' => $products,
-            'banners'  => $banners,
+            'products'    => $products,
+            'banners'     => $banners,
+            'homeDesigns' => $homeDesigns,
         ]);
     }
 }

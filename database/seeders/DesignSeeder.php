@@ -26,6 +26,23 @@ class DesignSeeder extends Seeder
                 'page_name'   => 'home',
                 'description' => 'بانر المنتجات المميزة',
             ],
+            // Home page — mid section (band covers)
+            [
+                'title'       => 'home_band_left',
+                'page_name'   => 'home',
+                'description' => 'الصورة اليسرى في قسم البانرات الوسطى بالصفحة الرئيسية',
+            ],
+            [
+                'title'       => 'home_band_right',
+                'page_name'   => 'home',
+                'description' => 'الصورة اليمنى في قسم البانرات الوسطى بالصفحة الرئيسية',
+            ],
+            // Home page — TV banner
+            [
+                'title'       => 'home_tv_banner',
+                'page_name'   => 'home',
+                'description' => 'بانر التلفزيون في الصفحة الرئيسية',
+            ],
             // Offers page banners
             [
                 'title'       => 'بانر صفحة العروض',
