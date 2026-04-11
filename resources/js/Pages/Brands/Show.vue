@@ -9,7 +9,7 @@
                 </div>
                 <div class="text-center">
                     <h1 class="text-white font-weight-bold" style="font-size:28px">{{ brand.name }}</h1>
-                    <p style="color:rgba(255,255,255,0.75); font-size:14px">{{ products.total }} منتج</p>
+                    <p style="color:rgba(255,255,255,0.75); font-size:14px">{{ products.total }} {{ t('products_count') }}</p>
                 </div>
             </div>
         </div>
@@ -23,7 +23,7 @@
 
             <div v-else style="text-align:center; padding:64px 0">
                 <v-icon size="64" color="grey-lighten-1">mdi-shopping-outline</v-icon>
-                <p style="margin-top:12px; color:#9ca3af">لا توجد منتجات لهذه الماركة</p>
+                <p style="margin-top:12px; color:#9ca3af">{{ t('no_products_brand') }}</p>
             </div>
 
             <div class="d-flex justify-center mt-8" v-if="products.last_page > 1">
@@ -37,7 +37,9 @@
 import { ref, watch, inject } from 'vue';
 import { router } from '@inertiajs/vue3';
 import ProductCard from '../../components/Shared/ProductCard.vue';
+import { useLocale } from '../../composables/useLocale';
 
+const { t } = useLocale();
 const props = defineProps({ brand: Object, products: Object });
 const Emitter = inject('Emitter');
 const page = ref(props.products.current_page);

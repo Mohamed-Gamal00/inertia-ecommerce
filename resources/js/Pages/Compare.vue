@@ -6,8 +6,8 @@
             <div class="cmp-hero-icon">
                 <v-icon size="32" color="white">mdi-compare</v-icon>
             </div>
-            <h1 class="cmp-hero-title">مقارنة المنتجات</h1>
-            <p class="cmp-hero-sub">{{ products.length }} منتجات للمقارنة</p>
+            <h1 class="cmp-hero-title">{{ t('compare_title') }}</h1>
+            <p class="cmp-hero-sub">{{ products.length }} {{ t('compare_count') }}</p>
         </div>
 
         <div class="cmp-container">
@@ -15,8 +15,8 @@
             <!-- Empty -->
             <div v-if="!products.length" class="cmp-empty">
                 <v-icon size="72" color="grey-lighten-1">mdi-compare-remove</v-icon>
-                <p class="mt-3 font-weight-bold" style="font-size:16px; color:#374151">لا توجد منتجات للمقارنة</p>
-                <a href="/products" class="cmp-btn-go mt-4">تصفح المنتجات</a>
+                <p class="mt-3 font-weight-bold" style="font-size:16px; color:#374151">{{ t('no_compare') }}</p>
+                <a href="/products" class="cmp-btn-go mt-4">{{ t('browse_products') }}</a>
             </div>
 
             <template v-else>
@@ -31,19 +31,19 @@
                         <div class="cmp-header-row">
                             <div class="cmp-col-name cmp-hdr-cell">
                                 <v-icon size="14" class="me-1">mdi-package-variant</v-icon>
-                                المنتج
+                                {{ t('compare_product') }}
                             </div>
                             <div class="cmp-col-img cmp-hdr-cell">
                                 <v-icon size="14" class="me-1">mdi-image-outline</v-icon>
-                                الصورة
+                                {{ t('compare_image') }}
                             </div>
                             <div class="cmp-col-data cmp-hdr-cell">
                                 <v-icon size="14" class="me-1">mdi-shape-outline</v-icon>
-                                القسم
+                                {{ t('compare_category') }}
                             </div>
                             <div class="cmp-col-data cmp-hdr-cell">
                                 <v-icon size="14" class="me-1">mdi-palette-outline</v-icon>
-                                الألوان
+                                {{ t('compare_colors') }}
                             </div>
                             <div v-for="col in columns" :key="col.key" class="cmp-col-data cmp-hdr-cell">
                                 <v-icon size="14" class="me-1">{{ col.icon }}</v-icon>
@@ -51,11 +51,11 @@
                             </div>
                             <div class="cmp-col-price cmp-hdr-cell">
                                 <v-icon size="14" class="me-1">mdi-cash</v-icon>
-                                السعر
+                                {{ t('compare_price') }}
                             </div>
                             <div class="cmp-col-action cmp-hdr-cell">
                                 <v-icon size="14" class="me-1">mdi-cart-outline</v-icon>
-                                الإجراء
+                                {{ t('compare_action') }}
                             </div>
                         </div>
 
@@ -66,7 +66,7 @@
                             class="cmp-product-row"
                             :class="{ 'cmp-product-row--best': bestValue(p) }"
                         >
-                            <div v-if="bestValue(p)" class="cmp-best-badge">الأفضل قيمة</div>
+                            <div v-if="bestValue(p)" class="cmp-best-badge">{{ t('compare_best_value') }}</div>
 
                             <div class="cmp-col-name">
                                 <div class="cmp-product-name">{{ p.name }}</div>
@@ -109,13 +109,13 @@
                             </div>
 
                             <div class="cmp-col-action">
-                                <button class="cmp-btn-icon cmp-btn-cart-icon" :disabled="p.quantity < 1" @click="addToCart(p)" title="أضف للسلة">
+                                <button class="cmp-btn-icon cmp-btn-cart-icon" :disabled="p.quantity < 1" @click="addToCart(p)" :title="t('add_to_cart')">
                                     <v-icon size="16">mdi-cart-plus</v-icon>
                                 </button>
-                                <a :href="`/products/${p.slug}`" class="cmp-btn-icon cmp-btn-view" title="عرض المنتج">
+                                <a :href="`/products/${p.slug}`" class="cmp-btn-icon cmp-btn-view" :title="t('quick_view')">
                                     <v-icon size="15">mdi-eye-outline</v-icon>
                                 </a>
-                                <button class="cmp-btn-icon cmp-btn-remove" @click="removeProduct(p.id)" title="إزالة">
+                                <button class="cmp-btn-icon cmp-btn-remove" @click="removeProduct(p.id)" :title="t('delete')">
                                     <v-icon size="14">mdi-close</v-icon>
                                 </button>
                             </div>
@@ -125,10 +125,10 @@
 
                     <!-- Features table -->
                     <template v-if="allFeatureNames.length">
-                        <div class="cmp-features-title">المميزات التفصيلية</div>
+                        <div class="cmp-features-title">{{ t('compare_features') }}</div>
                         <div class="cmp-features-table">
                             <div class="cmp-ft-header">
-                                <div class="cmp-ft-label">الميزة</div>
+                                <div class="cmp-ft-label">{{ t('compare_feature') }}</div>
                                 <div v-for="p in products" :key="p.id" class="cmp-ft-val cmp-ft-val--head">{{ p.name }}</div>
                             </div>
                             <div v-for="fname in allFeatureNames" :key="fname" class="cmp-ft-row">
@@ -152,7 +152,7 @@
                         <!-- Best value ribbon -->
                         <div v-if="bestValue(p)" class="cmp-card-ribbon">
                             <v-icon size="11" class="me-1">mdi-star</v-icon>
-                            الأفضل قيمة
+                            {{ t('compare_best_value') }}
                         </div>
 
                         <!-- Card top: image + name + category + colors -->
@@ -210,7 +210,7 @@
                             <div class="cmp-card-actions">
                                 <button class="cmp-card-btn cmp-card-btn-cart" :disabled="p.quantity < 1" @click="addToCart(p)">
                                     <v-icon size="15" class="me-1">mdi-cart-plus</v-icon>
-                                    {{ p.quantity < 1 ? 'نفذت' : 'أضف للسلة' }}
+                                    {{ p.quantity < 1 ? t('out_of_stock') : t('add_to_cart') }}
                                 </button>
                                 <a :href="`/products/${p.slug}`" class="cmp-card-btn cmp-card-btn-view">
                                     <v-icon size="15">mdi-eye-outline</v-icon>
@@ -232,7 +232,9 @@
 import { computed, inject } from 'vue';
 import { usePage, router } from '@inertiajs/vue3';
 import axios from 'axios';
+import { useLocale } from '../composables/useLocale';
 
+const { t } = useLocale();
 const { props } = usePage();
 const products = computed(() => props.products || []);
 const Emitter = inject('Emitter');
@@ -249,22 +251,22 @@ function bestValue(p) {
     return eff === min;
 }
 
-const columns = [
+const columns = computed(() => [
     {
-        key: 'stock', label: 'المخزون', icon: 'mdi-package-variant-closed',
-        get: p => p.quantity > 0 ? `${p.quantity} قطعة` : 'نفذت الكمية',
+        key: 'stock', label: t('compare_stock'), icon: 'mdi-package-variant-closed',
+        get: p => p.quantity > 0 ? `${p.quantity} ${t('compare_pieces')}` : t('out_of_stock'),
         class: p => p.quantity > 0 ? 'val-good' : 'val-bad',
     },
     {
-        key: 'weight', label: 'الوزن', icon: 'mdi-weight-kilogram',
-        get: p => p.weight ? `${p.weight} كجم` : '—',
+        key: 'weight', label: t('compare_weight'), icon: 'mdi-weight-kilogram',
+        get: p => p.weight ? `${p.weight} ${t('compare_kg')}` : '—',
     },
     {
-        key: 'discount', label: 'الخصم', icon: 'mdi-tag-outline',
+        key: 'discount', label: t('compare_discount'), icon: 'mdi-tag-outline',
         get: p => discountPct(p) ? `-${discountPct(p)}%` : '—',
         class: p => discountPct(p) ? 'val-good' : '',
     },
-];
+]);
 
 const allFeatureNames = computed(() => {
     const s = new Set();

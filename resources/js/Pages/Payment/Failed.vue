@@ -10,42 +10,27 @@
                 </svg>
             </div>
 
-            <h1 class="result-title result-title--failed">فشلت عملية الدفع</h1>
-            <p class="result-sub">{{ message || 'حدث خطأ أثناء معالجة الدفع. يرجى المحاولة مرة أخرى.' }}</p>
+            <h1 class="result-title result-title--failed">{{ t('payment_failed_title') }}</h1>
+            <p class="result-sub">{{ message || t('payment_failed_sub') }}</p>
 
-            <!-- Order info -->
             <div class="result-card">
-                <div class="result-row">
-                    <span class="result-label">رقم الطلب</span>
-                    <span class="result-val fw-bold">#{{ order.number }}</span>
-                </div>
-                <div class="result-row">
-                    <span class="result-label">المبلغ</span>
-                    <span class="result-val">
-                        {{ ((order.total_price || 0) + (order.shipping_price || 0)).toFixed(2) }} ر.س
-                    </span>
-                </div>
-                <div class="result-row">
-                    <span class="result-label">حالة الدفع</span>
-                    <span class="badge bg-danger px-3 py-2">فاشل ✗</span>
-                </div>
+                <div class="result-row"><span class="result-label">{{ t('order_number') }}</span><span class="result-val fw-bold">#{{ order.number }}</span></div>
+                <div class="result-row"><span class="result-label">{{ t('amount') }}</span><span class="result-val">{{ ((order.total_price || 0) + (order.shipping_price || 0)).toFixed(2) }} ر.س</span></div>
+                <div class="result-row"><span class="result-label">{{ t('payment_status') }}</span><span class="badge bg-danger px-3 py-2">{{ t('failed_status') }}</span></div>
             </div>
 
-            <!-- Actions -->
             <div class="result-actions">
                 <a :href="`/payment/${order.number}`" class="result-btn result-btn--primary">
-                    <v-icon size="16" class="me-1">mdi-refresh</v-icon>
-                    إعادة المحاولة
+                    <v-icon size="16" class="me-1">mdi-refresh</v-icon>{{ t('retry') }}
                 </a>
                 <a href="/" class="result-btn result-btn--outline">
-                    <v-icon size="16" class="me-1">mdi-home-outline</v-icon>
-                    الرئيسية
+                    <v-icon size="16" class="me-1">mdi-home-outline</v-icon>{{ t('home') }}
                 </a>
             </div>
 
             <p class="result-help">
-                إذا استمرت المشكلة، يرجى
-                <a href="/contact-us" class="text-primary">التواصل مع الدعم</a>
+                {{ t('problem_persists') }}
+                <a href="/contact-us" class="text-primary">{{ t('contact_support') }}</a>
             </p>
 
         </div>
@@ -55,12 +40,12 @@
 <script setup>
 import { computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
-
+import { useLocale } from '../../composables/useLocale';
 defineOptions({ layout: null });
-
 const { props } = usePage();
 const order   = computed(() => props.order);
 const message = computed(() => props.message);
+const { t } = useLocale();
 </script>
 
 <style scoped>

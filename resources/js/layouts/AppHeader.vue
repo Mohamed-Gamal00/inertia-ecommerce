@@ -28,7 +28,7 @@
                 <v-menu open-on-hover :close-on-content-click="true">
                     <template #activator="{ props: menuProps }">
                         <button class="nav-link" v-bind="menuProps">
-                            الأقسام
+                            {{ t('categories') }}
                             <v-icon size="16" class="ms-1">mdi-chevron-down</v-icon>
                         </button>
                     </template>
@@ -37,7 +37,7 @@
                             <v-list-item
                                 v-for="cat in categories"
                                 :key="cat.id"
-                                :title="cat.name"
+                                :title="pick(cat, 'name')"
                                 rounded="lg"
                                 :href="`/categories/${cat.slug}`"
                             />
@@ -50,6 +50,19 @@
 
             <!-- Search bar (desktop) -->
             <GlobalSearch class="d-none d-md-flex" />
+
+            <!-- Language switcher -->
+            <v-btn
+                variant="text"
+                size="small"
+                color="white"
+                class="ms-1 d-none d-md-flex"
+                style="text-transform:none; font-size:12px; font-weight:700; min-width:0; padding:0 8px"
+                @click="switchLocale(locale === 'ar' ? 'en' : 'ar')"
+                title="تغيير اللغة"
+            >
+                {{ locale === 'ar' ? 'EN' : 'ع' }}
+            </v-btn>
 
             <!-- Cart icon -->
             <v-btn icon variant="text" @click="openCart" class="ms-1" color="white" data-cart-icon>
@@ -74,11 +87,11 @@
                     </template>
                     <v-card min-width="180" elevation="3" rounded="lg">
                         <v-list density="compact" nav>
-                            <v-list-item prepend-icon="mdi-account-outline" title="حسابي" rounded="lg" href="/user-profile" />
+                            <v-list-item prepend-icon="mdi-account-outline" :title="t('my_account')" rounded="lg" href="/user-profile" />
                             <v-divider class="my-1" />
                             <v-list-item prepend-icon="mdi-logout" rounded="lg" base-color="red">
                                 <Link href="/logout" method="post" as="button" class="text-decoration-none text-red" style="font-size:14px">
-                                    تسجيل الخروج
+                                    {{ t('logout') }}
                                 </Link>
                             </v-list-item>
                         </v-list>
@@ -91,12 +104,12 @@
                 <div class="d-none d-md-flex align-center ms-2" style="gap:8px">
                     <Link href="/login">
                         <v-btn variant="text" size="small" style="text-transform:none; font-size:13px; color:white">
-                            دخول
+                            {{ t('login') }}
                         </v-btn>
                     </Link>
                     <Link href="/register">
                         <v-btn color="white" size="small" rounded="lg" style="text-transform:none; font-size:13px; color:#1a237e">
-                            حساب جديد
+                            {{ t('register') }}
                         </v-btn>
                     </Link>
                 </div>
@@ -118,16 +131,7 @@
 
         <!-- Mobile search -->
         <div class="pa-3">
-            <v-text-field
-                v-model="search"
-                placeholder="ابحث عن منتج..."
-                hide-details
-                variant="outlined"
-                density="compact"
-                rounded="lg"
-                prepend-inner-icon="mdi-magnify"
-                bg-color="grey-lighten-5"
-            />
+            <v-text-field v-model="search" :placeholder="t('search_placeholder')" hide-details variant="outlined" density="compact" rounded="lg" prepend-inner-icon="mdi-magnify" bg-color="grey-lighten-5" />
         </div>
 
         <v-list nav density="compact">
@@ -143,12 +147,12 @@
 
             <v-list-group value="categories">
                 <template #activator="{ props: groupProps }">
-                    <v-list-item v-bind="groupProps" title="الأقسام" prepend-icon="mdi-shape-outline" rounded="lg" />
+                    <v-list-item v-bind="groupProps" :title="t('categories')" prepend-icon="mdi-shape-outline" rounded="lg" />
                 </template>
                 <v-list-item
                     v-for="cat in categories"
                     :key="cat.id"
-                    :title="cat.name"
+                    :title="pick(cat, 'name')"
                     :href="`/categories/${cat.slug}`"
                     rounded="lg"
                     @click="mobileDrawer = false"
@@ -170,22 +174,16 @@
                         <div class="text-grey" style="font-size:12px">{{ user.email }}</div>
                     </div>
                 </div>
-                <v-btn block variant="outlined" color="primary" rounded="lg" href="/user-profile" style="text-transform:none" class="mb-2">
-                    حسابي
-                </v-btn>
+                <v-btn block variant="outlined" color="primary" rounded="lg" href="/user-profile" style="text-transform:none" class="mb-2">{{ t('my_account') }}</v-btn>
                 <Link href="/logout" method="post" as="button" class="w-100">
                     <v-btn block variant="tonal" color="red" rounded="lg" style="text-transform:none">
-                        تسجيل الخروج
+                        {{ t('logout') }}
                     </v-btn>
                 </Link>
             </template>
             <template v-else>
-                <v-btn block color="primary" rounded="lg" href="/login" style="text-transform:none" class="mb-2">
-                    تسجيل الدخول
-                </v-btn>
-                <v-btn block variant="outlined" color="primary" rounded="lg" href="/register" style="text-transform:none">
-                    إنشاء حساب
-                </v-btn>
+                <v-btn block color="primary" rounded="lg" href="/login" style="text-transform:none" class="mb-2">{{ t('login') }}</v-btn>
+                <v-btn block variant="outlined" color="primary" rounded="lg" href="/register" style="text-transform:none">{{ t('register') }}</v-btn>
             </template>
         </div>
     </v-navigation-drawer>
@@ -195,6 +193,7 @@
 import { ref, inject, computed, onMounted, onBeforeUnmount } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import GlobalSearch from '../components/Shared/GlobalSearch.vue';
+import { useLocale } from '../composables/useLocale';
 
 const Emitter = inject('Emitter');
 const mobileDrawer = ref(false);
@@ -205,14 +204,15 @@ const { props } = usePage();
 const categories = computed(() => usePage().props.categories ?? []);
 const user = computed(() => usePage().props.auth?.user);
 const siteName = computed(() => usePage().props.seo?.site_name || 'متجري');
+const { locale, switchLocale, t, pick } = useLocale();
 
-const menu = [
-    { title: 'الرئيسية',  href: '/',          icon: 'mdi-home-outline' },
-    { title: 'المنتجات',  href: '/products',   icon: 'mdi-shopping-outline' },
-    { title: 'العروض',    href: '/offers',     icon: 'mdi-tag-outline' },
-    { title: 'الماركات',  href: '/brands',     icon: 'mdi-store-outline' },
-    { title: 'تواصل معنا', href: '/contact-us', icon: 'mdi-email-outline' },
-];
+const menu = computed(() => [
+    { title: t('home'),       href: '/',          icon: 'mdi-home-outline' },
+    { title: t('products'),   href: '/products',   icon: 'mdi-shopping-outline' },
+    { title: t('offers'),     href: '/offers',     icon: 'mdi-tag-outline' },
+    { title: t('brands'),     href: '/brands',     icon: 'mdi-store-outline' },
+    { title: t('contact_us'), href: '/contact-us', icon: 'mdi-email-outline' },
+]);
 
 function isActive(href) {
     return window.location.pathname === href;

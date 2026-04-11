@@ -1,14 +1,14 @@
 <template>
     <div style="background:#f5f6fa; min-height:100vh; padding-bottom:48px">
-        <SeoHead :title="filters.q ? `نتائج: ${filters.q}` : 'جميع المنتجات'" />
+        <SeoHead :title="filters.q ? `${t('results_for')} ${filters.q}` : t('all_products')" />
 
         <!-- Header -->
         <div style="background:linear-gradient(135deg,#1a237e,#3949ab); padding:32px 16px 44px">
             <h1 class="text-white font-weight-bold text-center" style="font-size:26px">
-                {{ filters.q ? `نتائج: "${filters.q}"` : 'جميع المنتجات' }}
+                {{ filters.q ? `${t('results_for')} "${filters.q}"` : t('all_products') }}
             </h1>
             <p class="text-center mt-1" style="color:rgba(255,255,255,0.75); font-size:13px">
-                {{ products.total }} منتج متاح
+                {{ products.total }} {{ t('available_products') }}
             </p>
         </div>
 
@@ -20,54 +20,46 @@
                 <!-- Search -->
                 <div class="filter-search">
                     <v-icon size="16" color="grey">mdi-magnify</v-icon>
-                    <input
-                        v-model="localSearch"
-                        placeholder="ابحث في المنتجات..."
-                        class="filter-search-input"
-                    />
+                    <input v-model="localSearch" :placeholder="t('search_in_products')" class="filter-search-input" />
+
                 </div>
 
-                <!-- Category -->
                 <select v-model="localCat" class="filter-select" @change="applyFilters">
-                    <option value="">جميع الأقسام</option>
+                    <option value="">{{ t('all_categories') }}</option>
                     <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
                 </select>
 
-                <!-- Sort -->
                 <select v-model="localSort" class="filter-select" @change="applyFilters">
-                    <option value="latest">الأحدث</option>
-                    <option value="price_asc">السعر: الأقل أولاً</option>
-                    <option value="price_desc">السعر: الأعلى أولاً</option>
-                    <option value="discount">الأكثر خصماً</option>
+                    <option value="latest">{{ t('sort_latest') }}</option>
+                    <option value="price_asc">{{ t('sort_price_asc') }}</option>
+                    <option value="price_desc">{{ t('sort_price_desc') }}</option>
+                    <option value="discount">{{ t('sort_discount') }}</option>
                 </select>
 
-                <!-- Price range -->
                 <div class="filter-price">
-                    <input v-model="localMin" type="number" placeholder="من" class="filter-price-input" min="0" />
+                    <input v-model="localMin" type="number" :placeholder="t('from')" class="filter-price-input" min="0" />
                     <span style="color:#9ca3af; font-size:12px">—</span>
-                    <input v-model="localMax" type="number" placeholder="إلى" class="filter-price-input" min="0" />
-                    <button class="filter-apply-btn" @click="applyFilters">تطبيق</button>
+                    <input v-model="localMax" type="number" :placeholder="t('to')" class="filter-price-input" min="0" />
+                    <button class="filter-apply-btn" @click="applyFilters">{{ t('apply') }}</button>
                 </div>
 
-                <!-- Clear filters -->
                 <button v-if="hasFilters" class="filter-clear-btn" @click="clearFilters">
                     <v-icon size="14" class="me-1">mdi-close</v-icon>
-                    مسح
+                    {{ t('clear') }}
                 </button>
             </div>
 
-            <!-- Active filter chips -->
             <div v-if="hasFilters" class="filter-chips">
                 <span v-if="filters.q" class="filter-chip">
-                    بحث: {{ filters.q }}
+                    {{ t('filter_search') }} {{ filters.q }}
                     <button @click="removeFilter('q')">×</button>
                 </span>
                 <span v-if="filters.cat" class="filter-chip">
-                    القسم: {{ categories.find(c => c.id == filters.cat)?.name }}
+                    {{ t('filter_category') }} {{ categories.find(c => c.id == filters.cat)?.name }}
                     <button @click="removeFilter('cat')">×</button>
                 </span>
                 <span v-if="filters.min || filters.max" class="filter-chip">
-                    السعر: {{ filters.min || '0' }} — {{ filters.max || '∞' }} ر.س
+                    {{ t('filter_price') }} {{ filters.min || '0' }} — {{ filters.max || '∞' }} ر.س
                     <button @click="removeFilter('price')">×</button>
                 </span>
             </div>
@@ -86,12 +78,11 @@
                 </v-col>
             </v-row>
 
-            <!-- Empty state -->
             <div v-else style="text-align:center; padding:64px 0; margin-top:16px">
                 <v-icon size="64" color="grey-lighten-1">mdi-shopping-search</v-icon>
-                <p style="margin-top:12px; color:#374151; font-weight:600">لا توجد منتجات مطابقة</p>
-                <p style="color:#9ca3af; font-size:13px">جرّب تغيير معايير البحث أو الفلترة</p>
-                <button class="filter-apply-btn mt-4" @click="clearFilters">مسح الفلاتر</button>
+                <p style="margin-top:12px; color:#374151; font-weight:600">{{ t('no_products') }}</p>
+                <p style="color:#9ca3af; font-size:13px">{{ t('no_products_hint') }}</p>
+                <button class="filter-apply-btn mt-4" @click="clearFilters">{{ t('clear_filters') }}</button>
             </div>
 
             <!-- Pagination -->
@@ -113,6 +104,8 @@ import { ref, computed, watch, inject } from 'vue';
 import { router } from '@inertiajs/vue3';
 import ProductCard from '../../components/Shared/ProductCard.vue';
 import SeoHead from '../../components/Shared/SeoHead.vue';
+import { useLocale } from '../../composables/useLocale';
+const { t } = useLocale();
 
 const props = defineProps({
     products:   Object,

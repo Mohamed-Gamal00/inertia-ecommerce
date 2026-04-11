@@ -19,24 +19,13 @@
                             <v-icon size="28" color="white">mdi-storefront</v-icon>
                             <span>{{ siteName }}</span>
                         </div>
-                        <p class="brand-desc">
-                            وجهتك الأولى للتسوق الإلكتروني. نقدم أفضل المنتجات بأعلى جودة وأنسب الأسعار مع توصيل سريع وموثوق.
-                        </p>
+                        <p class="brand-desc">{{ t('footer_tagline') }}</p>
 
                         <!-- Trust badges -->
                         <div class="trust-badges">
-                            <div class="trust-badge">
-                                <v-icon size="14">mdi-shield-check-outline</v-icon>
-                                <span>دفع آمن</span>
-                            </div>
-                            <div class="trust-badge">
-                                <v-icon size="14">mdi-truck-fast-outline</v-icon>
-                                <span>شحن سريع</span>
-                            </div>
-                            <div class="trust-badge">
-                                <v-icon size="14">mdi-refresh</v-icon>
-                                <span>إرجاع مجاني</span>
-                            </div>
+                            <div class="trust-badge"><v-icon size="14">mdi-shield-check-outline</v-icon><span>{{ t('footer_secure_payment') }}</span></div>
+                            <div class="trust-badge"><v-icon size="14">mdi-truck-fast-outline</v-icon><span>{{ t('footer_fast_shipping') }}</span></div>
+                            <div class="trust-badge"><v-icon size="14">mdi-refresh</v-icon><span>{{ t('footer_free_returns') }}</span></div>
                         </div>
 
                         <!-- Social -->
@@ -58,36 +47,36 @@
 
                     <!-- Quick Links -->
                     <div class="footer-col">
-                        <h5 class="footer-col-title">روابط سريعة</h5>
+                        <h5 class="footer-col-title">{{ t('footer_quick_links') }}</h5>
                         <ul class="footer-links">
-                            <li><Link href="/">الرئيسية</Link></li>
-                            <li><Link href="/products">المنتجات</Link></li>
-                            <li><Link href="/categories">الأقسام</Link></li>
-                            <li><Link href="/brands">الماركات</Link></li>
-                            <li><Link href="/offers">العروض</Link></li>
-                            <li><Link href="/contact-us">تواصل معنا</Link></li>
+                            <li><Link href="/">{{ t('home') }}</Link></li>
+                            <li><Link href="/products">{{ t('products') }}</Link></li>
+                            <li><Link href="/categories">{{ t('categories') }}</Link></li>
+                            <li><Link href="/brands">{{ t('brands') }}</Link></li>
+                            <li><Link href="/offers">{{ t('offers') }}</Link></li>
+                            <li><Link href="/contact-us">{{ t('contact_us') }}</Link></li>
                         </ul>
                     </div>
 
                     <!-- Policies -->
                     <div class="footer-col">
-                        <h5 class="footer-col-title">السياسات</h5>
+                        <h5 class="footer-col-title">{{ t('footer_policies') }}</h5>
                         <ul class="footer-links">
-                            <li><Link href="/terms-conditions">الشروط والأحكام</Link></li>
-                            <li><Link href="/privacy-policy">سياسة الخصوصية</Link></li>
-                            <li><Link href="/shipping-policy">سياسة الشحن</Link></li>
-                            <li><Link href="/exchanges-returns">الإرجاع والاستبدال</Link></li>
-                            <li><Link href="/faq">الأسئلة الشائعة</Link></li>
+                            <li><Link href="/terms-conditions">{{ t('footer_terms') }}</Link></li>
+                            <li><Link href="/privacy-policy">{{ t('footer_privacy') }}</Link></li>
+                            <li><Link href="/shipping-policy">{{ t('footer_shipping_policy') }}</Link></li>
+                            <li><Link href="/exchanges-returns">{{ t('footer_exchanges') }}</Link></li>
+                            <li><Link href="/faq">{{ t('footer_faq') }}</Link></li>
                         </ul>
                     </div>
 
                     <!-- Services -->
                     <div class="footer-col">
-                        <h5 class="footer-col-title">خدماتنا</h5>
+                        <h5 class="footer-col-title">{{ t('footer_services') }}</h5>
                         <ul class="footer-links">
-                            <li><Link href="/bulk-order">طلبات الجملة</Link></li>
-                            <li><Link href="/representative-order">طلبات المناديب</Link></li>
-                            <li><Link href="/contact-us">تواصل معنا</Link></li>
+                            <li><Link href="/bulk-order">{{ t('footer_bulk') }}</Link></li>
+                            <li><Link href="/representative-order">{{ t('footer_reps') }}</Link></li>
+                            <li><Link href="/contact-us">{{ t('contact_us') }}</Link></li>
                         </ul>
 
                         <!-- Contact info -->
@@ -105,36 +94,28 @@
 
                     <!-- Newsletter -->
                     <div class="footer-newsletter">
-                        <h5 class="footer-col-title">النشرة البريدية</h5>
-                        <p class="newsletter-desc">اشترك ليصلك أحدث العروض والخصومات أولاً بأول.</p>
+                        <h5 class="footer-col-title">{{ t('footer_newsletter') }}</h5>
+                        <p class="newsletter-desc">{{ t('footer_newsletter_desc') }}</p>
                         <div class="newsletter-form">
-                            <input
-                                v-model="email"
-                                type="email"
-                                placeholder="بريدك الإلكتروني..."
-                                class="newsletter-input"
-                                dir="ltr"
-                                @keyup.enter="subscribe"
-                            />
+                            <input v-model="email" type="email" :placeholder="t('footer_newsletter_placeholder')"
+                                class="newsletter-input" dir="ltr" @keyup.enter="subscribe" />
                             <button class="newsletter-btn" :disabled="subscribing" @click="subscribe">
                                 <v-icon size="18">mdi-send</v-icon>
                             </button>
                         </div>
                         <p v-if="subscribeMsg" class="subscribe-msg">{{ subscribeMsg }}</p>
-
-                        <!-- App store badges -->
                         <div class="app-badges mt-4">
                             <div class="app-badge">
                                 <v-icon size="20">mdi-apple</v-icon>
                                 <div>
-                                    <div style="font-size:9px; opacity:0.7">تحميل من</div>
+                                    <div style="font-size:9px; opacity:0.7">{{ t('footer_download_from') }}</div>
                                     <div style="font-size:12px; font-weight:700">App Store</div>
                                 </div>
                             </div>
                             <div class="app-badge">
                                 <v-icon size="20">mdi-google-play</v-icon>
                                 <div>
-                                    <div style="font-size:9px; opacity:0.7">تحميل من</div>
+                                    <div style="font-size:9px; opacity:0.7">{{ t('footer_download_from') }}</div>
                                     <div style="font-size:12px; font-weight:700">Google Play</div>
                                 </div>
                             </div>
@@ -149,13 +130,13 @@
         <div class="footer-bottom">
             <div class="footer-container">
                 <div class="footer-bottom-inner">
-                    <span>© {{ new Date().getFullYear() }} {{ siteName }} — جميع الحقوق محفوظة</span>
+                    <span>© {{ new Date().getFullYear() }} {{ siteName }} — {{ t('footer_rights') }}</span>
                     <div class="bottom-links">
-                        <Link href="/terms-conditions">الشروط</Link>
+                        <Link href="/terms-conditions">{{ t('footer_terms_short') }}</Link>
                         <span>·</span>
-                        <Link href="/privacy-policy">الخصوصية</Link>
+                        <Link href="/privacy-policy">{{ t('footer_privacy_short') }}</Link>
                         <span>·</span>
-                        <Link href="/contact-us">تواصل معنا</Link>
+                        <Link href="/contact-us">{{ t('contact_us') }}</Link>
                     </div>
                 </div>
             </div>
@@ -168,11 +149,13 @@
 import { ref, computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
+import { useLocale } from '../composables/useLocale';
 
 const email        = ref('');
 const subscribing  = ref(false);
 const subscribeMsg = ref('');
 const siteName     = computed(() => usePage().props.seo?.site_name || 'متجري');
+const { t } = useLocale();
 
 async function subscribe() {
     if (!email.value.trim()) return;

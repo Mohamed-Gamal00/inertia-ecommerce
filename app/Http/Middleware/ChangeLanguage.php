@@ -8,18 +8,16 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ChangeLanguage
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->header('lang') && $request->header('lang') == 'en') {
-            app()->setLocale('en');
-        } else {
-            app()->setLocale('ar'); // Set default locale to 'ar'
+        $locale = $request->session()->get('locale', config('app.locale', 'ar'));
+
+        if (!in_array($locale, ['ar', 'en'])) {
+            $locale = 'ar';
         }
+
+        app()->setLocale($locale);
+
         return $next($request);
     }
 }

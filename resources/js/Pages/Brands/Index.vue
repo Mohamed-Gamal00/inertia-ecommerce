@@ -2,9 +2,9 @@
     <div style="background:#f5f6fa; min-height:100vh; padding-bottom:48px">
 
         <div style="background:linear-gradient(135deg,#1a237e,#3949ab); padding:40px 16px 50px">
-            <h1 class="text-white font-weight-bold text-center" style="font-size:28px">الماركات والشركات</h1>
+            <h1 class="text-white font-weight-bold text-center" style="font-size:28px">{{ t('brands_title') }}</h1>
             <p class="text-center mt-2" style="color:rgba(255,255,255,0.75); font-size:14px">
-                {{ brands.length }} ماركة متاحة
+                {{ brands.length }} {{ t('available_brands') }}
             </p>
         </div>
 
@@ -18,25 +18,29 @@
                 >
                     <div class="brand-card">
                         <div class="brand-logo">
-                            <img v-if="brand.image_url && !brand.image_url.includes('no-image')" :src="brand.image_url" :alt="brand.name" />
+                            <img v-if="brand.image_url && !brand.image_url.includes('no-image')" :src="brand.image_url" :alt="pick(brand, 'name')" />
                             <span v-else class="brand-initials">{{ brand.name_en?.charAt(0) || brand.name?.charAt(0) }}</span>
                         </div>
-                        <div class="brand-name">{{ brand.name }}</div>
-                        <div class="brand-count">{{ brand.products_count }} منتج</div>
+                        <div class="brand-name">{{ pick(brand, 'name') }}</div>
+                        <div class="brand-count">{{ brand.products_count }} {{ t('products_count') }}</div>
                     </div>
                 </a>
             </div>
 
             <div v-else style="text-align:center; padding:64px 0">
                 <v-icon size="64" color="grey-lighten-1">mdi-store-outline</v-icon>
-                <p style="margin-top:12px; color:#9ca3af">لا توجد ماركات متاحة</p>
+                <p style="margin-top:12px; color:#9ca3af">{{ t('no_brands') }}</p>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
+import { useLocale } from '../../composables/useLocale';
+
 defineProps({ brands: Array });
+
+const { t, pick } = useLocale();
 </script>
 
 <style scoped>

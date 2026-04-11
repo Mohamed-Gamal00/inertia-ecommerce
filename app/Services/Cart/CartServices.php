@@ -44,7 +44,7 @@ class CartServices
 
         // Check if requested quantity is available
         if ($quantity > $product->quantity) {
-            return ApiResponse::sendResponse(400, "Sorry, the requested quantity is not available.");
+            return ApiResponse::sendResponse(400, __('flash.quantity_not_available'));
         }
 
         // Check if product is already in the cart
@@ -57,13 +57,13 @@ class CartServices
         if ($cartItem) {
             // Ensure adding more quantity does not exceed available stock
             if (($cartItem->quantity + $quantity) > $product->quantity) {
-                return ApiResponse::sendResponse(400, "Sorry, the requested quantity exceeds available stock.");
+                return ApiResponse::sendResponse(400, __('flash.quantity_exceeds_stock'));
             }
 
             // Increment the quantity of the existing cart item
             $cartItem->increment('quantity', $quantity);
 
-            return ApiResponse::sendResponse(200, "Cart item quantity updated successfully.", $cartItem);
+            return ApiResponse::sendResponse(200, __('flash.cart_quantity_updated'), $cartItem);
         }
 
         // Create new cart item if not found
@@ -74,19 +74,19 @@ class CartServices
             'quantity' => $quantity,
         ]);
 
-        return ApiResponse::sendResponse(201, "Product added to cart successfully.", $cart);
+        return ApiResponse::sendResponse(201, __('flash.product_added_to_cart'), $cart);
     }
 
     public function deleteCartItem($cart)
     {
         if (!$cart) {
-            return ApiResponse::sendResponse(404, 'المنتج غير موجود في السلة', []);
+            return ApiResponse::sendResponse(404, __('flash.product_not_in_cart'), []);
         }
         $cart->update([
             'status' => 1
         ]);
 
-        return ApiResponse::sendResponse(200, 'success', []);
+        return ApiResponse::sendResponse(200, __('flash.success'), []);
     }
 
     public function UpdateCartProductCount($request,$id)
@@ -99,6 +99,6 @@ class CartServices
                 'quantity' => $request->post('quantity')
             ]);
 
-        return ApiResponse::sendResponse(200, 'تم التعديل بنجاح', []);
+        return ApiResponse::sendResponse(200, __('flash.cart_updated_success'), []);
     }
 }

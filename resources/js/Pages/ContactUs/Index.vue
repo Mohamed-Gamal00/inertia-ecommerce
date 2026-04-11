@@ -1,8 +1,8 @@
 <template>
     <div style="background:#f5f6fa; min-height:100vh; padding-bottom:48px">
         <div style="background:linear-gradient(135deg,#1a237e,#3949ab); padding:40px 16px 50px">
-            <h1 class="text-white font-weight-bold text-center" style="font-size:28px">تواصل معنا</h1>
-            <p class="text-center mt-2" style="color:rgba(255,255,255,0.75); font-size:14px">نحن هنا لمساعدتك في أي وقت</p>
+            <h1 class="text-white font-weight-bold text-center" style="font-size:28px">{{ t('contact_title') }}</h1>
+            <p class="text-center mt-2" style="color:rgba(255,255,255,0.75); font-size:14px">{{ t('contact_subtitle') }}</p>
         </div>
 
         <div style="max-width:800px; margin:32px auto; padding:0 16px">
@@ -30,24 +30,24 @@
                         <v-form @submit.prevent="submit">
                             <v-row dense>
                                 <v-col cols="12">
-                                    <label class="field-label">الاسم الكامل</label>
+                                    <label class="field-label">{{ t('contact_full_name') }}</label>
                                     <v-text-field v-model="form.full_name" variant="outlined" density="comfortable" rounded="lg" bg-color="grey-lighten-5" hide-details="auto" class="mt-1 mb-3" :error-messages="form.errors.full_name" />
                                 </v-col>
                                 <v-col cols="12" sm="6">
-                                    <label class="field-label">البريد الإلكتروني</label>
+                                    <label class="field-label">{{ t('email') }}</label>
                                     <v-text-field v-model="form.contact_email" variant="outlined" density="comfortable" rounded="lg" bg-color="grey-lighten-5" hide-details="auto" class="mt-1 mb-3" dir="ltr" :error-messages="form.errors.contact_email" />
                                 </v-col>
                                 <v-col cols="12" sm="6">
-                                    <label class="field-label">رقم الهاتف</label>
+                                    <label class="field-label">{{ t('phone') }}</label>
                                     <v-text-field v-model="form.phone_number" variant="outlined" density="comfortable" rounded="lg" bg-color="grey-lighten-5" hide-details="auto" class="mt-1 mb-3" dir="ltr" :error-messages="form.errors.phone_number" />
                                 </v-col>
                                 <v-col cols="12">
-                                    <label class="field-label">الرسالة</label>
+                                    <label class="field-label">{{ t('contact_message') }}</label>
                                     <v-textarea v-model="form.text" variant="outlined" density="comfortable" rounded="lg" bg-color="grey-lighten-5" hide-details="auto" rows="4" class="mt-1 mb-4" :error-messages="form.errors.text" />
                                 </v-col>
                             </v-row>
                             <v-btn type="submit" color="primary" block height="48" rounded="lg" style="text-transform:none; font-size:15px; font-weight:600" :loading="form.processing">
-                                إرسال الرسالة
+                                {{ t('contact_send') }}
                             </v-btn>
                         </v-form>
                     </v-card>
@@ -60,16 +60,18 @@
 <script setup>
 import { computed } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
+import { useLocale } from '../../composables/useLocale';
+const { t } = useLocale();
 
 const form = useForm({ full_name: '', contact_email: '', phone_number: '', text: '' });
 const success = computed(() => usePage().props.flash?.success);
 
-const contactInfo = [
-    { icon: 'mdi-phone-outline',    label: 'الهاتف',           value: '+966 50 000 0000' },
-    { icon: 'mdi-email-outline',    label: 'البريد الإلكتروني', value: 'info@store.com' },
-    { icon: 'mdi-map-marker-outline', label: 'العنوان',         value: 'الرياض، المملكة العربية السعودية' },
-    { icon: 'mdi-clock-outline',    label: 'ساعات العمل',       value: 'السبت - الخميس، 9ص - 6م' },
-];
+const contactInfo = computed(() => [
+    { icon: 'mdi-phone-outline',      label: t('contact_phone_label'),  value: '+966 50 000 0000' },
+    { icon: 'mdi-email-outline',      label: t('contact_email_label'),  value: 'info@store.com' },
+    { icon: 'mdi-map-marker-outline', label: t('contact_address_label'), value: 'الرياض، المملكة العربية السعودية' },
+    { icon: 'mdi-clock-outline',      label: t('contact_hours_label'),  value: 'السبت - الخميس، 9ص - 6م' },
+]);
 
 const submit = () => form.post('/contact-us');
 </script>

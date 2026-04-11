@@ -7,8 +7,8 @@
         <!-- Empty state -->
         <div v-else-if="!returnOrders.length" class="empty-state">
             <v-icon size="56" color="grey-lighten-1">mdi-package-variant-remove</v-icon>
-            <p class="mt-3 text-grey-darken-1" style="font-size:14px">لا توجد طلبات إرجاع</p>
-            <p class="text-grey text-caption">يمكنك طلب الإرجاع من تبويب "طلباتي"</p>
+            <p class="mt-3 text-grey-darken-1" style="font-size:14px">{{ t('returns_empty') }}</p>
+            <p class="text-grey text-caption">{{ t('returns_hint') }}</p>
         </div>
 
         <!-- Return orders list -->
@@ -24,13 +24,13 @@
                     <div class="d-flex align-center" style="gap:10px">
                         <v-icon size="18" color="orange">mdi-arrow-u-left-top</v-icon>
                         <span class="font-weight-bold" style="font-size:14px">
-                            طلب إرجاع #{{ order.number }}
+                            {{ t('return_order_label') }} #{{ order.number }}
                         </span>
                     </div>
                     <div class="d-flex align-center" style="gap:10px">
                         <span class="text-grey" style="font-size:12px">{{ formatDate(order.created_at) }}</span>
                         <v-chip color="orange" size="x-small" variant="flat" class="text-white">
-                            قيد المراجعة
+                            {{ t('under_review') }}
                         </v-chip>
                     </div>
                 </div>
@@ -49,7 +49,7 @@
                             <span class="text-grey" style="font-size:11px">x{{ item.quantity }}</span>
                         </div>
                         <span v-if="(order.order_items || []).length > 3" class="text-grey" style="font-size:12px">
-                            +{{ order.order_items.length - 3 }} أخرى
+                            +{{ order.order_items.length - 3 }} {{ t('more_items') }}
                         </span>
                     </div>
                 </div>
@@ -57,13 +57,13 @@
                 <!-- Card footer -->
                 <div class="order-card-foot">
                     <div>
-                        <span class="text-grey" style="font-size:12px">الإجمالي</span>
+                        <span class="text-grey" style="font-size:12px">{{ t('total') }}</span>
                         <span class="font-weight-bold text-primary ms-2" style="font-size:15px">
                             {{ order.total_price }} ر.س
                         </span>
                     </div>
                     <v-btn size="small" variant="text" color="primary" style="text-transform:none; font-size:12px">
-                        عرض التفاصيل
+                        {{ t('view_details') }}
                         <v-icon size="14" class="ms-1">mdi-chevron-left</v-icon>
                     </v-btn>
                 </div>
@@ -76,12 +76,12 @@
                 <!-- Dialog header -->
                 <div class="dialog-head">
                     <div>
-                        <div class="font-weight-bold" style="font-size:16px">طلب إرجاع #{{ selected.number }}</div>
+                        <div class="font-weight-bold" style="font-size:16px">{{ t('return_order_label') }} #{{ selected.number }}</div>
                         <div class="text-grey" style="font-size:12px">{{ formatDate(selected.created_at) }}</div>
                     </div>
                     <div class="d-flex align-center" style="gap:10px">
                         <v-chip color="orange" size="small" variant="flat" class="text-white">
-                            قيد المراجعة
+                            {{ t('under_review') }}
                         </v-chip>
                         <v-btn icon size="small" variant="text" @click="dialog = false">
                             <v-icon>mdi-close</v-icon>
@@ -95,29 +95,29 @@
                     <!-- Order info grid -->
                     <div class="info-grid mb-5">
                         <div class="info-cell">
-                            <div class="info-label">طريقة الدفع</div>
+                            <div class="info-label">{{ t('payment_method') }}</div>
                             <div class="info-value">
                                 <v-icon size="15" color="primary" class="me-1">mdi-credit-card-outline</v-icon>
-                                {{ selected.payment_method === 'cash_on_delivery' ? 'الدفع عند الاستلام' : 'بطاقة ائتمانية' }}
+                                {{ selected.payment_method === 'cash_on_delivery' ? t('cash_on_delivery') : t('card_payment') }}
                             </div>
                         </div>
                         <div class="info-cell">
-                            <div class="info-label">حالة الدفع</div>
+                            <div class="info-label">{{ t('payment_status') }}</div>
                             <div class="info-value">
                                 <v-chip
                                     :color="selected.payment_status === 'paid' ? 'green' : 'orange'"
                                     size="x-small" variant="flat" class="text-white"
                                 >
-                                    {{ selected.payment_status === 'paid' ? 'مدفوع' : 'غير مدفوع' }}
+                                    {{ selected.payment_status === 'paid' ? t('paid') : t('unpaid') }}
                                 </v-chip>
                             </div>
                         </div>
                         <div class="info-cell">
-                            <div class="info-label">سعر الشحن</div>
+                            <div class="info-label">{{ t('shipping_price') }}</div>
                             <div class="info-value">{{ selected.shipping_price }} ر.س</div>
                         </div>
                         <div class="info-cell">
-                            <div class="info-label">الإجمالي</div>
+                            <div class="info-label">{{ t('total') }}</div>
                             <div class="info-value font-weight-bold text-primary" style="font-size:15px">
                                 {{ selected.total_price }} ر.س
                             </div>
@@ -125,7 +125,7 @@
                     </div>
 
                     <!-- Products -->
-                    <div class="section-title mb-3">المنتجات</div>
+                    <div class="section-title mb-3">{{ t('products') }}</div>
                     <div class="items-list">
                         <div
                             v-for="item in selected.order_items || []"
@@ -137,7 +137,7 @@
                             </div>
                             <div style="flex:1">
                                 <div style="font-size:13px; font-weight:600">{{ item.product_name }}</div>
-                                <div style="font-size:12px; color:#9ca3af">الكمية: {{ item.quantity }}</div>
+                                <div style="font-size:12px; color:#9ca3af">{{ t('quantity') }}: {{ item.quantity }}</div>
                             </div>
                             <div class="font-weight-bold" style="font-size:13px; color:#1a237e">
                                 {{ item.price }} ر.س
@@ -147,14 +147,14 @@
 
                     <!-- Note -->
                     <template v-if="selected.note">
-                        <div class="section-title mt-4 mb-2">ملاحظة</div>
+                        <div class="section-title mt-4 mb-2">{{ t('note') }}</div>
                         <div class="note-box">{{ selected.note }}</div>
                     </template>
 
                     <!-- Return status notice -->
                     <div class="mt-4">
                         <v-alert type="warning" variant="tonal" density="compact" rounded="lg" icon="mdi-arrow-u-left-top">
-                            تم تقديم طلب إرجاع لهذا الطلب وهو قيد المراجعة من قِبل الفريق
+                            {{ t('return_submitted_review') }}
                         </v-alert>
                     </div>
                 </v-card-text>
@@ -166,7 +166,9 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import { useLocale } from '../../../composables/useLocale';
 
+const { t } = useLocale();
 defineProps({ user: { type: Object, required: true } });
 
 const loading      = ref(false);

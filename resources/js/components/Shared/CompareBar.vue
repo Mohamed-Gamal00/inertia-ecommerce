@@ -4,22 +4,21 @@
             <div class="compare-bar-inner">
                 <div class="compare-items">
                     <div v-for="item in compareList" :key="item.id" class="compare-item">
-                        <img :src="item.image_url" :alt="item.name" class="compare-item-img" />
-                        <div class="compare-item-name">{{ item.name }}</div>
+                        <img :src="item.image_url" :alt="pick(item,'name')" class="compare-item-img" />
+                        <div class="compare-item-name">{{ pick(item, 'name') }}</div>
                         <button class="compare-item-remove" @click="toggle(item)">×</button>
                     </div>
                     <div v-for="i in (MAX - compareList.length)" :key="`empty-${i}`" class="compare-item compare-item--empty">
                         <v-icon size="24" color="grey-lighten-1">mdi-plus</v-icon>
-                        <span style="font-size:11px; color:#9ca3af">أضف منتجاً</span>
+                        <span style="font-size:11px; color:#9ca3af">{{ t('compare_add_product') }}</span>
                     </div>
                 </div>
-
                 <div class="compare-actions">
                     <a :href="`/compare?ids=${compareList.map(p=>p.id).join(',')}`" class="compare-btn-go">
                         <v-icon size="16" class="me-1">mdi-compare</v-icon>
-                        مقارنة ({{ compareList.length }})
+                        {{ t('compare') }} ({{ compareList.length }})
                     </a>
-                    <button class="compare-btn-clear" @click="clear">مسح</button>
+                    <button class="compare-btn-clear" @click="clear">{{ t('compare_clear') }}</button>
                 </div>
             </div>
         </div>
@@ -28,7 +27,9 @@
 
 <script setup>
 import { useCompare } from '../../composables/useCompare';
+import { useLocale } from '../../composables/useLocale';
 const { compareList, toggle, clear, MAX } = useCompare();
+const { t, pick } = useLocale();
 </script>
 
 <style scoped>

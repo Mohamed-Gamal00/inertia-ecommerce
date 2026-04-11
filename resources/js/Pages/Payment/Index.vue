@@ -7,18 +7,18 @@
                 <div class="pay-logo">
                     <v-icon size="28" color="white">mdi-lock-outline</v-icon>
                 </div>
-                <h1 class="pay-title">إتمام الدفع</h1>
-                <p class="pay-sub">بيئة دفع آمنة ومشفرة</p>
+                <h1 class="pay-title">{{ t('payment_page_title') }}</h1>
+                <p class="pay-sub">{{ t('payment_secure') }}</p>
             </div>
 
             <!-- Order summary -->
             <div class="pay-card pay-summary">
                 <div class="pay-summary-row">
-                    <span class="pay-summary-label">رقم الطلب</span>
+                    <span class="pay-summary-label">{{ t('order_number') }}</span>
                     <span class="pay-summary-val">#{{ order.number }}</span>
                 </div>
                 <div class="pay-summary-row">
-                    <span class="pay-summary-label">المبلغ الإجمالي</span>
+                    <span class="pay-summary-label">{{ t('total_amount') }}</span>
                     <span class="pay-summary-val pay-amount">
                         {{ totalAmount.toFixed(2) }} ر.س
                     </span>
@@ -42,25 +42,13 @@
 
             <!-- Security badges -->
             <div class="pay-badges">
-                <div class="pay-badge">
-                    <v-icon size="14" class="me-1">mdi-shield-check-outline</v-icon>
-                    SSL مشفر
-                </div>
-                <div class="pay-badge">
-                    <v-icon size="14" class="me-1">mdi-credit-card-outline</v-icon>
-                    Moyasar
-                </div>
-                <div class="pay-badge">
-                    <v-icon size="14" class="me-1">mdi-lock-outline</v-icon>
-                    PCI DSS
-                </div>
+                <div class="pay-badge"><v-icon size="14" class="me-1">mdi-shield-check-outline</v-icon>{{ t('ssl_encrypted') }}</div>
+                <div class="pay-badge"><v-icon size="14" class="me-1">mdi-credit-card-outline</v-icon>Moyasar</div>
+                <div class="pay-badge"><v-icon size="14" class="me-1">mdi-lock-outline</v-icon>PCI DSS</div>
             </div>
 
             <div class="pay-back">
-                <a href="/" class="pay-back-link">
-                    <v-icon size="14" class="me-1">mdi-arrow-right</v-icon>
-                    العودة للرئيسية
-                </a>
+                <a href="/" class="pay-back-link"><v-icon size="14" class="me-1">mdi-arrow-right</v-icon>{{ t('back_to_home') }}</a>
             </div>
 
         </div>
@@ -70,6 +58,8 @@
 <script setup>
 import { computed, onMounted } from 'vue';
 import { usePage } from '@inertiajs/vue3';
+import { useLocale } from '../../composables/useLocale';
+const { t } = useLocale();
 
 defineOptions({ layout: null });
 

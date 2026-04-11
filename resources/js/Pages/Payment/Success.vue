@@ -10,40 +10,22 @@
                 </svg>
             </div>
 
-            <h1 class="result-title result-title--success">تم الدفع بنجاح!</h1>
-            <p class="result-sub">شكراً لك، تم استلام طلبك وسيتم معالجته قريباً.</p>
+            <h1 class="result-title result-title--success">{{ t('payment_success_title') }}</h1>
+            <p class="result-sub">{{ t('payment_success_sub') }}</p>
 
-            <!-- Order summary card -->
             <div class="result-card">
-                <div class="result-row">
-                    <span class="result-label">رقم الطلب</span>
-                    <span class="result-val fw-bold">#{{ order.number }}</span>
-                </div>
-                <div class="result-row">
-                    <span class="result-label">عدد المنتجات</span>
-                    <span class="result-val">{{ order.items_count }} قطعة</span>
-                </div>
-                <div class="result-row">
-                    <span class="result-label">المبلغ المدفوع</span>
-                    <span class="result-val result-amount">
-                        {{ ((order.total_price || 0) + (order.shipping_price || 0)).toFixed(2) }} ر.س
-                    </span>
-                </div>
-                <div class="result-row">
-                    <span class="result-label">حالة الدفع</span>
-                    <span class="badge bg-success px-3 py-2">مدفوع ✓</span>
-                </div>
+                <div class="result-row"><span class="result-label">{{ t('order_number') }}</span><span class="result-val fw-bold">#{{ order.number }}</span></div>
+                <div class="result-row"><span class="result-label">{{ t('items_count') }}</span><span class="result-val">{{ order.items_count }} {{ t('pieces') }}</span></div>
+                <div class="result-row"><span class="result-label">{{ t('amount_paid') }}</span><span class="result-val result-amount">{{ ((order.total_price || 0) + (order.shipping_price || 0)).toFixed(2) }} ر.س</span></div>
+                <div class="result-row"><span class="result-label">{{ t('payment_status') }}</span><span class="badge bg-success px-3 py-2">{{ t('paid_status') }}</span></div>
             </div>
 
-            <!-- Actions -->
             <div class="result-actions">
                 <a v-if="!order.is_guest" href="/user-profile?tab=orders" class="result-btn result-btn--primary">
-                    <v-icon size="16" class="me-1">mdi-clipboard-list-outline</v-icon>
-                    عرض طلباتي
+                    <v-icon size="16" class="me-1">mdi-clipboard-list-outline</v-icon>{{ t('view_orders') }}
                 </a>
                 <a href="/products" class="result-btn result-btn--outline">
-                    <v-icon size="16" class="me-1">mdi-shopping-outline</v-icon>
-                    متابعة التسوق
+                    <v-icon size="16" class="me-1">mdi-shopping-outline</v-icon>{{ t('continue_shopping') }}
                 </a>
             </div>
 
@@ -54,11 +36,11 @@
 <script setup>
 import { computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
-
+import { useLocale } from '../../composables/useLocale';
 defineOptions({ layout: null });
-
 const { props } = usePage();
 const order = computed(() => props.order);
+const { t } = useLocale();
 </script>
 
 <style scoped>
