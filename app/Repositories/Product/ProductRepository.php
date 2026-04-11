@@ -82,12 +82,12 @@ class ProductRepository implements ProudctInterface
                 foreach (request()->product_features as $feature) {
                     if (!empty($feature['feature_name']) && !empty($feature['feature_description'])) {
                         ProductFeature::updateOrCreate(
-                            ['id' => $feature['feature_id']],
+                            ['id' => $feature['feature_id'] ?? null],
                             [
-                                'feature_name' => $feature['feature_name'],
-                                'feature_name_en' => $feature['feature_name_en'],
+                                'feature_name'        => $feature['feature_name'],
+                                'feature_name_en'     => $feature['feature_name_en'] ?? null,
                                 'feature_description' => $feature['feature_description'],
-                                'product_id' => $product->id
+                                'product_id'          => $product->id
                             ]
                         );
                     }

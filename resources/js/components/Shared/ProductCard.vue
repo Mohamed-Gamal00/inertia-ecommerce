@@ -1,12 +1,7 @@
 <template>
-    <div
-        class="pc"
-        :class="{ 'pc--hovered': hovered && item.quantity > 0, 'pc--oos': item.quantity < 1 }"
-        :data-product-id="item.id"
-        @mouseenter="hovered = true"
-        @mouseleave="hovered = false"
-    >
-        <!-- Image -->
+    <div class="pc" @mouseenter="hovered = true" @mouseleave="hovered = false" :data-product-id="item.id">
+
+        <!-- Image area -->
         <div class="pc-img-wrap">
             <img :src="item.image_url" :alt="item.name" class="pc-img" />
             <span v-if="discountPercent && item.quantity > 0" class="pc-badge">-{{ discountPercent }}%</span>

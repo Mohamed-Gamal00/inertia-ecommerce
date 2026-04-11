@@ -8,6 +8,7 @@ use App\Models\MainCategory;
 use App\Models\Product;
 use App\Models\ProductAvailability;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class ProductSeeder extends Seeder
 {
@@ -23,10 +24,16 @@ class ProductSeeder extends Seeder
         $black = Color::updateOrCreate(['color_code' => '#000000'], ['name' => 'أسود']);
         $white = Color::updateOrCreate(['color_code' => '#FFFFFF'], ['name' => 'أبيض']);
 
-        // Company
+        // Default catalog vendor (products in seed reference this company)
         $company = Company::updateOrCreate(
             ['name' => 'الشركة الافتراضية'],
-            ['name_en' => 'Default Company']
+            [
+                'name_en' => 'Default Company',
+                'email' => 'default-store@example.test',
+                'password' => Hash::make('password'),
+                'is_vendor' => true,
+                'status' => 'active',
+            ]
         );
 
         // Categories

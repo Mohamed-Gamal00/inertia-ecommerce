@@ -14,6 +14,7 @@ use App\Models\SendNewsToUser;
 use App\Models\Setting;
 use App\Models\ShippingTypesAndPrice;
 use App\Models\UserAddress;
+use App\Services\Vendor\VendorOrderNotificationService;
 use App\Notifications\OrderCreatedEmailAdmin;
 use App\Notifications\OrderCreatedNotification;
 use Illuminate\Support\Facades\Notification;
@@ -43,10 +44,18 @@ class CheckoutServices
     public function checkShippingSelectOptions($request)
     {
         $selectedShippingOptions = 0;
-        if ($request->has('pickup_from_store'))        $selectedShippingOptions++;
-        if ($request->has('fixed_shipping'))           $selectedShippingOptions++;
-        if ($request->has('shipping_based_on_weight')) $selectedShippingOptions++;
-        if ($request->has('shipping_based_on_city'))   $selectedShippingOptions++;
+        if ($request->has('pickup_from_store')) {
+            $selectedShippingOptions++;
+        }
+        if ($request->has('fixed_shipping')) {
+            $selectedShippingOptions++;
+        }
+        if ($request->has('shipping_based_on_weight')) {
+            $selectedShippingOptions++;
+        }
+        if ($request->has('shipping_based_on_city')) {
+            $selectedShippingOptions++;
+        }
 
         if ($selectedShippingOptions > 1) {
             throw new \Exception('لا يمكن اختيار اكثر من طريقة شحن في اّن واحد', 400);
@@ -77,7 +86,7 @@ class CheckoutServices
             // لو اليوزر اختار عنوان محفوظ
             if ($request->has('user_address') && $request->user_address !== 'add_address') {
                 $userAddress = UserAddress::find($request->user_address);
-                if (!$userAddress) {
+                if (! $userAddress) {
                     throw new \Exception('العنوان المحدد غير موجود. يرجى التحقق من صحة العنوان.', 400);
                 }
                 $cityId = $userAddress->city_id;
@@ -96,13 +105,13 @@ class CheckoutServices
         return (float) $shippingPrice;
     }
 
-    public function createOrder($request, $user, $shippingPrice): Order
+    public function createOrder($request, $user, $shippingPrice, ?int $companyId = null): Order
     {
-        $settings            = Setting::first();
-        $valueAddedTax       = $settings->value_added_tax ?? 0;
-        $totalPrice          = $this->calculateTotal($user);
+        $settings = Setting::first();
+        $valueAddedTax = $settings->value_added_tax ?? 0;
+        $totalPrice = $this->calculateTotal($user);
         $totalBeforeDiscount = $this->calculateTotalBeforeDiscount($user);
-        $addedTax            = ($totalPrice * ($valueAddedTax / 100));
+        $addedTax = ($totalPrice * ($valueAddedTax / 100));
 
         // For guest checkout: create or update a Guest record
         $guestId = null;
@@ -142,15 +151,15 @@ class CheckoutServices
 
         foreach ($cartItems as $cartItem) {
             $orderItem = OrderItem::create([
-                'order_id'     => $order->id,
-                'product_id'   => $cartItem->product_id,
+                'order_id' => $order->id,
+                'product_id' => $cartItem->product_id,
                 'product_name' => $cartItem->product->name,
-                'price'        => $cartItem->product->discount_price ?? $cartItem->product->price,
-                'quantity'     => $cartItem->quantity,
+                'price' => $cartItem->product->discount_price ?? $cartItem->product->price,
+                'quantity' => $cartItem->quantity,
             ]);
 
             // لو فيه sub_choice كمان، زودها مع withPivot
-            if (!empty($cartItem->choices)) {
+            if (! empty($cartItem->choices)) {
                 foreach ($cartItem->choices as $choiceId) {
                     $orderItem->choices()->attach($choiceId);
                 }
@@ -192,16 +201,17 @@ class CheckoutServices
             $UserAddress = UserAddress::where('id', $request->user_address)->first();
             if ($UserAddress) {
                 $order->addresses()->create([
-                    'type'         => 'shipping',
-                    'first_name'   => $UserAddress->first_name,
-                    'last_name'    => $UserAddress->family_name,
+                    'type' => 'shipping',
+                    'first_name' => $UserAddress->first_name,
+                    'last_name' => $UserAddress->family_name,
                     'phone_number' => $UserAddress->phone_number,
-                    'country_id'   => $UserAddress->country_id,
-                    'city_id'      => $UserAddress->city_id,
-                    'address'      => $UserAddress->address,
-                    'email'        => $user?->email,
+                    'country_id' => $UserAddress->country_id,
+                    'city_id' => $UserAddress->city_id,
+                    'address' => $UserAddress->address,
+                    'email' => $user?->email,
                 ]);
             }
+
             return;
         }
 
@@ -209,30 +219,31 @@ class CheckoutServices
         if (isset($request->addr['shipping'])) {
             $addr = $request->addr['shipping'];
             $order->addresses()->create([
-                'type'         => 'shipping',
-                'first_name'   => $addr['first_name'] ?? null,
-                'last_name'    => $addr['last_name'] ?? null,
+                'type' => 'shipping',
+                'first_name' => $addr['first_name'] ?? null,
+                'last_name' => $addr['last_name'] ?? null,
                 'phone_number' => $addr['phone_number'] ?? null,
-                'country_id'   => $addr['country_id'] ?? null,
-                'city_id'      => $addr['city_id'] ?? null,
-                'address'      => $addr['address'] ?? null,
-                'email'        => $user?->email,
+                'country_id' => $addr['country_id'] ?? null,
+                'city_id' => $addr['city_id'] ?? null,
+                'address' => $addr['address'] ?? null,
+                'email' => $user?->email,
             ]);
 
             // حفظ العنوان في قائمة عناوين اليوزر للاستخدام مستقبلاً
             if ($user) {
                 UserAddress::create([
-                    'user_id'       => $user->id,
+                    'user_id' => $user->id,
                     'address_title' => 'عنوان جديد',
-                    'first_name'    => $addr['first_name'] ?? null,
-                    'family_name'   => $addr['last_name'] ?? null,
-                    'phone_number'  => $addr['phone_number'] ?? null,
-                    'country_id'    => $addr['country_id'] ?? null,
-                    'city_id'       => $addr['city_id'] ?? null,
-                    'address'       => $addr['address'] ?? null,
-                    'main_address'  => false,
+                    'first_name' => $addr['first_name'] ?? null,
+                    'family_name' => $addr['last_name'] ?? null,
+                    'phone_number' => $addr['phone_number'] ?? null,
+                    'country_id' => $addr['country_id'] ?? null,
+                    'city_id' => $addr['city_id'] ?? null,
+                    'address' => $addr['address'] ?? null,
+                    'main_address' => false,
                 ]);
             }
+
             return;
         }
 
@@ -240,14 +251,14 @@ class CheckoutServices
         if (isset($request->addr['billing'])) {
             $addr = $request->addr['billing'];
             $order->addresses()->create([
-                'type'         => 'billing',
-                'first_name'   => $addr['first_name'] ?? null,
-                'last_name'    => $addr['last_name'] ?? null,
+                'type' => 'billing',
+                'first_name' => $addr['first_name'] ?? null,
+                'last_name' => $addr['last_name'] ?? null,
                 'phone_number' => $addr['phone_number'] ?? null,
-                'country_id'   => $addr['country_id'] ?? null,
-                'city_id'      => $addr['city_id'] ?? null,
-                'address'      => $addr['address'] ?? null,
-                'email'        => $request->guest_email,
+                'country_id' => $addr['country_id'] ?? null,
+                'city_id' => $addr['city_id'] ?? null,
+                'address' => $addr['address'] ?? null,
+                'email' => $request->guest_email,
             ]);
         }
     }
@@ -292,11 +303,13 @@ class CheckoutServices
 
     public function sendNotificationToAdmin($order)
     {
+        VendorOrderNotificationService::notifyNewOrder($order);
+
         $admins = Admin::all();
         Notification::send($admins, new OrderCreatedNotification($order));
 
         // إرسال إيميل للأدمنز اللي عندهم إيميل صحيح
-        $validAdmins = $admins->filter(fn($admin) => filter_var($admin->email, FILTER_VALIDATE_EMAIL));
+        $validAdmins = $admins->filter(fn ($admin) => filter_var($admin->email, FILTER_VALIDATE_EMAIL));
         foreach ($validAdmins as $admin) {
             try {
                 Notification::route('mail', $admin->email)
@@ -318,7 +331,7 @@ class CheckoutServices
         // الدفع عند الاستلام — توجيه للصفحة الرئيسية
         return response()->json([
             'redirect' => route('home'),
-            'message'  => 'تم إتمام الطلب بنجاح',
+            'message' => 'تم إتمام الطلب بنجاح',
         ], 201);
     }
 

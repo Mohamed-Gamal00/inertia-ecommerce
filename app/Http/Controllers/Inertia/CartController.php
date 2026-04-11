@@ -54,7 +54,11 @@ class CartController extends Controller
             return response()->json(['message' => __('flash.quantity_not_available')], 422);
         }
 
-        $this->cart->add($product, $request->quantity ?? 1, $request->color_id);
+        try {
+            $this->cart->add($product, $request->quantity ?? 1, $request->color_id);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
         $items = $this->cart->get()->map(fn($item) => [
             'id'             => $item->id,

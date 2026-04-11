@@ -183,3 +183,4 @@ Route::middleware('auth:web')->group(function () {
 //Route::get('/user_orders/{number}/payment/callback', [\App\Http\Controllers\Front\PaymentController::class, 'callback'])->name('payment.callback');
 
 require __DIR__ . '/dashboard.php';
+require __DIR__ . '/vendor.php';

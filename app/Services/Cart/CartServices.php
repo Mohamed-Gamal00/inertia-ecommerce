@@ -6,6 +6,7 @@ use App\Helper\ApiResponse;
 use App\Http\Resources\CartResource;
 use App\Models\Cart;
 use App\Models\Product;
+use App\Support\CartSingleVendor;
 
 class CartServices
 {
@@ -64,6 +65,14 @@ class CartServices
             $cartItem->increment('quantity', $quantity);
 
             return ApiResponse::sendResponse(200, __('flash.cart_quantity_updated'), $cartItem);
+        }
+
+        $currentLines = Cart::with('product')->withoutGlobalScope('cookie_id')
+            ->where('user_id', $user->id)
+            ->where('status', 0)
+            ->get();
+        if ($message = CartSingleVendor::validateCartLinesForProduct($currentLines, $product)) {
+            return ApiResponse::sendResponse(422, $message, []);
         }
 
         // Create new cart item if not found

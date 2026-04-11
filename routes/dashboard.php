@@ -125,6 +125,13 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     //----------------------------------------------/Companies routes
     Route::resource('/companies', CompaniesController::class);
 
+    //----------------------------------------------/Vendors routes
+    Route::get('/vendors', [\App\Http\Controllers\Dashboard\VendorsController::class, 'index'])->name('vendors.index');
+    Route::get('/vendors/{id}', [\App\Http\Controllers\Dashboard\VendorsController::class, 'show'])->name('vendors.show');
+    Route::put('/vendors/{id}/approve', [\App\Http\Controllers\Dashboard\VendorsController::class, 'approve'])->name('vendors.approve');
+    Route::put('/vendors/{id}/suspend', [\App\Http\Controllers\Dashboard\VendorsController::class, 'suspend'])->name('vendors.suspend');
+    Route::delete('/vendors/{id}', [\App\Http\Controllers\Dashboard\VendorsController::class, 'destroy'])->name('vendors.destroy');
+
     //----------------------------------------------/stores routes
     Route::resource('/store_featuers', StoreFatuerController::class);
 
