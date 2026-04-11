@@ -7,6 +7,10 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    banners: {
+        type: Array,
+        default: () => [],
+    },
 });
 </script>
 
@@ -14,7 +18,7 @@ const props = defineProps({
 <template>
     <div class="home">
         <SeoHead />
-        <UpperPanner />
+        <UpperPanner :banners="banners" />
         <TheFeatures />
         <TopOffers />
         <ProductsComponents

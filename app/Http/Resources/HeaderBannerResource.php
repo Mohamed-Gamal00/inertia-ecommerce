@@ -15,7 +15,7 @@ class HeaderBannerResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'image' => asset('storage/' . $this->header_image),
+            'image' => asset('storage/' . $this->current_image_lang),
             'link' => $this->image_link,
         ];
     }

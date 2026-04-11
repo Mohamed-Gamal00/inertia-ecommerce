@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Inertia;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\HeaderBannerResource;
+use App\Models\HeaderBanner;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -34,8 +36,11 @@ class HomeController extends Controller
                     : null,
             ]);
 
+        $banners = HeaderBannerResource::collection(HeaderBanner::all())->resolve();
+
         return Inertia::render('Home', [
             'products' => $products,
+            'banners'  => $banners,
         ]);
     }
 }
