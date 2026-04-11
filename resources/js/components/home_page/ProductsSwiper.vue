@@ -6,7 +6,7 @@
                 style="font-weight: 900; font-size: 30px"
                 :class="[`text-${titleColor}`]"
             >
-                {{ title }}
+                {{ t(title) }}
             </h2>
             <Link href="/products" class="text-black" style="font-size: 14px; text-decoration: none">
                 {{ t('shop_all') }}

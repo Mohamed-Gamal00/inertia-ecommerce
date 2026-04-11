@@ -19,7 +19,7 @@ const props = defineProps({
         <TopOffers />
         <ProductsComponents
             :products="products"
-            title="Flash Deals"
+            title="section_flash_deals"
             titleColor="red"
         />
 
@@ -28,7 +28,7 @@ const props = defineProps({
         <QualityFeatuers />
         <ProductsComponents
             :products="products"
-            title="Top Mobile Phones"
+            title="section_top_mobiles"
             titleColor="#404040"
         />
         <v-container fluid>
@@ -51,7 +51,7 @@ const props = defineProps({
         </v-container>
         <ProductsComponents
             :products="products"
-            title="Top Fragrances"
+            title="section_top_fragrances"
             titleColor="#404040"
         />
         <img

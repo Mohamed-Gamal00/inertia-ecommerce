@@ -89,7 +89,7 @@ const submit = () => {
     form.post('/login', {
         onFinish: () => (loading.value = false),
         onError: (errors) => {
-            errorMessage.value = errors.email || errors.password || 'حدث خطأ، حاول مرة أخرى.';
+            errorMessage.value = errors.email || errors.password || t('error_occurred');
         },
     });
 };

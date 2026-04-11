@@ -10,9 +10,9 @@
         <div class="pd-breadcrumb">
             <v-container>
                 <div class="d-flex align-center" style="gap:6px; font-size:13px; color:#6b7280">
-                    <a href="/" class="text-decoration-none text-grey-darken-1">الرئيسية</a>
+                    <a href="/" class="text-decoration-none text-grey-darken-1">{{ t('home') }}</a>
                     <v-icon size="14" color="grey">mdi-chevron-left</v-icon>
-                    <a href="/products" class="text-decoration-none text-grey-darken-1">المنتجات</a>
+                    <a href="/products" class="text-decoration-none text-grey-darken-1">{{ t('products') }}</a>
                     <v-icon size="14" color="grey">mdi-chevron-left</v-icon>
                     <span class="text-primary font-weight-medium">{{ product.name }}</span>
                 </div>
@@ -296,7 +296,7 @@ const newComment     = ref('');
 const submittingReview = ref(false);
 const reviewError    = ref('');
 const user = usePage().props.auth?.user;
-const rateLabels = ['سيء', 'مقبول', 'جيد', 'جيد جداً', 'ممتاز'];
+const rateLabels = computed(() => [t('rate_bad'), t('rate_ok'), t('rate_good'), t('rate_very_good'), t('rate_excellent')]);
 
 async function loadReviews() {
     loadingReviews.value = true;
@@ -322,7 +322,7 @@ async function submitReview() {
         newComment.value = '';
         await loadReviews();
     } catch (e) {
-        reviewError.value = e.response?.data?.message || 'حدث خطأ';
+        reviewError.value = e.response?.data?.message || t('error_occurred');
     } finally {
         submittingReview.value = false;
     }
@@ -345,10 +345,10 @@ async function addToCart() {
     try {
         const { data } = await axios.post('/cart/add', { product_id: product.id, quantity: quantity.value });
         Emitter.emit('cart-item-added', data.items);
-        snackbarMessage.value = 'تم إضافة المنتج للسلة';
+        snackbarMessage.value = t('product_added_to_cart');
         snackbarColor.value = 'success';
     } catch (e) {
-        snackbarMessage.value = e.response?.data?.message || 'حدث خطأ';
+        snackbarMessage.value = e.response?.data?.message || t('error_occurred');
         snackbarColor.value = 'error';
     } finally {
         btnLoading.value = false;

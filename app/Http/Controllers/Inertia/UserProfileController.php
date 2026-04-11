@@ -61,7 +61,7 @@ class UserProfileController extends Controller
     public function userAddressesStore(CreateNewAddressRequest $request)
     {
         UserAddress::create($request->all());
-        return to_route('user.addresses')->with('success', 'تم اضافة العنوان');
+        return to_route('user.addresses')->with('success', __('flash.address_added'));
     }
 
     public function userAddressesEdit($addressId)
@@ -75,13 +75,13 @@ class UserProfileController extends Controller
     {
         $address = UserAddress::findOrFail($addressId);
         $address->update($request->all());
-        return to_route('user.addresses')->with('success', 'تم تحديث العنوان');
+        return to_route('user.addresses')->with('success', __('flash.address_updated'));
     }
 
     public function userAddressesDestroy($addressId)
     {
         UserAddress::findOrFail($addressId)->delete();
-        return to_route('user.addresses')->with('danger', 'تم مسح العنوان');
+        return to_route('user.addresses')->with('danger', __('flash.address_deleted'));
     }
 
     public function setMainAddress($addressId)
@@ -89,7 +89,7 @@ class UserProfileController extends Controller
         $user = Auth::user();
         $user->addresses()->update(['main_address' => 0]);
         $user->addresses()->where('id', $addressId)->update(['main_address' => 1]);
-        return back()->with('success', 'تم تحديث العنوان الرئيسي بنجاح');
+        return back()->with('success', __('flash.main_address_updated'));
     }
 
     public function changePasswordView()
@@ -102,6 +102,6 @@ class UserProfileController extends Controller
         $request->validate(['new_password' => 'required|confirmed|min:6']);
         $user = Auth::user();
         $user->update(['password' => Hash::make($request->new_password)]);
-        return to_route('user.info')->with('info', 'تم تغيير الرقم السري بنجاح');
+        return to_route('user.info')->with('info', __('flash.password_changed'));
     }
 }

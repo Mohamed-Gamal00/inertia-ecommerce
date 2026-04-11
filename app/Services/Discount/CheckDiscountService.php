@@ -25,7 +25,7 @@ class CheckDiscountService
         ])->exists();
 
         if ($userDiscountCodeExists) {
-            return ApiResponse::sendResponse(400, 'لقد استخدمت هذا الكود بالفعل.');
+            return ApiResponse::sendResponse(400, __('flash.discount_already_used'));
         }
         UserDiscountCode::create([
             'cookie_id' => Cart::getCookieIdApi(),
@@ -42,7 +42,7 @@ class CheckDiscountService
             ->where('status', 0)->get();
 
         if ($cartItems->isEmpty()) {
-            return ApiResponse::sendResponse(200, 'لا يمكن استخدام كود الخصم والسلة فارغة');
+            return ApiResponse::sendResponse(200, __('flash.discount_cart_empty'));
         }
 
         foreach ($cartItems as $item) {
@@ -65,6 +65,6 @@ class CheckDiscountService
             'discount_code' => $discountCode->code,
             'discount_price' => $discountCode->price,
         ];
-        return ApiResponse::sendResponse(200, 'success', $data);
+        return ApiResponse::sendResponse(200, __('flash.success'), $data);
     }
 }

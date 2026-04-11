@@ -153,7 +153,7 @@ class CheckoutController extends Controller
             $cartItems = $this->checkoutService->getCartItems($user);
 
             if ($cartItems->isEmpty()) {
-                return response()->json(['message' => 'لا يمكن اتمام الطلب والسلة فارغة'], 422);
+                return response()->json(['message' => __('flash.cart_empty_checkout')], 422);
             }
 
         } catch (\Exception $e) {
@@ -186,7 +186,7 @@ class CheckoutController extends Controller
 
         } catch (Throwable $e) {
             DB::rollBack();
-            return response()->json(['message' => 'فشل إنشاء الطلب', 'error' => $e->getMessage()], 500);
+            return response()->json(['message' => __('flash.order_creation_failed'), 'error' => $e->getMessage()], 500);
         }
     }
 
@@ -202,7 +202,7 @@ class CheckoutController extends Controller
         // 1. Guests cannot use discount codes
         if (!$user) {
             return response()->json([
-                'message'       => 'يجب تسجيل الدخول أولاً لاستخدام كود الخصم',
+                'message'       => __('flash.login_required_discount'),
                 'requires_login' => true,
             ], 401);
         }
@@ -213,7 +213,7 @@ class CheckoutController extends Controller
             ->first();
 
         if (!$code) {
-            return response()->json(['message' => 'الكود غير صالح أو انتهت صلاحيته'], 422);
+            return response()->json(['message' => __('flash.invalid_discount_code')], 422);
         }
 
         // 2. If code is product-specific, check that at least one cart item matches
@@ -227,7 +227,7 @@ class CheckoutController extends Controller
 
             if (!$hasMatchingItem) {
                 return response()->json([
-                    'message' => 'هذا الكود لا ينطبق على أي منتج في سلتك',
+                    'message' => __('flash.discount_not_applicable'),
                 ], 422);
             }
         }
@@ -238,7 +238,7 @@ class CheckoutController extends Controller
             ->exists();
 
         if ($alreadyUsed) {
-            return response()->json(['message' => 'لقد استخدمت هذا الكود بالفعل'], 422);
+            return response()->json(['message' => __('flash.discount_already_used')], 422);
         }
 
         // Register usage & decrement
@@ -264,7 +264,7 @@ class CheckoutController extends Controller
         session(['applied_discount_code_id' => $code->id]);
 
         return response()->json([
-            'message'        => 'تم تطبيق كود الخصم بنجاح',
+            'message'        => __('flash.discount_applied_success'),
             'discount_code'  => $code->code,
             'discount_value' => (float) $code->price,
             'discount_type'  => $code->discount_type,

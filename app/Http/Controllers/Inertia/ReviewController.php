@@ -26,7 +26,7 @@ class ReviewController extends Controller
             ->first();
 
         if ($existing) {
-            return response()->json(['message' => 'لقد قمت بتقييم هذا المنتج مسبقاً'], 422);
+            return response()->json(['message' => __('flash.product_already_reviewed')], 422);
         }
 
         Comment::create([
@@ -36,7 +36,7 @@ class ReviewController extends Controller
             'comment'    => $request->comment,
         ]);
 
-        return response()->json(['message' => 'تم إضافة تقييمك بنجاح']);
+        return response()->json(['message' => __('flash.review_added_success')]);
     }
 
     public function index($productId)

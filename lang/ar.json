@@ -331,6 +331,9 @@
   "why_support_desc": "خدمة عملاء متاحة 24/7",
 
   "top_categories_title": "الأقسام الرئيسية",
+  "section_flash_deals": "عروض خاطفة",
+  "section_top_mobiles": "أفضل الهواتف المحمولة",
+  "section_top_fragrances": "أفضل العطور",
 
   "quickview_in_stock": "متوفر في المخزن",
   "quickview_out_of_stock": "غير متوفر",
@@ -343,5 +346,60 @@
   "newsletter_placeholder": "بريدك الإلكتروني...",
   "subscribe": "اشتراك",
   "subscribed_success": "✓ تم الاشتراك بنجاح!",
-  "already_subscribed": "أنت مشترك بالفعل في النشرة البريدية"
+  "already_subscribed": "أنت مشترك بالفعل في النشرة البريدية",
+
+  "save_changes": "حفظ التغييرات",
+  "profile_updated": "تم تحديث البيانات بنجاح",
+  "error_occurred": "حدث خطأ، حاول مرة أخرى",
+
+  "orders_empty": "لا توجد طلبات حتى الآن",
+  "shop_now": "تسوق الآن",
+  "order_label": "طلب",
+  "more_items": "أخرى",
+  "view_details": "عرض التفاصيل",
+  "paid": "مدفوع",
+  "unpaid": "غير مدفوع",
+  "shipping_price": "سعر الشحن",
+  "products": "المنتجات",
+  "return_question": "هل تريد إرجاع هذا الطلب؟",
+  "return_hint": "سيتم مراجعة طلبك من قِبل الفريق",
+  "request_return": "طلب إرجاع",
+  "return_submitted": "تم تقديم طلب إرجاع لهذا الطلب وهو قيد المراجعة",
+  "return_success": "تم تقديم طلب الإرجاع بنجاح",
+
+  "status_pending": "قيد الانتظار",
+  "status_approved": "تمت الموافقة",
+  "status_in_progress": "قيد التنفيذ",
+  "status_completed": "مكتمل",
+  "status_rejected": "مرفوض",
+
+  "no_addresses": "لا توجد عناوين مسجلة بعد",
+  "add_first_address": "أضف عنوانك الأول",
+  "set_main_address": "تعيين رئيسي",
+  "edit_address": "تعديل العنوان",
+  "address_name": "اسم العنوان",
+  "address_name_placeholder": "المنزل، العمل...",
+  "address_detail": "العنوان التفصيلي",
+  "cancel": "إلغاء",
+  "update": "تحديث",
+  "delete": "حذف",
+  "delete_address": "حذف العنوان",
+  "delete_address_confirm": "هل أنت متأكد من حذف هذا العنوان؟",
+
+  "wishlist_empty": "لا توجد منتجات في المفضلة حتى الآن",
+
+  "returns_empty": "لا توجد طلبات إرجاع",
+  "returns_hint": "يمكنك طلب الإرجاع من تبويب \"طلباتي\"",
+  "return_order_label": "طلب إرجاع",
+  "under_review": "قيد المراجعة",
+  "return_submitted_review": "تم تقديم طلب إرجاع لهذا الطلب وهو قيد المراجعة من قِبل الفريق",
+
+  "agree_terms_required": "يجب الموافقة على الشروط والأحكام",
+  "first_name_required": "الاسم الأول مطلوب",
+  "last_name_required": "اسم العائلة مطلوب",
+  "phone_required": "رقم الجوال مطلوب",
+  "address_required": "العنوان مطلوب",
+  "country_required": "الدولة مطلوبة",
+  "city_required": "المدينة مطلوبة",
+  "email_required": "البريد الإلكتروني مطلوب"
 }

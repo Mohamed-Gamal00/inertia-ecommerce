@@ -113,7 +113,7 @@
                         <div v-if="appliedDiscount" class="co-sum-row" style="color:#16a34a">
                             <span>
                                 <v-icon size="14" color="success" class="me-1">mdi-tag-outline</v-icon>
-                                خصم ({{ appliedDiscount.code }})
+                                {{ t('discount_applied') }} ({{ appliedDiscount.code }})
                             </span>
                             <span>- {{ discountSaving }} ر.س</span>
                         </div>
@@ -385,7 +385,7 @@ async function applyDiscount() {
         if (res?.requires_login) {
             discountError.value = '__login__';
         } else {
-            discountError.value = res?.message || 'حدث خطأ';
+            discountError.value = res?.message || t('error_occurred');
         }
     } finally {
         discountLoading.value = false;
@@ -409,7 +409,7 @@ const discountSaving = computed(() => {
 
 async function submit() {
     if (!form.value.terms) {
-        errors.value = { terms: 'يجب الموافقة على الشروط والأحكام' };
+        errors.value = { terms: t('agree_terms_required') };
         return;
     }
 
@@ -419,13 +419,13 @@ async function submit() {
 
     if (needsAddressForm) {
         const fieldErrors = {};
-        if (!addrForm.value.first_name?.trim())   fieldErrors['addr.billing.first_name']   = ['الاسم الأول مطلوب'];
-        if (!addrForm.value.last_name?.trim())    fieldErrors['addr.billing.last_name']    = ['اسم العائلة مطلوب'];
-        if (!addrForm.value.phone_number?.trim()) fieldErrors['addr.billing.phone_number'] = ['رقم الجوال مطلوب'];
-        if (!addrForm.value.address?.trim())      fieldErrors['addr.billing.address']      = ['العنوان مطلوب'];
-        if (!addrForm.value.country_id)           fieldErrors['addr.billing.country_id']   = ['الدولة مطلوبة'];
-        if (!addrForm.value.city_id)              fieldErrors['addr.billing.city_id']      = ['المدينة مطلوبة'];
-        if (isGuest && !addrForm.value.email?.trim()) fieldErrors['guest_email'] = ['البريد الإلكتروني مطلوب'];
+        if (!addrForm.value.first_name?.trim())   fieldErrors['addr.billing.first_name']   = [t('first_name_required')];
+        if (!addrForm.value.last_name?.trim())    fieldErrors['addr.billing.last_name']    = [t('last_name_required')];
+        if (!addrForm.value.phone_number?.trim()) fieldErrors['addr.billing.phone_number'] = [t('phone_required')];
+        if (!addrForm.value.address?.trim())      fieldErrors['addr.billing.address']      = [t('address_required')];
+        if (!addrForm.value.country_id)           fieldErrors['addr.billing.country_id']   = [t('country_required')];
+        if (!addrForm.value.city_id)              fieldErrors['addr.billing.city_id']      = [t('city_required')];
+        if (isGuest && !addrForm.value.email?.trim()) fieldErrors['guest_email'] = [t('email_required')];
 
         if (Object.keys(fieldErrors).length) {
             errors.value = fieldErrors;
@@ -482,7 +482,7 @@ async function submit() {
         if (e.response?.status === 422) {
             errors.value = e.response.data.errors || {};
         } else {
-            errors.value = { general: e.response?.data?.message || e.message || 'حدث خطأ' };
+            errors.value = { general: e.response?.data?.message || e.message || t('error_occurred') };
             console.error('Checkout error:', e.response?.data);
         }
     } finally {

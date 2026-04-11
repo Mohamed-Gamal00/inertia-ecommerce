@@ -17,11 +17,11 @@ class NewsletterController extends Controller
         $already = SendNewsToUser::where('subscription_email', $request->email)->exists();
 
         if ($already) {
-            return response()->json(['message' => 'أنت مشترك بالفعل في النشرة البريدية'], 409);
+            return response()->json(['message' => __('flash.newsletter_already_subscribed')], 409);
         }
 
         SendNewsToUser::create(['subscription_email' => $request->email]);
 
-        return response()->json(['message' => '✓ تم الاشتراك بنجاح!']);
+        return response()->json(['message' => __('flash.newsletter_subscribed_success')]);
     }
 }

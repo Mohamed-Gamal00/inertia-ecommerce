@@ -16,18 +16,18 @@
             <div v-if="item.quantity > 0" class="pc-qv-layer" :class="{ show: hovered }">
                 <button class="pc-qv-pill" @click.stop="$emit('quick-view', item)">
                     <v-icon size="13" class="me-1">mdi-eye-outline</v-icon>
-                    عرض سريع
+                    {{ t('quick_view') }}
                 </button>
             </div>
-            <button v-if="item.quantity > 0" class="pc-qv-mobile" @click.stop="$emit('quick-view', item)" title="عرض سريع">
+            <button v-if="item.quantity > 0" class="pc-qv-mobile" @click.stop="$emit('quick-view', item)" :title="t('quick_view')">
                 <v-icon size="15">mdi-eye-outline</v-icon>
-                عرض سريع
+                {{ t('quick_view') }}
             </button>
             <!-- OOS overlay -->
             <div v-if="item.quantity < 1" class="pc-oos-overlay">
                 <span class="pc-oos-text">
                     <v-icon size="16" class="me-1">mdi-package-variant-remove</v-icon>
-                    نفذت الكمية
+                    {{ t('out_of_stock') }}
                 </span>
             </div>
         </div>
@@ -58,7 +58,7 @@
                     class="pc-compare-btn"
                     :class="{ 'pc-compare-btn--on': isInCompare(item.id) }"
                     @click.stop="toggleCompare(item)"
-                    title="إضافة للمقارنة"
+                    :title="t('compare')"
                 >
                     <v-icon size="13">mdi-compare</v-icon>
                 </button>
@@ -69,7 +69,7 @@
             {{ snackbarMessage }}
             <template v-if="snackbarColor === 'warning'" #actions>
                 <v-btn variant="text" color="white" size="small" href="/login" style="font-weight:700">
-                    تسجيل الدخول
+                    {{ t('login') }}
                 </v-btn>
             </template>
         </v-snackbar>
@@ -115,9 +115,9 @@ async function addToCart() {
         flyToCart(document.querySelector(`[data-product-id="${props.item.id}"]`));
         justAdded.value = true;
         setTimeout(() => { justAdded.value = false; }, 2200);
-        snackbarMessage.value = 'تم إضافة المنتج للسلة';        snackbarColor.value = 'success';
+        snackbarMessage.value = t('product_added_to_cart');        snackbarColor.value = 'success';
     } catch (e) {
-        snackbarMessage.value = e.response?.data?.message || 'حدث خطأ';
+        snackbarMessage.value = e.response?.data?.message || t('error_occurred');
         snackbarColor.value = 'error';
     } finally {
         addingToCart.value = false;

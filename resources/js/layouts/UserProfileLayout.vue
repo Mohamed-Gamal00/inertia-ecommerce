@@ -8,7 +8,7 @@
             <v-avatar size="80" class="mx-auto">
               <v-img :src="user?.profile_image || '/images/default-avatar.png'" />
             </v-avatar>
-            <h4 class="mt-3">wellcom {{ user?.name }}</h4>
+            <h4 class="mt-3">{{ user?.name }}</h4>
             <p class="text-grey text-sm">{{ user?.first_name }}</p>
           </div>
 
@@ -35,7 +35,7 @@
               <v-list-item-icon>
                 <v-icon>mdi-logout</v-icon>
               </v-list-item-icon>
-              <v-list-item-title>تسجيل  خروج</v-list-item-title>
+              <v-list-item-title>{{ t('logout') }}</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-card>
@@ -55,17 +55,17 @@
 import { Link } from '@inertiajs/vue3'
 import { router, usePage } from '@inertiajs/vue3'
 import { computed } from 'vue'
+import { useLocale } from '../composables/useLocale'
 
+const { t } = useLocale()
 const page = usePage()
 const user = computed(() => page.props.auth.user)
 
-const menuItems = [
-  { label: 'المفضلة', icon: 'mdi-heart', route: 'user.wishlist' },
-//   { label: 'الطلبات', icon: 'mdi-cube', route: 'user.info' },
-//   { label: 'المرتجعات', icon: 'mdi-undo-variant', route: 'user.info' },
-  { label: 'العناوين', icon: 'mdi-map-marker', route: 'user.addresses' },
-  { label: 'الحساب', icon: 'mdi-account', route: 'user.profile' },
-]
+const menuItems = computed(() => [
+  { label: t('profile_wishlist'), icon: 'mdi-heart', route: 'user.wishlist' },
+  { label: t('profile_addresses'), icon: 'mdi-map-marker', route: 'user.addresses' },
+  { label: t('profile_account'), icon: 'mdi-account', route: 'user.profile' },
+])
 
 const logout = () => {
   router.post(route('logout'))

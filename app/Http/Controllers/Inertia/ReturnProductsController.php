@@ -41,6 +41,6 @@ class ReturnProductsController extends Controller
             'order_status_id' => $statusId,
         ]);
 
-        return response()->json(['message' => 'تم تقديم طلب الإرجاع بنجاح']);
+        return response()->json(['message' => __('flash.return_request_success')]);
     }
 }
