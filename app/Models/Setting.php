@@ -31,10 +31,26 @@ class Setting extends Model
         'value_added_tax',
         'publishable_key',
         'secret_key',
-
         'sms_api_key',
         'sms_user_name',
         'sms_sender',
+
+        // SEO
+        'seo_meta_title',
+        'seo_meta_description',
+        'seo_meta_keywords',
+        'og_title',
+        'og_description',
+        'og_image',
+        'twitter_card',
+        'twitter_title',
+        'twitter_description',
+        'twitter_image',
+        'google_analytics_id',
+        'google_tag_manager_id',
+        'google_site_verification',
+        'canonical_url',
+        'robots_index',
     ];
 
     public function getImageUrlAttribute()

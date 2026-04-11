@@ -5,6 +5,7 @@ namespace App\Services\CheckOut;
 use App\Models\Admin;
 use App\Models\Cart;
 use App\Models\City;
+use App\Models\Guest;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderStatus;
@@ -112,8 +113,28 @@ class CheckoutServices
         $totalBeforeDiscount = $this->calculateTotalBeforeDiscount($user);
         $addedTax = ($totalPrice * ($valueAddedTax / 100));
 
+        // For guest checkout: create or update a Guest record
+        $guestId = null;
+        if (!$user) {
+            $cookieId = Cart::getCookieId();
+            $addr     = $request->addr['billing'] ?? [];
+            $guest    = Guest::updateOrCreate(
+                ['cookie_id' => $cookieId],
+                [
+                    'first_name'   => $addr['first_name'] ?? null,
+                    'family_name'  => $addr['last_name'] ?? null,
+                    'email'        => $request->guest_email ?? null,
+                    'phone_number' => $addr['phone_number'] ?? null,
+                    'address'      => $addr['address'] ?? null,
+                ]
+            );
+            $guestId = $guest->id;
+        }
+
         return Order::create([
             'user_id'             => $user?->id,
+            'guest_id'            => $guestId,
+            'discount_code_id'    => session('applied_discount_code_id'),
             'payment_method'      => $request->payment_method,
             'order_status_id'     => OrderStatus::where('default_status', true)->first()->id,
             'note'                => $request->note,
@@ -312,5 +333,44 @@ class CheckoutServices
             'redirect' => route('home'),
             'message' => 'تم إتمام الطلب بنجاح',
         ], 201);
+    }
+
+    /**
+     * Merge guest cart (by cookie_id) into the authenticated user's cart.
+     * Called right after login or register.
+     */
+    public function mergeGuestCart(int $userId): void
+    {
+        $cookieId = Cart::getCookieId();
+
+        $guestItems = Cart::withoutGlobalScope('cookie_id')
+            ->where('cookie_id', $cookieId)
+            ->where('status', 0)
+            ->whereNull('user_id')
+            ->get();
+
+        foreach ($guestItems as $guestItem) {
+            // Check if user already has this product in cart
+            $existing = Cart::withoutGlobalScope('cookie_id')
+                ->where('user_id', $userId)
+                ->where('product_id', $guestItem->product_id)
+                ->where('status', 0)
+                ->first();
+
+            if ($existing) {
+                // Merge quantities (cap at product stock)
+                $product  = $guestItem->product;
+                $newQty   = $existing->quantity + $guestItem->quantity;
+                $maxQty   = $product ? $product->quantity : $newQty;
+                $existing->update(['quantity' => min($newQty, $maxQty)]);
+                $guestItem->update(['status' => 1]); // mark old guest item as done
+            } else {
+                // Reassign to user
+                $guestItem->update([
+                    'user_id'   => $userId,
+                    'cookie_id' => $cookieId, // keep same cookie so global scope still works
+                ]);
+            }
+        }
     }
 }

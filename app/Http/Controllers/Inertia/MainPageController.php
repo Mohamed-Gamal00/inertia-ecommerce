@@ -48,6 +48,6 @@ class MainPageController extends Controller
         $request->session()->put('currency_id', $request->input('currency_id'));
 
 
-        return response()->json(['success' => true, 'message' => 'تم تحديث العملة الافتراضية بنجاح.']);
+        return response()->json(['success' => true, 'message' => __('flash.currency_updated_success')]);
     }
 }

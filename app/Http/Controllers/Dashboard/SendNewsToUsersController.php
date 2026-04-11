@@ -29,12 +29,32 @@ class SendNewsToUsersController extends Controller
 
   public function sendNewsMail(SendNewsToUserRequest $request)
   {
-    //Gate::authorize('news.view');
-    $data = $request->validated();
-    $users =  $this->SendNewsToUser->sendNewsMail($data);
+    $userIds = (array) $request->input('users', []);
+    $users   = SendNewsToUser::whereIn('id', $userIds)->get();
+    $sent    = 0;
+    $failed  = 0;
+
     foreach ($users as $user) {
-      $user->notify(new NewsNotification(request()->input('title'), request()->input('body'), $user));
+      try {
+        $user->notify(new NewsNotification(
+          $request->input('title'),
+          $request->input('body'),
+          $user
+        ));
+        $sent++;
+        // Respect Mailtrap / SMTP rate limits — 1 second between sends
+        if ($users->count() > 1) usleep(1100000);
+      } catch (\Exception $e) {
+        \Log::error('Newsletter send failed for: ' . $user->subscription_email . ' — ' . $e->getMessage());
+        $failed++;
+      }
     }
-    return \redirect()->back()->with('success', __('messages.NEWSLETTER_CREATED'));
+
+    $msg = "تم إرسال النشرة البريدية بنجاح إلى {$sent} مشترك.";
+    if ($failed > 0) {
+      $msg .= " (فشل الإرسال لـ {$failed} بريد)";
+    }
+
+    return redirect()->back()->with('success', $msg);
   }
 }

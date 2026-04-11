@@ -92,7 +92,7 @@
                                     @enderror
                                     <option hidden disabled>اختر حالة الكود</option>
                                     <option selected value="active">نشط</option>
-                                    <option value="archived">غير نشط</option>
+                                    <option value="inactive">غير نشط</option>
                                 </select>
                                 @error('status')
                                 <span class="error">{{ $message }}</span>

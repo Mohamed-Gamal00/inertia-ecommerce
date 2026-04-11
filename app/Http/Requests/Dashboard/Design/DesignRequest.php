@@ -27,11 +27,11 @@ class DesignRequest extends FormRequest
     ];
 
     if ($this->isMethod('post')) { // For store method
-      $rules['image'] = ['required', 'image', 'mimes:png,jpg,jpeg,gif,svg', 'max:2048'];
+      $rules['image'] = ['required', 'image', 'mimes:png,jpg,jpeg,gif,svg,webp', 'max:2048'];
     }
 
     if ($this->isMethod('put') || $this->isMethod('patch')) { // For update method
-      $rules['image'] = ['nullable', 'image', 'mimes:png,jpg,jpeg,gif,svg', 'max:2048'];
+      $rules['image'] = ['nullable', 'image', 'mimes:png,jpg,jpeg,gif,svg,webp', 'max:2048'];
     }
 
     return $rules;

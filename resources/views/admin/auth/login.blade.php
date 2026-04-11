@@ -1,329 +1,378 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل دخول الإدارة</title>
-    <link href="{{ asset('assets/css/bootstrap-rtl.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet">
+    <title>تسجيل الدخول | لوحة التحكم</title>
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
+    <link href="{{ asset('assets/css/bootstrap-rtl.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('assets/css/app-rtl.min.css') }}" rel="stylesheet" type="text/css">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             min-height: 100vh;
             display: flex;
             font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: #f5f6fa;
+            background: #f0f2f8;
         }
 
-        /* Left: branding panel */
-        .login-left {
-            width: 45%;
-            background: linear-gradient(145deg, #0d1b6e 0%, #1a237e 40%, #283593 70%, #3949ab 100%);
+        /* ── Left panel: branding ── */
+        .al-brand {
+            flex: 1;
+            background: linear-gradient(145deg, #1a237e 0%, #283593 50%, #3949ab 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 48px;
+            padding: 48px 40px;
             position: relative;
             overflow: hidden;
         }
 
-        .login-left::before {
+        .al-brand::before {
             content: '';
             position: absolute;
             width: 400px; height: 400px;
             border-radius: 50%;
             background: rgba(255,255,255,0.04);
-            top: -150px; right: -100px;
+            top: -100px; left: -100px;
         }
 
-        .login-left::after {
+        .al-brand::after {
             content: '';
             position: absolute;
-            width: 250px; height: 250px;
+            width: 300px; height: 300px;
             border-radius: 50%;
             background: rgba(255,255,255,0.04);
-            bottom: -80px; left: -60px;
+            bottom: -80px; right: -80px;
         }
 
-        .login-left-content { position: relative; z-index: 1; text-align: center; }
-
-        .brand-icon {
+        .al-brand-logo {
             width: 80px; height: 80px;
             background: rgba(255,255,255,0.15);
             border-radius: 20px;
             display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 36px;
-            backdrop-filter: blur(10px);
+            margin-bottom: 28px;
+            backdrop-filter: blur(8px);
             border: 1px solid rgba(255,255,255,0.2);
+            z-index: 1;
         }
 
-        .brand-title {
-            color: white;
+        .al-brand-logo img {
+            width: 48px; height: 48px; object-fit: contain;
+        }
+
+        .al-brand-title {
+            color: #fff;
             font-size: 28px;
             font-weight: 800;
-            margin-bottom: 8px;
+            text-align: center;
+            margin-bottom: 12px;
+            z-index: 1;
         }
 
-        .brand-sub {
+        .al-brand-sub {
             color: rgba(255,255,255,0.7);
             font-size: 14px;
-            line-height: 1.7;
-            max-width: 260px;
-            margin: 0 auto 32px;
-        }
-
-        .stat-cards {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .stat-card {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 12px;
-            padding: 14px 20px;
             text-align: center;
-            backdrop-filter: blur(8px);
-            min-width: 90px;
+            line-height: 1.6;
+            max-width: 280px;
+            z-index: 1;
         }
 
-        .stat-card .num {
-            color: white;
-            font-size: 22px;
-            font-weight: 800;
-            line-height: 1;
+        .al-brand-features {
+            margin-top: 48px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            z-index: 1;
+            width: 100%;
+            max-width: 300px;
         }
 
-        .stat-card .label {
-            color: rgba(255,255,255,0.65);
-            font-size: 11px;
-            margin-top: 4px;
+        .al-feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            padding: 12px 16px;
+            backdrop-filter: blur(4px);
         }
 
-        /* Right: form panel */
-        .login-right {
-            flex: 1;
+        .al-feature-icon {
+            width: 36px; height: 36px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .al-feature-text {
+            color: rgba(255,255,255,0.85);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        /* ── Right panel: form ── */
+        .al-form-panel {
+            width: 480px;
+            flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 40px 32px;
-            background: white;
+            padding: 48px 40px;
+            background: #fff;
         }
 
-        .login-form-wrap {
+        .al-form-wrap {
             width: 100%;
-            max-width: 400px;
+            max-width: 380px;
         }
 
-        .login-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #e8eaf6;
-            color: #1a237e;
-            font-size: 12px;
-            font-weight: 700;
-            padding: 5px 12px;
-            border-radius: 20px;
-            margin-bottom: 20px;
+        .al-form-header {
+            margin-bottom: 36px;
         }
 
-        .login-title {
+        .al-form-header h2 {
             font-size: 26px;
             font-weight: 800;
             color: #111827;
             margin-bottom: 6px;
         }
 
-        .login-sub {
+        .al-form-header p {
             font-size: 14px;
-            color: #9ca3af;
-            margin-bottom: 28px;
+            color: #6b7280;
         }
 
-        .field-label {
+        .al-field {
+            margin-bottom: 20px;
+        }
+
+        .al-label {
+            display: block;
             font-size: 13px;
             font-weight: 600;
             color: #374151;
-            display: block;
             margin-bottom: 6px;
         }
 
-        .form-control {
-            border-radius: 10px;
-            border: 1.5px solid #e5e7eb;
-            padding: 11px 14px;
-            font-size: 14px;
-            background: #f9fafb;
-            transition: border-color 0.15s, box-shadow 0.15s;
+        .al-input-wrap {
+            position: relative;
         }
 
-        .form-control:focus {
-            border-color: #3949ab;
-            box-shadow: 0 0 0 3px rgba(57,73,171,0.1);
-            background: white;
-            outline: none;
-        }
-
-        .btn-login {
+        .al-input {
             width: 100%;
+            padding: 12px 44px 12px 16px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #111827;
+            background: #f9fafb;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            direction: ltr;
+            text-align: right;
+        }
+
+        .al-input:focus {
+            border-color: #3949ab;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(57,73,171,0.1);
+        }
+
+        .al-input-icon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        .al-input-toggle {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .al-input-toggle:hover { color: #3949ab; }
+
+        .al-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #dc2626;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .al-btn {
+            width: 100%;
+            padding: 13px;
             background: linear-gradient(135deg, #1a237e, #3949ab);
-            color: white;
+            color: #fff;
             border: none;
             border-radius: 10px;
-            padding: 13px;
             font-size: 15px;
             font-weight: 700;
             cursor: pointer;
             transition: opacity 0.2s, transform 0.1s;
             margin-top: 8px;
+            letter-spacing: 0.3px;
         }
 
-        .btn-login:hover { opacity: 0.92; transform: translateY(-1px); }
-        .btn-login:active { transform: translateY(0); }
+        .al-btn:hover { opacity: 0.92; }
+        .al-btn:active { transform: scale(0.99); }
 
-        .divider {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin: 20px 0;
-            color: #d1d5db;
+        .al-footer {
+            margin-top: 32px;
+            text-align: center;
             font-size: 12px;
+            color: #9ca3af;
         }
 
-        .divider::before, .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: #e5e7eb;
-        }
-
-        .vendor-link {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 11px;
-            border: 1.5px solid #e5e7eb;
-            border-radius: 10px;
-            color: #374151;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            transition: border-color 0.15s, background 0.15s;
-        }
-
-        .vendor-link:hover {
-            border-color: #3949ab;
-            background: #f0f2ff;
-            color: #1a237e;
-        }
-
+        /* ── Responsive ── */
         @media (max-width: 768px) {
-            .login-left { display: none; }
+            body { flex-direction: column; }
+            .al-brand { padding: 32px 24px; min-height: 220px; }
+            .al-brand-features { display: none; }
+            .al-form-panel { width: 100%; padding: 32px 24px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Left branding -->
-    <div class="login-left">
-        <div class="login-left-content">
-            <div class="brand-icon">🛒</div>
-            <div class="brand-title">لوحة التحكم</div>
-            <p class="brand-sub">إدارة متكاملة لمتجرك الإلكتروني — منتجات، طلبات، عملاء، وأكثر.</p>
+    <!-- Left: Branding -->
+    <div class="al-brand">
+        <div class="al-brand-logo">
+            <img src="{{ asset('assets/images/logo-sm.png') }}" alt="Logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'mdi mdi-store\' style=\'font-size:32px; color:white\'></i>'">
+        </div>
+        <div class="al-brand-title">لوحة التحكم</div>
+        <div class="al-brand-sub">منصة إدارة متكاملة للتحكم في متجرك الإلكتروني بكل سهولة واحترافية</div>
 
-            <div class="stat-cards">
-                @php
-                    $pCount = \App\Models\Product::count();
-                    $oCount = \App\Models\Order::count();
-                    $uCount = \App\Models\User::count();
-                @endphp
-                <div class="stat-card">
-                    <div class="num">{{ $pCount }}</div>
-                    <div class="label">منتج</div>
-                </div>
-                <div class="stat-card">
-                    <div class="num">{{ $oCount }}</div>
-                    <div class="label">طلب</div>
-                </div>
-                <div class="stat-card">
-                    <div class="num">{{ $uCount }}</div>
-                    <div class="label">عميل</div>
-                </div>
+        <div class="al-brand-features">
+            <div class="al-feature">
+                <div class="al-feature-icon"><i class="mdi mdi-shopping"></i></div>
+                <div class="al-feature-text">إدارة المنتجات والمخزون</div>
+            </div>
+            <div class="al-feature">
+                <div class="al-feature-icon"><i class="mdi mdi-chart-line"></i></div>
+                <div class="al-feature-text">تقارير المبيعات والإحصائيات</div>
+            </div>
+            <div class="al-feature">
+                <div class="al-feature-icon"><i class="mdi mdi-account-group"></i></div>
+                <div class="al-feature-text">إدارة العملاء والطلبات</div>
             </div>
         </div>
     </div>
 
-    <!-- Right form -->
-    <div class="login-right">
-        <div class="login-form-wrap">
+    <!-- Right: Form -->
+    <div class="al-form-panel">
+        <div class="al-form-wrap">
 
-            <div class="login-badge">
-                <i class="mdi mdi-shield-account-outline"></i>
-                منطقة الإدارة
+            <div class="al-form-header">
+                <h2>مرحباً بعودتك 👋</h2>
+                <p>سجّل دخولك للوصول إلى لوحة التحكم</p>
             </div>
 
-            <h1 class="login-title">مرحباً بعودتك 👋</h1>
-            <p class="login-sub">سجّل دخولك للوصول إلى لوحة التحكم</p>
+            @if (session('error'))
+                <div class="al-error">
+                    <i class="mdi mdi-alert-circle-outline"></i>
+                    {{ session('error') }}
+                </div>
+            @endif
 
-            @if(session('error') || $errors->any())
-                <div class="alert alert-danger mb-4" style="border-radius:10px; font-size:13px">
-                    {{ session('error') ?? $errors->first() }}
+            @if ($errors->any())
+                <div class="al-error">
+                    <i class="mdi mdi-alert-circle-outline"></i>
+                    {{ $errors->first() }}
                 </div>
             @endif
 
             <form method="POST" action="{{ route('admin.login.store') }}">
                 @csrf
 
-                <div class="mb-4">
-                    <label class="field-label">البريد الإلكتروني</label>
-                    <input
-                        type="email"
-                        name="email"
-                        class="form-control"
-                        placeholder="admin@example.com"
-                        value="{{ old('email') }}"
-                        required
-                        dir="ltr"
-                        autofocus
-                    >
+                <div class="al-field">
+                    <label class="al-label" for="email">البريد الإلكتروني</label>
+                    <div class="al-input-wrap">
+                        <i class="mdi mdi-email-outline al-input-icon"></i>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            class="al-input"
+                            placeholder="admin@example.com"
+                            value="{{ old('email') }}"
+                            required
+                            autocomplete="email"
+                        />
+                    </div>
                 </div>
 
-                <div class="mb-4">
-                    <label class="field-label">كلمة المرور</label>
-                    <input
-                        type="password"
-                        name="password"
-                        class="form-control"
-                        placeholder="••••••••"
-                        required
-                    >
+                <div class="al-field">
+                    <label class="al-label" for="password">كلمة المرور</label>
+                    <div class="al-input-wrap">
+                        <i class="mdi mdi-lock-outline al-input-icon"></i>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="al-input"
+                            placeholder="••••••••"
+                            required
+                            autocomplete="current-password"
+                        />
+                        <button type="button" class="al-input-toggle" onclick="togglePassword()" id="toggleBtn">
+                            <i class="mdi mdi-eye-outline" id="toggleIcon"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <button type="submit" class="btn-login">
-                    <i class="mdi mdi-login me-2"></i>
+                <button type="submit" class="al-btn">
+                    <i class="mdi mdi-login me-1"></i>
                     تسجيل الدخول
                 </button>
             </form>
 
-            <div class="divider">أو</div>
-
-            <a href="{{ route('vendor.login') }}" class="vendor-link">
-                <i class="mdi mdi-store-outline" style="font-size:18px"></i>
-                تسجيل دخول البائعين
-            </a>
-
-            <p class="text-center mt-4" style="font-size:12px; color:#9ca3af">
-                © {{ date('Y') }} متجري — جميع الحقوق محفوظة
-            </p>
+            <div class="al-footer">
+                &copy; {{ date('Y') }} — جميع الحقوق محفوظة
+            </div>
         </div>
     </div>
 
+    <script src="{{ asset('assets/libs/jquery/jquery.min.js') }}"></script>
+    <script>
+        function togglePassword() {
+            const input = document.getElementById('password');
+            const icon  = document.getElementById('toggleIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'mdi mdi-eye-off-outline';
+            } else {
+                input.type = 'password';
+                icon.className = 'mdi mdi-eye-outline';
+            }
+        }
+    </script>
 </body>
 </html>

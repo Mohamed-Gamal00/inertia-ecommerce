@@ -3,9 +3,9 @@
         <div class="auth-left d-none d-md-flex">
             <div class="auth-left-content">
                 <v-icon size="56" color="white" class="mb-4">mdi-storefront</v-icon>
-                <h1 class="text-white font-weight-bold mb-3" style="font-size:32px">متجري</h1>
+                <h1 class="text-white font-weight-bold mb-3" style="font-size:32px">{{ siteName }}</h1>
                 <p class="text-white" style="opacity:0.85; font-size:15px; max-width:280px; line-height:1.8">
-                    أنشئ كلمة مرور جديدة قوية لحماية حسابك.
+                    {{ t('reset_tagline') }}
                 </p>
             </div>
         </div>
@@ -14,11 +14,11 @@
             <div class="auth-form-wrapper">
                 <div class="d-flex d-md-none align-center mb-6">
                     <v-icon size="32" color="primary" class="me-2">mdi-storefront</v-icon>
-                    <span class="font-weight-bold text-h6">متجري</span>
+                    <span class="font-weight-bold text-h6">{{ siteName }}</span>
                 </div>
 
-                <h2 class="font-weight-bold mb-1" style="font-size:26px">إعادة تعيين كلمة المرور</h2>
-                <p class="text-grey-darken-1 mb-6" style="font-size:14px">أدخل كلمة المرور الجديدة</p>
+                <h2 class="font-weight-bold mb-1" style="font-size:26px">{{ t('reset_title') }}</h2>
+                <p class="text-grey-darken-1 mb-6" style="font-size:14px">{{ t('reset_subtitle') }}</p>
 
                 <v-alert v-if="success" type="success" variant="tonal" rounded="lg" class="mb-5" density="compact">
                     {{ success }}
@@ -28,7 +28,7 @@
                 </v-alert>
 
                 <v-form @submit.prevent="submit">
-                    <label class="field-label">كلمة المرور الجديدة</label>
+                    <label class="field-label">{{ t('reset_new_password') }}</label>
                     <v-text-field
                         v-model="form.password"
                         placeholder="••••••••"
@@ -45,7 +45,7 @@
                         :error-messages="form.errors.password"
                     />
 
-                    <label class="field-label">تأكيد كلمة المرور</label>
+                    <label class="field-label">{{ t('reset_confirm_password') }}</label>
                     <v-text-field
                         v-model="form.password_confirmation"
                         placeholder="••••••••"
@@ -70,12 +70,12 @@
                         :loading="form.processing"
                         style="font-size:15px; font-weight:600; text-transform:none"
                     >
-                        تحديث كلمة المرور
+                        {{ t('reset_btn') }}
                     </v-btn>
                 </v-form>
 
                 <div class="text-center mt-5" style="font-size:14px">
-                    <a href="/login" class="text-primary font-weight-bold text-decoration-none">العودة لتسجيل الدخول</a>
+                    <a href="/login" class="text-primary font-weight-bold text-decoration-none">{{ t('reset_back_login') }}</a>
                 </div>
             </div>
         </div>
@@ -85,9 +85,12 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
+import { useLocale } from '../../composables/useLocale';
 
 defineOptions({ layout: null });
 
+const { t } = useLocale();
+const siteName = computed(() => usePage().props.seo?.site_name || 'متجري');
 const form  = useForm({ password: '', password_confirmation: '' });
 const showPass  = ref(false);
 const showPass2 = ref(false);

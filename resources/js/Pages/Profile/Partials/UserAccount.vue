@@ -2,7 +2,7 @@
     <div>
         <v-row>
             <v-col cols="12" md="6">
-                <label class="field-label">الاسم الأول</label>
+                <label class="field-label">{{ t('first_name') }}</label>
                 <v-text-field
                     v-model="form.first_name"
                     variant="outlined"
@@ -15,7 +15,7 @@
                 />
             </v-col>
             <v-col cols="12" md="6">
-                <label class="field-label">اسم العائلة</label>
+                <label class="field-label">{{ t('last_name') }}</label>
                 <v-text-field
                     v-model="form.family_name"
                     variant="outlined"
@@ -27,7 +27,7 @@
                 />
             </v-col>
             <v-col cols="12" md="6">
-                <label class="field-label">رقم الهاتف</label>
+                <label class="field-label">{{ t('phone') }}</label>
                 <v-text-field
                     v-model="form.phone_number"
                     variant="outlined"
@@ -41,7 +41,7 @@
                 />
             </v-col>
             <v-col cols="12" md="6">
-                <label class="field-label">البريد الإلكتروني</label>
+                <label class="field-label">{{ t('email') }}</label>
                 <v-text-field
                     :model-value="props.user.email"
                     variant="outlined"
@@ -69,12 +69,12 @@
                 @click="updateInfo"
             >
                 <v-icon start>mdi-content-save-outline</v-icon>
-                حفظ التغييرات
+                {{ t('save_changes') }}
             </v-btn>
         </div>
 
         <v-snackbar v-model="snackbar" color="success" location="top right" timeout="2500">
-            تم تحديث البيانات بنجاح
+            {{ t('profile_updated') }}
         </v-snackbar>
     </div>
 </template>
@@ -82,7 +82,9 @@
 <script setup>
 import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
+import { useLocale } from '../../../composables/useLocale';
 
+const { t } = useLocale();
 const props = defineProps({ user: Object });
 
 const form = useForm({

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\DiscountCode;
 use App\Models\ShippingTypesAndPrice;
+use App\Models\UserDiscountCode;
 use App\Repositories\Cart\CartRepository;
 use App\Services\CheckOut\CheckoutServices;
 use App\Support\CartSingleVendor;
@@ -89,7 +90,65 @@ class CheckoutController extends Controller
     {
         $request->headers->set('Accept', 'application/json');
 
-        $user = Auth::guard('web')->user();
+        $user   = Auth::guard('web')->user();
+        $isNew  = isset($request->addr['shipping']) || isset($request->addr['billing']);
+        $isGuest = !$user;
+
+        // ===== Validation =====
+
+        // Terms always required
+        $request->validate(['terms' => 'required'], [
+            'terms.required' => 'يجب الموافقة على الشروط والأحكام',
+        ]);
+
+        // Authenticated user with existing address
+        if ($user && !$isNew) {
+            $request->validate([
+                'user_address' => 'required|exists:user_addresses,id',
+            ], [
+                'user_address.required' => 'برجاء اختيار عنوان أو إضافة عنوان جديد',
+                'user_address.exists'   => 'العنوان المحدد غير موجود',
+            ]);
+        }
+
+        // New address fields (guest billing or user adding new shipping)
+        if ($isNew) {
+            $addrType = $isGuest ? 'billing' : 'shipping';
+            $request->validate([
+                "addr.{$addrType}.first_name"   => ['required', 'string', 'max:255'],
+                "addr.{$addrType}.last_name"    => ['required', 'string', 'max:255'],
+                "addr.{$addrType}.phone_number" => ['required', 'string', 'max:20'],
+                "addr.{$addrType}.address"      => ['required', 'string', 'max:500'],
+                "addr.{$addrType}.country_id"   => ['required', 'exists:countries,id'],
+                "addr.{$addrType}.city_id"      => ['required', 'exists:cities,id'],
+            ], [
+                "addr.{$addrType}.first_name.required"   => 'الاسم الأول مطلوب',
+                "addr.{$addrType}.last_name.required"    => 'اسم العائلة مطلوب',
+                "addr.{$addrType}.phone_number.required" => 'رقم الجوال مطلوب',
+                "addr.{$addrType}.address.required"      => 'العنوان التفصيلي مطلوب',
+                "addr.{$addrType}.country_id.required"   => 'الدولة مطلوبة',
+                "addr.{$addrType}.country_id.exists"     => 'الدولة المحددة غير صحيحة',
+                "addr.{$addrType}.city_id.required"      => 'المدينة مطلوبة',
+                "addr.{$addrType}.city_id.exists"        => 'المدينة المحددة غير صحيحة',
+            ]);
+
+            if ($isGuest) {
+                $request->validate([
+                    'guest_email' => ['required', 'email'],
+                ], [
+                    'guest_email.required' => 'البريد الإلكتروني مطلوب',
+                    'guest_email.email'    => 'البريد الإلكتروني غير صحيح',
+                ]);
+            }
+        }
+
+        // Payment method
+        $request->validate([
+            'payment_method' => ['required', 'in:cash_on_delivery,card_payment'],
+        ], [
+            'payment_method.required' => 'طريقة الدفع مطلوبة',
+            'payment_method.in'       => 'طريقة الدفع غير صحيحة',
+        ]);
 
         // handle requests
         try {
@@ -101,7 +160,7 @@ class CheckoutController extends Controller
             $cartItems = $this->checkoutService->getCartItems($user);
 
             if ($cartItems->isEmpty()) {
-                return response()->json(['message' => 'لا يمكن اتمام الطلب والسلة فارغة'], 422);
+                return response()->json(['message' => __('flash.cart_empty_checkout')], 422);
             }
 
             try {
@@ -119,13 +178,7 @@ class CheckoutController extends Controller
         try {
             $this->checkoutService->checkJoinNews($request, $user);
 
-            $order = $this->checkoutService->createOrder(
-                $request,
-                $user,
-                $shipping_price,
-                CartSingleVendor::resolveCompanyId($cartItems)
-            );
-
+            $order = $this->checkoutService->createOrder($request, $user, $shipping_price);
             $this->checkoutService->createOrderItems($order, $user);
 
             $this->checkoutService->isAddingNewAddress($order, $request, $user);
@@ -137,13 +190,98 @@ class CheckoutController extends Controller
 
             $this->checkoutService->sendNotificationToAdmin($order);
 
+            // Clear applied discount from session
+            session()->forget('applied_discount_code_id');
+
             DB::commit();
 
             return $this->checkoutService->checkPaymentMethod($request, $order);
 
         } catch (Throwable $e) {
             DB::rollBack();
-            return response()->json(['message' => 'فشل إنشاء الطلب', 'error' => $e->getMessage()], 500);
+            return response()->json(['message' => __('flash.order_creation_failed'), 'error' => $e->getMessage()], 500);
         }
+    }
+
+    /**
+     * Validate and apply a discount code — returns JSON for the Vue checkout page.
+     */
+    public function applyDiscount(Request $request)
+    {
+        $request->validate(['discount_code' => 'required|string']);
+
+        $user = Auth::guard('web')->user();
+
+        // 1. Guests cannot use discount codes
+        if (!$user) {
+            return response()->json([
+                'message'       => __('flash.login_required_discount'),
+                'requires_login' => true,
+            ], 401);
+        }
+
+        $code = DiscountCode::where('code', $request->discount_code)
+            ->where('status', 'active')
+            ->where('number_of_used', '>', 0)
+            ->first();
+
+        if (!$code) {
+            return response()->json(['message' => __('flash.invalid_discount_code')], 422);
+        }
+
+        // 2. If code is product-specific, check that at least one cart item matches
+        $cartItems = $this->checkoutService->getCartItems($user);
+        $isGlobal  = $code->products()->count() === 0;
+
+        if (!$isGlobal) {
+            $codeProductIds  = $code->products->pluck('id')->toArray();
+            $cartProductIds  = $cartItems->pluck('product_id')->toArray();
+            $hasMatchingItem = count(array_intersect($codeProductIds, $cartProductIds)) > 0;
+
+            if (!$hasMatchingItem) {
+                return response()->json([
+                    'message' => __('flash.discount_not_applicable'),
+                ], 422);
+            }
+        }
+
+        $cookieId    = Cart::getCookieId();
+        $alreadyUsed = UserDiscountCode::where('cookie_id', $cookieId)
+            ->where('discount_id', $code->id)
+            ->exists();
+
+        if ($alreadyUsed) {
+            return response()->json(['message' => __('flash.discount_already_used')], 422);
+        }
+
+        // Register usage & decrement
+        UserDiscountCode::create(['cookie_id' => $cookieId, 'discount_id' => $code->id]);
+        $code->decrement('number_of_used');
+
+        // Apply discount to matching cart items only
+        foreach ($cartItems as $item) {
+            if ($isGlobal || $code->products->contains($item->product_id)) {
+                $discountAmount = $code->discount_type === 'percentage'
+                    ? (($item->product->discount_price ?? $item->product->price) * $code->price) / 100
+                    : $code->price;
+
+                $original               = $item->product->discount_price ?? $item->product->price;
+                $item->discounted_price = max(0, $original - $discountAmount);
+                $item->save();
+            }
+        }
+
+        $newTotal = $this->checkoutService->calculateTotal($user);
+
+        // Store in session so createOrder can attach it to the order
+        session(['applied_discount_code_id' => $code->id]);
+
+        return response()->json([
+            'message'        => __('flash.discount_applied_success'),
+            'discount_code'  => $code->code,
+            'discount_value' => (float) $code->price,
+            'discount_type'  => $code->discount_type,
+            'new_total'      => (float) $newTotal,
+        ]);
     }
 }

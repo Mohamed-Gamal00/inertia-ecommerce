@@ -4,11 +4,11 @@
         <div class="d-flex align-center justify-space-between mb-5">
             <div>
                 <p class="text-grey-darken-1 mt-1" style="font-size:13px">
-                    {{ addresses.length }} عنوان مسجل
+                    {{ addresses.length }} {{ t('profile_address_label') }}
                 </p>
             </div>
             <v-btn color="primary" rounded="lg" style="text-transform:none" prepend-icon="mdi-plus" @click="openAdd">
-                عنوان جديد
+                {{ t('add_new_address') }}
             </v-btn>
         </div>
 
@@ -28,11 +28,11 @@
                                 mdi-map-marker{{ addr.main_address ? '' : '-outline' }}
                             </v-icon>
                             <span class="font-weight-bold" style="font-size:14px">
-                                {{ addr.address_title || 'عنوان' }}
+                                {{ addr.address_title || t('address_title') }}
                             </span>
                         </div>
                         <v-chip v-if="addr.main_address" color="primary" size="x-small" variant="flat">
-                            رئيسي
+                            {{ t('main_address') }}
                         </v-chip>
                     </div>
 
@@ -65,7 +65,7 @@
                             prepend-icon="mdi-star-outline"
                             @click="setMain(addr.id)"
                         >
-                            تعيين رئيسي
+                            {{ t('set_main_address') }}
                         </v-btn>
                         <v-spacer v-if="!addr.main_address" />
                         <v-btn icon size="small" variant="text" color="grey" @click="openEdit(addr)">
@@ -82,9 +82,9 @@
         <!-- Empty state -->
         <div v-else class="empty-state">
             <v-icon size="64" color="grey-lighten-1">mdi-map-marker-off-outline</v-icon>
-            <p class="mt-3 text-grey-darken-1" style="font-size:15px">لا توجد عناوين مسجلة بعد</p>
+            <p class="mt-3 text-grey-darken-1" style="font-size:15px">{{ t('no_addresses') }}</p>
             <v-btn color="primary" rounded="lg" class="mt-3" style="text-transform:none" @click="openAdd">
-                أضف عنوانك الأول
+                {{ t('add_first_address') }}
             </v-btn>
         </div>
 
@@ -93,7 +93,7 @@
             <v-card rounded="xl" class="pa-2">
                 <v-card-title class="d-flex align-center justify-space-between pa-4 pb-2">
                     <span class="font-weight-bold" style="font-size:16px">
-                        {{ editing ? 'تعديل العنوان' : 'إضافة عنوان جديد' }}
+                        {{ editing ? t('edit_address') : t('add_new_address') }}
                     </span>
                     <v-btn icon size="small" variant="text" @click="close">
                         <v-icon>mdi-close</v-icon>
@@ -106,10 +106,10 @@
                     <v-form @submit.prevent="save">
                         <v-row dense>
                             <v-col cols="12">
-                                <label class="field-label">اسم العنوان</label>
+                                <label class="field-label">{{ t('address_name') }}</label>
                                 <v-text-field
                                     v-model="form.address_title"
-                                    placeholder="المنزل، العمل..."
+                                    :placeholder="t('address_name_placeholder')"
                                     variant="outlined"
                                     density="comfortable"
                                     rounded="lg"
@@ -119,7 +119,7 @@
                                 />
                             </v-col>
                             <v-col cols="6">
-                                <label class="field-label">الاسم الأول</label>
+                                <label class="field-label">{{ t('first_name') }}</label>
                                 <v-text-field
                                     v-model="form.first_name"
                                     variant="outlined"
@@ -131,7 +131,7 @@
                                 />
                             </v-col>
                             <v-col cols="6">
-                                <label class="field-label">اسم العائلة</label>
+                                <label class="field-label">{{ t('last_name') }}</label>
                                 <v-text-field
                                     v-model="form.family_name"
                                     variant="outlined"
@@ -143,7 +143,7 @@
                                 />
                             </v-col>
                             <v-col cols="12">
-                                <label class="field-label">رقم الهاتف</label>
+                                <label class="field-label">{{ t('phone') }}</label>
                                 <v-text-field
                                     v-model="form.phone_number"
                                     variant="outlined"
@@ -157,7 +157,7 @@
                                 />
                             </v-col>
                             <v-col cols="12">
-                                <label class="field-label">العنوان التفصيلي</label>
+                                <label class="field-label">{{ t('address_detail') }}</label>
                                 <v-textarea
                                     v-model="form.address"
                                     variant="outlined"
@@ -175,7 +175,7 @@
                 </v-card-text>
 
                 <v-card-actions class="pa-4 pt-0">
-                    <v-btn variant="text" rounded="lg" style="text-transform:none" @click="close">إلغاء</v-btn>
+                    <v-btn variant="text" rounded="lg" style="text-transform:none" @click="close">{{ t('cancel') }}</v-btn>
                     <v-spacer />
                     <v-btn
                         color="primary"
@@ -184,7 +184,7 @@
                         :loading="saving"
                         @click="save"
                     >
-                        {{ editing ? 'تحديث' : 'حفظ' }}
+                        {{ editing ? t('update') : t('save') }}
                     </v-btn>
                 </v-card-actions>
             </v-card>
@@ -194,11 +194,11 @@
         <v-dialog v-model="confirmDelete" max-width="360">
             <v-card rounded="xl" class="pa-4 text-center">
                 <v-icon size="48" color="error" class="mb-3">mdi-delete-alert-outline</v-icon>
-                <p class="font-weight-bold mb-1">حذف العنوان</p>
-                <p class="text-grey-darken-1 text-caption mb-4">هل أنت متأكد من حذف هذا العنوان؟</p>
+                <p class="font-weight-bold mb-1">{{ t('delete_address') }}</p>
+                <p class="text-grey-darken-1 text-caption mb-4">{{ t('delete_address_confirm') }}</p>
                 <div class="d-flex justify-center" style="gap:12px">
-                    <v-btn variant="text" rounded="lg" style="text-transform:none" @click="confirmDelete = false">إلغاء</v-btn>
-                    <v-btn color="error" rounded="lg" style="text-transform:none" :loading="deleting" @click="confirmRemove">حذف</v-btn>
+                    <v-btn variant="text" rounded="lg" style="text-transform:none" @click="confirmDelete = false">{{ t('cancel') }}</v-btn>
+                    <v-btn color="error" rounded="lg" style="text-transform:none" :loading="deleting" @click="confirmRemove">{{ t('delete') }}</v-btn>
                 </div>
             </v-card>
         </v-dialog>
@@ -208,7 +208,9 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3';
+import { useLocale } from '../../../composables/useLocale';
 
+const { t } = useLocale();
 const props = defineProps({ user: { type: Object, required: true } });
 
 const addresses = computed(() => props.user?.addresses ?? []);

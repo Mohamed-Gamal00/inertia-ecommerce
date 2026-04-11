@@ -33,55 +33,44 @@ class SettingsController extends Controller
 
     public function update(SettingRequest $request, $id)
     {
-        //Gate::authorize('settings.edit');
-
-        $data = $request->validated();
+        $data     = $request->validated();
         $settings = $this->settingRepo->getById($id);
 
-        // main Image
-        $oldImage = $settings->image;
+        // Favicon
         $newImage = $this->uploadedImage(request(), 'image', 'website_image');
         if ($newImage) {
+            if ($settings->image) Storage::disk('public')->delete($settings->image);
             $data['image'] = $newImage;
         }
-        if ($oldImage && $newImage) {
-            Storage::disk('public')->delete($oldImage);
-        }
 
-        /* logo */
-        $oldLogo = $settings->logo;
+        // Logo
         $newLogo = $this->uploadedLogo(request(), 'logo', 'website_image');
-
         if ($newLogo) {
+            if ($settings->logo) Storage::disk('public')->delete($settings->logo);
             $data['logo'] = $newLogo;
         }
 
-        if ($oldLogo && $newLogo) {
-            Storage::disk('public')->delete($oldLogo);
+        // OG image
+        if ($request->hasFile('og_image')) {
+            if ($settings->og_image) Storage::disk('public')->delete($settings->og_image);
+            $data['og_image'] = $request->file('og_image')->store('seo', 'public');
+        } else {
+            unset($data['og_image']);
         }
 
-        $wasChanged = $this->settingRepo->update($data, $id);
+        // Twitter image
+        if ($request->hasFile('twitter_image')) {
+            if ($settings->twitter_image) Storage::disk('public')->delete($settings->twitter_image);
+            $data['twitter_image'] = $request->file('twitter_image')->store('seo', 'public');
+        } else {
+            unset($data['twitter_image']);
+        }
 
+        $this->settingRepo->update($data, $id);
 
+        // Clear cached settings so changes reflect immediately
+        cache()->forget('site_settings');
 
-        // $newOrderStatus = OrderStatus::where('id', $request->order_status)->first();
-        // $oldOrderStatus = OrderStatus::where('default_status', true)->first();
-
-        // if ($newOrderStatus->id != $oldOrderStatus->id) {
-        //   $oldOrderStatus->update([
-        //     'default_status' => false
-        //   ]);
-
-        //   $newOrderStatus->update([
-        //     'default_status' => true
-        //   ]);
-        // }
-
-
-        // if ($wasChanged || $oldOrderStatus->id != $newOrderStatus->id) {
-        //   return back()->with('success', __('messages.SETTING_UPDATED'));
-        // }
         return back()->with('success', __('messages.SETTING_UPDATED'));
-        // return back()->with('dark', __('messages.SETTING_NOT_UPDATED'));
     }
 }

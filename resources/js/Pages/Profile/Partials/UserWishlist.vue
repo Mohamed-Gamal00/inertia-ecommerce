@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3 class="mb-4">قائمة المفضلة</h3>
+    <h3 class="mb-4">{{ t('profile_wishlist') }}</h3>
 
     <v-row v-if="wishlists.length" class="justify-center">
       <v-col
@@ -20,15 +20,18 @@
       v-else
       type="info"
       variant="outlined"
-      text="لا توجد منتجات في المفضلة حتى الآن."
+      :text="t('wishlist_empty')"
       class="text-center mt-6"
     />
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, inject } from "vue";
 import ProductCard from "../../../components/Shared/ProductCard.vue";
+import { useLocale } from "../../../composables/useLocale";
+
+const { t } = useLocale();
 
 const props = defineProps({
   user: {
@@ -39,11 +42,9 @@ const props = defineProps({
 
 const wishlists = computed(() => props.user?.wishlist_products ?? []);
 
-import { inject } from "vue";
 const Emitter = inject("Emitter");
 
 function openQuickView(product) {
     Emitter.emit("openQuickView", product);
 }
-
 </script>

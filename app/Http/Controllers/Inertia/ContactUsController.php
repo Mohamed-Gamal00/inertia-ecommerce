@@ -45,6 +45,6 @@ class ContactUsController extends Controller
             } catch (\Exception $e) {}
         }
 
-        return redirect()->back()->with('success', 'تم الإرسال بنجاح، سنتواصل معك قريباً.');
+        return redirect()->back()->with('success', __('flash.contact_sent'));
     }
 }

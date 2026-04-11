@@ -2,10 +2,10 @@
     <div class="categories pt-12 pb-6">
         <div class="title d-flex justify-center align-center px-5 mb-6">
             <h3 class="text-center flex-grow-1 font-weight-bold" style="font-size:22px">
-                الأقسام الرئيسية
+                {{ t('top_categories_title') }}
             </h3>
             <a href="/categories" class="text-decoration-none text-primary" style="font-size:14px; font-weight:600">
-                عرض الكل
+                {{ t('shop_all') }}
             </a>
         </div>
 
@@ -18,10 +18,10 @@
                     style="display:block; width:120px; text-decoration:none; flex-shrink:0; text-align:center"
                 >
                     <div class="cat-circle">
-                        <img v-if="cat.image_url" :src="cat.image_url" :alt="cat.name" />
+                        <img v-if="cat.image_url" :src="cat.image_url" :alt="pick(cat,'name')" />
                         <v-icon v-else size="36" color="primary">mdi-shape-outline</v-icon>
                     </div>
-                    <div class="cat-name">{{ cat.name }}</div>
+                    <div class="cat-name">{{ pick(cat, 'name') }}</div>
                 </a>
             </div>
         </v-container>
@@ -31,22 +31,12 @@
 <script setup>
 import { computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
-
+import { useLocale } from '../../composables/useLocale';
+const { t, pick } = useLocale();
 const categories = computed(() => usePage().props.categories ?? []);
 </script>
 
 <style scoped>
-.cat-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-    text-decoration: none;
-    transition: transform 0.2s;
-}
-
-.cat-item:hover { transform: translateY(-4px); }
-
 .cat-circle {
     width: 90px;
     height: 90px;
@@ -60,16 +50,7 @@ const categories = computed(() => usePage().props.categories ?? []);
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.cat-item:hover .cat-circle {
-    border-color: #3949ab;
-    box-shadow: 0 4px 16px rgba(57, 73, 171, 0.2);
-}
-
-.cat-circle img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+.cat-circle img { width: 100%; height: 100%; object-fit: cover; }
 
 .cat-name {
     margin-top: 8px;
