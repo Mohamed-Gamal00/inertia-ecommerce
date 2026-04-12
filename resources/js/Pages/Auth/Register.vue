@@ -74,13 +74,8 @@
                             <v-text-field v-model="form.password_confirmation" placeholder="••••••••" :type="showPass2 ? 'text' : 'password'" variant="outlined" density="comfortable" hide-details="auto" class="mt-1 mb-3" prepend-inner-icon="mdi-lock-check-outline" :append-inner-icon="showPass2 ? 'mdi-eye-off' : 'mdi-eye'" @click:append-inner="showPass2 = !showPass2" rounded="lg" bg-color="grey-lighten-5" />
                         </v-col>
                     </v-row>
-                    <v-btn type="submit" color="primary" block height="48" rounded="lg" :loading="userForm.processing" class="mt-2" style="font-size:15px; font-weight:600; text-transform:none">
+                    <v-btn type="submit" color="primary" block height="48" rounded="lg" :loading="form.processing" class="mt-2" style="font-size:15px; font-weight:600; text-transform:none">
                         إنشاء حساب عميل
-                    </v-btn>
-                </v-form>
-
-                    <v-btn type="submit" color="primary" block height="48" rounded="lg" :loading="loading" class="mt-2" style="font-size:15px; font-weight:600; text-transform:none">
-                        {{ t('register_btn') }}
                     </v-btn>
                 </v-form>
 
@@ -112,6 +107,7 @@
 import { ref, computed } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { useLocale } from '../../composables/useLocale';
+import axios from 'axios';
 
 defineOptions({ layout: null });
 
@@ -120,16 +116,24 @@ const { t } = useLocale();
 
 const props = defineProps({ countries: Array, cities: Array });
 
+const registerType = ref('user');
+
 const form = useForm({
     first_name: '', family_name: '', phone_number: '', email: '',
     password: '', password_confirmation: '', address: '', country_id: '', city_id: '',
 });
 
-const loading = ref(false);
+const vendorForm = ref({
+    store_name: '', email: '', phone_number: '', description: '',
+});
+
 const showPass = ref(false);
 const showPass2 = ref(false);
+const vendorSuccess = ref(false);
+const vendorSubmitting = ref(false);
+const vendorErrors = ref({});
 
-const steps = computed(() => [
+const currentSteps = computed(() => [
     t('register_step1'), t('register_step2'), t('register_step3'),
 ]);
 
@@ -137,32 +141,8 @@ const filteredCities = computed(() =>
     form.country_id ? props.cities.filter(c => c.country_id === form.country_id) : props.cities
 );
 
-const submit = () => {
-    loading.value = true;
-    form.post('/register', { preserveState: true, onFinish: () => (loading.value = false) });
-};
-</script>
-
-<style scoped>
-.auth-page {
-    display: flex;
-    min-height: 100vh;
-    direction: rtl;
-}
-
-.auth-left {
-    width: 38%;
-    background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 48px;
-    position: relative;
-    overflow: hidden;
-}
-
 function submitUser() {
-    userForm.post('/register', { preserveState: true });
+    form.post('/register', { preserveState: true });
 }
 
 async function submitVendor() {
