@@ -1,0 +1,2 @@
+[build]
+nixpacks_metadata = "php-extensions = [\"pdo_mysql\"]"

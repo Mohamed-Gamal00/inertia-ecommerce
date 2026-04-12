@@ -157,7 +157,6 @@ Route::middleware('auth:web')->group(function () {
     #################################################--Comments Routes
     // Route::post('/comments', [CommentsController::class, 'store'])->name('comments.store');
 });
-// Route::get('/user/payment/{order_number}', [\App\Http\Controllers\Front\PaymentController::class, 'index'])->name('user.payment');
 /*عملية الدفع*/
 // Route::get('/user_orders/{number}/payment/callback', [\App\Http\Controllers\Front\PaymentController::class, 'callback'])->name('payment.callback');
 //Route::get('/user_orders/{number}/payment/callback', [\App\Http\Controllers\Front\PaymentController::class, 'callback'])->name('payment.callback');
