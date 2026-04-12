@@ -7,18 +7,14 @@
                 <div class="faq-hero-icon">
                     <v-icon size="40" color="white">mdi-help-circle-outline</v-icon>
                 </div>
-                <h1 class="text-white font-weight-bold" style="font-size:32px; margin-bottom:8px">
-                    الأسئلة الشائعة
-                </h1>
+                <h1 class="text-white font-weight-bold" style="font-size:32px; margin-bottom:8px">{{ t('faq_title') }}</h1>
                 <p style="color:rgba(255,255,255,0.8); font-size:15px">
-                    إجابات على أكثر الأسئلة شيوعاً — إذا لم تجد إجابتك
-                    <a href="/contact-us" style="color:white; font-weight:700; text-decoration:underline">تواصل معنا</a>
+                    {{ t('faq_subtitle') }} — {{ t('faq_contact_hint') }}
+                    <a href="/contact-us" style="color:white; font-weight:700; text-decoration:underline">{{ t('faq_contact_btn') }}</a>
                 </p>
-
-                <!-- Search -->
                 <div class="faq-search">
                     <v-icon size="18" color="grey">mdi-magnify</v-icon>
-                    <input v-model="search" placeholder="ابحث في الأسئلة..." class="faq-search-input" />
+                    <input v-model="search" :placeholder="t('faq_search')" class="faq-search-input" />
                 </div>
             </div>
         </div>
@@ -43,7 +39,7 @@
         <div class="faq-body">
             <div v-if="!filteredQuestions.length" class="faq-empty">
                 <v-icon size="56" color="grey-lighten-1">mdi-help-circle-outline</v-icon>
-                <p class="mt-3 text-grey">لا توجد نتائج مطابقة</p>
+                <p class="mt-3 text-grey">{{ t('faq_no_results') }}</p>
             </div>
 
             <div v-else class="faq-list">
@@ -80,13 +76,11 @@
                     <v-icon size="28" color="primary">mdi-headset</v-icon>
                 </div>
                 <div>
-                    <div class="font-weight-bold" style="font-size:15px; color:#111827">لم تجد إجابتك؟</div>
-                    <div style="font-size:13px; color:#6b7280">فريق الدعم متاح للمساعدة على مدار الساعة</div>
+                    <div class="font-weight-bold" style="font-size:15px; color:#111827">{{ t('faq_not_found') }}</div>
+                    <div style="font-size:13px; color:#6b7280">{{ t('faq_support') }}</div>
                 </div>
                 <a href="/contact-us">
-                    <v-btn color="primary" rounded="lg" style="text-transform:none; font-size:13px">
-                        تواصل معنا
-                    </v-btn>
+                    <v-btn color="primary" rounded="lg" style="text-transform:none; font-size:13px">{{ t('faq_contact_btn') }}</v-btn>
                 </a>
             </div>
         </div>
@@ -96,20 +90,20 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-
+import { useLocale } from '../../composables/useLocale';
+const { t } = useLocale();
 const props = defineProps({ questions: Array });
-
-const search        = ref('');
-const openIndex     = ref(null);
+const search         = ref('');
+const openIndex      = ref(null);
 const activeCategory = ref('all');
 
-const categories = [
-    { key: 'all',      label: 'الكل',          icon: 'mdi-view-grid-outline' },
-    { key: 'shipping', label: 'الشحن',          icon: 'mdi-truck-fast-outline' },
-    { key: 'payment',  label: 'الدفع',          icon: 'mdi-credit-card-outline' },
-    { key: 'returns',  label: 'الإرجاع',        icon: 'mdi-arrow-u-left-top' },
-    { key: 'account',  label: 'الحساب',         icon: 'mdi-account-outline' },
-];
+const categories = computed(() => [
+    { key: 'all',      label: t('faq_all'),      icon: 'mdi-view-grid-outline' },
+    { key: 'shipping', label: t('faq_shipping'),  icon: 'mdi-truck-fast-outline' },
+    { key: 'payment',  label: t('faq_payment'),   icon: 'mdi-credit-card-outline' },
+    { key: 'returns',  label: t('faq_returns'),   icon: 'mdi-arrow-u-left-top' },
+    { key: 'account',  label: t('faq_account'),   icon: 'mdi-account-outline' },
+]);
 
 // Simple keyword-based categorization
 const categoryKeywords = {

@@ -39,15 +39,57 @@ class ProductController extends Controller
 
     public function index()
     {
-        $user = Auth::guard('web')->user();
+        $user  = Auth::guard('web')->user();
+        $q     = request('search', '');
+        $sort  = request('sort', 'latest');
+        $min   = request('min_price');
+        $max   = request('max_price');
+        $cat   = request('category');
 
-        $products = Product::with(['images', 'parent'])
-            ->withIsInWishlist($user)
-            ->latest()
-            ->paginate(5);
+        $query = Product::with(['images', 'parent'])
+            ->where('status', 'active')
+            ->withIsInWishlist($user);
+
+        if ($q) {
+            $query->where(fn($q2) =>
+                $q2->where('name', 'LIKE', "%{$q}%")
+                   ->orWhere('name_en', 'LIKE', "%{$q}%")
+            );
+        }
+
+        if ($min) $query->where('price', '>=', $min);
+        if ($max) $query->where('price', '<=', $max);
+        if ($cat) $query->where('category_id', $cat);
+
+        match ($sort) {
+            'price_asc'  => $query->orderBy('price'),
+            'price_desc' => $query->orderByDesc('price'),
+            'discount'   => $query->whereNotNull('discount_price')->orderByDesc('discount_price'),
+            default      => $query->latest(),
+        };
+
+        $products = $query->paginate(12)->withQueryString();
+
+        $products->getCollection()->transform(fn($p) => [
+            'id'             => $p->id,
+            'name'           => $p->name,
+            'name_en'        => $p->name_en,
+            'slug'           => $p->slug,
+            'price'          => (float) $p->price,
+            'discount_price' => $p->discount_price ? (float) $p->discount_price : null,
+            'image_url'      => $p->image_url,
+            'is_in_wishlist' => (bool) $p->is_in_wishlist,
+            'images'         => $p->images->map(fn($i) => ['image_url' => $i->image_url])->values(),
+            'parent'         => $p->parent ? ['id' => $p->parent->id, 'name' => $p->parent->name, 'name_en' => $p->parent->name_en] : null,
+            'quantity'       => $p->quantity,
+        ]);
+
+        $categories = \App\Models\MainCategory::whereNull('parent_id')->select('id', 'name')->get();
 
         return \Inertia\Inertia::render('Products/Index', [
-            'products' => $products,
+            'products'   => $products,
+            'filters'    => compact('q', 'sort', 'min', 'max', 'cat'),
+            'categories' => $categories,
         ]);
     }
 

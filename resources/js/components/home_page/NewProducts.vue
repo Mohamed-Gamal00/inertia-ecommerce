@@ -3,13 +3,9 @@
     <div class="new-products pt-15">
         <!-- العنوان -->
         <div class="title px-5 d-flex align-center justify-space-between">
-            <h2 style="font-weight: 900; font-size: 30px">New Products</h2>
-            <Link
-                href="/products"
-                class="text-black"
-                style="font-size: 14px; text-decoration: none"
-            >
-                Shop All
+            <h2 style="font-weight: 900; font-size: 30px">{{ t('all_products') }}</h2>
+            <Link href="/products" class="text-black" style="font-size: 14px; text-decoration: none">
+                {{ t('shop_all') }}
             </Link>
         </div>
 
@@ -70,40 +66,19 @@
 
 <script setup>
 import ProductCard from "../../components/Shared/ProductCard.vue";
-
-// Inertia
 import { Link, router } from "@inertiajs/vue3";
-
-// Swiper
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
-
-// Vue
 import { reactive, inject } from "vue";
+import { useLocale } from "../../composables/useLocale";
 
-// Props
-const props = defineProps({
-    products: Array,
-});
-
-// Emitter
+const props = defineProps({ products: Array });
 const Emitter = inject("Emitter");
+const { t } = useLocale();
 
-// Data
-const showenItem = reactive({});
-
-// Methods
-function openQuickView(product) {
-    Emitter.emit("openQuickView", product);
-}
-
-function goToDetails(productId) {
-    router.visit(`/products/${productId}`);
-}
-
-// Swiper modules
+function openQuickView(product) { Emitter.emit("openQuickView", product); }
 const modules = [Pagination];
 </script>
 

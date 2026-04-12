@@ -12,25 +12,25 @@
                         <!-- Shipping method -->
                         <v-col cols="12" sm="6">
                             <div class="co-card h-100">
-                                <div class="co-card-title">طريقة الشحن</div>
+                                <div class="co-card-title">{{ t('shipping_method') }}</div>
                                 <v-divider class="mb-3" />
 
                                 <div class="co-radio-group">
                                     <label v-if="shipping?.add_pickup_from_store" class="co-radio-item" :class="{ active: shippingOption === 'noShipping' }">
                                         <input type="radio" v-model="shippingOption" value="noShipping" />
-                                        <span>الاستلام من المتجر</span>
+                                        <span>{{ t('pickup_from_store') }}</span>
                                     </label>
                                     <label v-if="shipping?.add_normal_price" class="co-radio-item" :class="{ active: shippingOption === 'fixed_shipping' }">
                                         <input type="radio" v-model="shippingOption" value="fixed_shipping" />
-                                        <span>تكلفة ثابتة للشحن - {{ shipping.normal_shipping_price }} ر.س</span>
+                                        <span>{{ t('fixed_shipping') }} - {{ shipping.normal_shipping_price }} ر.س</span>
                                     </label>
                                     <label v-if="shipping?.add_wight_price" class="co-radio-item" :class="{ active: shippingOption === 'shipping_based_on_weight' }">
                                         <input type="radio" v-model="shippingOption" value="shipping_based_on_weight" />
-                                        <span>الشحن بناءً على الوزن</span>
+                                        <span>{{ t('weight_shipping') }}</span>
                                     </label>
                                     <label v-if="shipping?.add_price_based_on_city" class="co-radio-item" :class="{ active: shippingOption === 'shipping_based_on_city' }">
                                         <input type="radio" v-model="shippingOption" value="shipping_based_on_city" />
-                                        <span>الشحن بناءً على المنطقة - {{ cityShippingPrice }} ر.س</span>
+                                        <span>{{ t('city_shipping') }} - {{ cityShippingPrice }} ر.س</span>
                                     </label>
                                 </div>
                             </div>
@@ -39,44 +39,58 @@
                         <!-- Payment method -->
                         <v-col cols="12" sm="6">
                             <div class="co-card h-100">
-                                <div class="co-card-title">طريقة الدفع أو السداد</div>
+                                <div class="co-card-title">{{ t('payment_method') }}</div>
                                 <v-divider class="mb-3" />
 
                                 <div class="co-radio-group">
                                     <label class="co-radio-item" :class="{ active: form.payment_method === 'cash_on_delivery' }">
                                         <input type="radio" v-model="form.payment_method" value="cash_on_delivery" />
-                                        <span>الدفع عند الاستلام</span>
+                                        <span>{{ t('cash_on_delivery') }}</span>
                                     </label>
                                     <label class="co-radio-item" :class="{ active: form.payment_method === 'card_payment' }">
                                         <input type="radio" v-model="form.payment_method" value="card_payment" />
-                                        <span>بطاقة دفع</span>
+                                        <span>{{ t('card_payment') }}</span>
                                     </label>
                                 </div>
                             </div>
                         </v-col>
                     </v-row>
 
-                    <!-- Discount codes -->
+                    <!-- Discount code -->
                     <div class="co-card mb-4">
-                        <div class="co-card-title">قسيمة / كود خصم</div>
+                        <div class="co-card-title">{{ t('discount_code') }}</div>
                         <v-divider class="mb-3" />
 
-                        <div class="co-discount-row mb-3">
-                            <span class="co-discount-label">الرجاء ادخال رمز قسيمة التخفيض</span>
-                            <v-text-field v-model="couponCode" placeholder="الرجاء ادخال رمز قسيمة التخفيض" variant="outlined" density="compact" hide-details rounded="lg" bg-color="grey-lighten-5" style="flex:1" />
-                            <v-btn variant="outlined" color="primary" rounded="lg" height="40" style="text-transform:none; min-width:80px">إضافة</v-btn>
+                        <!-- Applied badge -->
+                        <div v-if="appliedDiscount" class="co-discount-applied mb-3">
+                            <v-icon size="18" color="success" class="me-1">mdi-check-circle</v-icon>
+                            <span>{{ t('discount_applied') }} <strong>{{ appliedDiscount.code }}</strong> — {{ t('discount_value') }} {{ appliedDiscount.type === 'percentage' ? appliedDiscount.value + '%' : appliedDiscount.value + ' ر.س' }}</span>
+                            <button class="co-discount-remove" @click="removeDiscount">
+                                <v-icon size="14">mdi-close</v-icon>
+                            </button>
                         </div>
-                        <div class="co-discount-row">
-                            <span class="co-discount-label">الرجاء ادخال رمز كود الخصم</span>
-                            <v-text-field v-model="discountCode" placeholder="الرجاء ادخال رمز كود الخصم" variant="outlined" density="compact" hide-details rounded="lg" bg-color="grey-lighten-5" style="flex:1" />
-                            <v-btn variant="outlined" color="primary" rounded="lg" height="40" style="text-transform:none; min-width:80px">إضافة</v-btn>
+
+                        <div v-else class="co-discount-input-row">
+                            <v-text-field v-model="discountInput" :placeholder="t('discount_placeholder')" variant="outlined" density="compact" hide-details rounded="lg" bg-color="grey-lighten-5" style="flex:1" dir="ltr" :error="!!discountError" @keyup.enter="applyDiscount" />
+                            <v-btn color="primary" rounded="lg" height="40" style="text-transform:none; min-width:90px" :loading="discountLoading" @click="applyDiscount">{{ t('discount_apply') }}</v-btn>
+                        </div>
+                        <div v-if="discountError" class="mt-2">
+                            <div v-if="discountError === '__login__'" class="co-discount-login-msg">
+                                <v-icon size="16" color="warning" class="me-1">mdi-account-lock-outline</v-icon>
+                                {{ t('discount_login_required') }}
+                                <a href="/login" class="text-primary fw-bold mx-1">{{ t('discount_login_link') }}</a>
+                                {{ t('discount_or') }}
+                                <a href="/register" class="text-primary fw-bold mx-1">{{ t('discount_register_link') }}</a>
+                                {{ t('discount_login_msg') }}
+                            </div>
+                            <div v-else class="text-red text-caption">{{ discountError }}</div>
                         </div>
                     </div>
 
                     <!-- Cart items -->
                     <div class="co-card mb-4">
                         <a href="/products" class="text-decoration-none">
-                            <div class="co-card-title text-primary" style="cursor:pointer">سلة المشتريات</div>
+                            <div class="co-card-title text-primary" style="cursor:pointer">{{ t('cart_title') }}</div>
                         </a>
                         <v-divider class="mb-3" />
 
@@ -95,41 +109,33 @@
 
                         <v-divider class="my-3" />
 
-                        <div class="co-sum-row">
-                            <span>مجموع المنتجات</span>
-                            <span>{{ totalItemsCount }} قطعة</span>
+                        <div class="co-sum-row"><span>{{ t('cart_items_count') }}</span><span>{{ totalItemsCount }} {{ t('pieces') }}</span></div>
+                        <div v-if="appliedDiscount" class="co-sum-row" style="color:#16a34a">
+                            <span>
+                                <v-icon size="14" color="success" class="me-1">mdi-tag-outline</v-icon>
+                                {{ t('discount_applied') }} ({{ appliedDiscount.code }})
+                            </span>
+                            <span>- {{ discountSaving }} ر.س</span>
                         </div>
-                        <div class="co-sum-row co-sum-total">
-                            <span>الإجمالي</span>
-                            <span>{{ grandTotal }} ر.س</span>
-                        </div>
+                        <div class="co-sum-row co-sum-total"><span>{{ t('total') }}</span><span>{{ grandTotal }} ر.س</span></div>
                     </div>
 
                     <!-- Confirm + Note -->
                     <div class="co-card">
-                        <div class="co-card-title">تأكيد</div>
+                        <div class="co-card-title">{{ t('confirm_order') }}</div>
                         <v-divider class="mb-3" />
-
-                        <div class="co-card-title mt-2" style="font-weight:500; color:#6b7280; font-size:13px">الملاحظة</div>
+                        <div class="co-card-title mt-2" style="font-weight:500; color:#6b7280; font-size:13px">{{ t('note') }}</div>
                         <v-textarea v-model="form.note" variant="outlined" density="compact" hide-details rows="3" rounded="lg" bg-color="grey-lighten-5" class="mt-1 mb-4" />
 
                         <div class="d-flex flex-column mb-4" style="gap:10px">
-                            <label class="co-check">
-                                <input type="checkbox" v-model="joinNews" />
-                                <span>أريد الاشتراك في القائمة البريدية</span>
-                            </label>
-                            <label class="co-check">
-                                <input type="checkbox" v-model="form.terms" />
-                                <span>لقد قرأت وأوافق على <a href="#" class="text-primary">الخصوصية والسياسة</a></span>
-                            </label>
+                            <label class="co-check"><input type="checkbox" v-model="joinNews" /><span>{{ t('join_newsletter') }}</span></label>
+                            <label class="co-check"><input type="checkbox" v-model="form.terms" /><span>{{ t('agree_terms') }} <a href="#" class="text-primary">{{ t('privacy_policy_link') }}</a></span></label>
                         </div>
 
                         <div v-if="errors.terms" class="text-red text-caption mb-2">{{ errors.terms }}</div>
                         <div v-if="errors.general" class="text-red text-caption mb-2">{{ errors.general }}</div>
 
-                        <v-btn block color="primary" height="48" rounded="lg" style="text-transform:none; font-size:15px; font-weight:600" :loading="submitting" @click="submit">
-                            تأكيد الطلب
-                        </v-btn>
+                        <v-btn block color="primary" height="48" rounded="lg" style="text-transform:none; font-size:15px; font-weight:600" :loading="submitting" @click="submit">{{ t('place_order') }}</v-btn>
                     </div>
 
                 </v-col>
@@ -138,25 +144,45 @@
                 <v-col cols="12" md="4">
                     <div class="co-card">
 
+                        <!-- Validation summary from backend -->
+                        <v-alert
+                            v-if="Object.keys(errors).length && !errors.terms"
+                            type="error"
+                            variant="tonal"
+                            rounded="lg"
+                            density="compact"
+                            class="mb-4"
+                        >
+                            <div class="font-weight-bold mb-1">{{ t('fix_errors') }}</div>
+                            <ul class="mb-0 ps-3" style="font-size:13px">
+                                <li v-for="(msgs, field) in errors" :key="field">
+                                    {{ Array.isArray(msgs) ? msgs[0] : msgs }}
+                                </li>
+                            </ul>
+                        </v-alert>
+
                         <!-- Guest: login or guest toggle -->
                         <template v-if="!user">
-                            <div class="co-card-title">تسجيل الدخول أو التسجيل</div>
+                            <div class="co-card-title">{{ t('login_or_guest') }}</div>
                             <v-divider class="mb-3" />
                             <div class="co-radio-group mb-4">
-                                <label class="co-radio-item" :class="{ active: guestMode === 'login' }">
+                                <label class="co-radio-item" :class="{ active: guestMode === 'login' }" @click="goToLogin">
                                     <input type="radio" v-model="guestMode" value="login" />
-                                    <span>تسجيل الدخول</span>
+                                    <v-icon size="16" class="me-2">mdi-account-circle-outline</v-icon>
+                                    <span>{{ t('login') }}</span>
+                                    <v-icon size="14" class="ms-auto">mdi-chevron-left</v-icon>
                                 </label>
                                 <label class="co-radio-item" :class="{ active: guestMode === 'guest' }">
                                     <input type="radio" v-model="guestMode" value="guest" />
-                                    <span>زائر</span>
+                                    <v-icon size="16" class="me-2">mdi-account-outline</v-icon>
+                                    <span>{{ t('continue_as_guest') }}</span>
                                 </label>
                             </div>
                         </template>
 
                         <!-- Logged in: saved addresses -->
                         <template v-if="user && userAddresses.length">
-                            <div class="co-card-title">اختر عنوان الشحن</div>
+                            <div class="co-card-title">{{ t('choose_shipping_address') }}</div>
                             <v-divider class="mb-3" />
                             <div class="mb-3">
                                 <label
@@ -168,10 +194,10 @@
                                 >
                                     <v-icon size="15" :color="form.user_address === String(addr.id) ? 'primary' : 'grey'">mdi-map-marker-outline</v-icon>
                                     <div style="flex:1">
-                                        <div style="font-size:13px; font-weight:600">{{ addr.address_title || 'عنوان' }}</div>
+                                        <div style="font-size:13px; font-weight:600">{{ addr.address_title || t('address_title') }}</div>
                                         <div style="font-size:12px; color:#9ca3af">{{ addr.address }}</div>
                                     </div>
-                                    <v-chip v-if="addr.main_address" size="x-small" color="primary" variant="flat">رئيسي</v-chip>
+                                    <v-chip v-if="addr.main_address" size="x-small" color="primary" variant="flat">{{ t('main_address') }}</v-chip>
                                 </label>
                             </div>
                         </template>
@@ -184,43 +210,42 @@
                                 @click="form.user_address = 'add_address'"
                             >
                                 <v-icon size="15" color="grey">mdi-plus-circle-outline</v-icon>
-                                <span style="font-size:13px">إضافة عنوان جديد</span>
+                                <span style="font-size:13px">{{ t('add_new_address') }}</span>
                             </label>
                         </template>
 
-                        <!-- Address form: shown for guests always, for users when add_address selected -->
-                        <template v-if="!user || form.user_address === 'add_address'">
-                            <div class="co-card-title">التفاصيل</div>
+                        <!-- Address form: shown for guests in guest mode, or users adding new address -->
+                        <template v-if="(!user && guestMode === 'guest') || (user && form.user_address === 'add_address')">
+                            <div class="co-card-title">{{ t('address_details') }}</div>
                             <v-divider class="mb-3" />
-
                             <div class="co-field-group">
                                 <div class="co-field">
-                                    <label class="co-label">الاسم الأول</label>
-                                    <v-text-field v-model="addrForm.first_name" placeholder="الاسم الأول" variant="outlined" density="compact" hide-details="auto" rounded="lg" bg-color="grey-lighten-5" class="mt-1" :error-messages="errors['addr.shipping.first_name'] || errors['addr.billing.first_name']" />
+                                    <label class="co-label">{{ t('first_name') }}</label>
+                                    <v-text-field v-model="addrForm.first_name" :placeholder="t('first_name')" variant="outlined" density="compact" hide-details="auto" rounded="lg" bg-color="grey-lighten-5" class="mt-1" :error-messages="errors['addr.shipping.first_name'] || errors['addr.billing.first_name']" />
                                 </div>
                                 <div class="co-field">
-                                    <label class="co-label">اسم العائلة</label>
-                                    <v-text-field v-model="addrForm.last_name" placeholder="اسم العائلة" variant="outlined" density="compact" hide-details="auto" rounded="lg" bg-color="grey-lighten-5" class="mt-1" :error-messages="errors['addr.shipping.last_name'] || errors['addr.billing.last_name']" />
+                                    <label class="co-label">{{ t('last_name') }}</label>
+                                    <v-text-field v-model="addrForm.last_name" :placeholder="t('last_name')" variant="outlined" density="compact" hide-details="auto" rounded="lg" bg-color="grey-lighten-5" class="mt-1" :error-messages="errors['addr.shipping.last_name'] || errors['addr.billing.last_name']" />
                                 </div>
                                 <div v-if="!user" class="co-field co-field--full">
-                                    <label class="co-label">البريد الإلكتروني</label>
-                                    <v-text-field v-model="addrForm.email" placeholder="البريد الإلكتروني" variant="outlined" density="compact" hide-details="auto" rounded="lg" bg-color="grey-lighten-5" class="mt-1" dir="ltr" :error-messages="errors['guest_email']" />
+                                    <label class="co-label">{{ t('email') }}</label>
+                                    <v-text-field v-model="addrForm.email" :placeholder="t('email')" variant="outlined" density="compact" hide-details="auto" rounded="lg" bg-color="grey-lighten-5" class="mt-1" dir="ltr" :error-messages="errors['guest_email']" />
                                 </div>
                                 <div class="co-field co-field--full">
-                                    <label class="co-label">رقم الجوال</label>
-                                    <v-text-field v-model="addrForm.phone_number" placeholder="رقم الجوال" variant="outlined" density="compact" hide-details="auto" rounded="lg" bg-color="grey-lighten-5" class="mt-1" dir="ltr" :error-messages="errors['addr.shipping.phone_number'] || errors['addr.billing.phone_number']" />
+                                    <label class="co-label">{{ t('phone') }}</label>
+                                    <v-text-field v-model="addrForm.phone_number" :placeholder="t('phone')" variant="outlined" density="compact" hide-details="auto" rounded="lg" bg-color="grey-lighten-5" class="mt-1" dir="ltr" :error-messages="errors['addr.shipping.phone_number'] || errors['addr.billing.phone_number']" />
                                 </div>
                                 <div class="co-field co-field--full">
-                                    <label class="co-label">الدولة</label>
-                                    <v-select v-model="addrForm.country_id" :items="countries" item-title="name_ar" item-value="id" placeholder="اختر الدولة" variant="outlined" density="compact" hide-details="auto" rounded="lg" bg-color="grey-lighten-5" class="mt-1" :error-messages="errors['addr.shipping.country_id'] || errors['addr.billing.country_id']" @update:model-value="addrForm.city_id = null" />
+                                    <label class="co-label">{{ t('country') }}</label>
+                                    <v-select v-model="addrForm.country_id" :items="countries" item-title="name_ar" item-value="id" :placeholder="t('select_country')" variant="outlined" density="compact" hide-details="auto" rounded="lg" bg-color="grey-lighten-5" class="mt-1" :error-messages="errors['addr.shipping.country_id'] || errors['addr.billing.country_id']" @update:model-value="addrForm.city_id = null" />
                                 </div>
                                 <div class="co-field co-field--full">
-                                    <label class="co-label">المدينة</label>
-                                    <v-select v-model="addrForm.city_id" :items="filteredCities" item-title="name_ar" item-value="id" placeholder="اختر المدينة" variant="outlined" density="compact" hide-details="auto" rounded="lg" bg-color="grey-lighten-5" class="mt-1" :error-messages="errors['addr.shipping.city_id'] || errors['addr.billing.city_id']" />
+                                    <label class="co-label">{{ t('city') }}</label>
+                                    <v-select v-model="addrForm.city_id" :items="filteredCities" item-title="name_ar" item-value="id" :placeholder="t('select_city')" variant="outlined" density="compact" hide-details="auto" rounded="lg" bg-color="grey-lighten-5" class="mt-1" :error-messages="errors['addr.shipping.city_id'] || errors['addr.billing.city_id']" />
                                 </div>
                                 <div class="co-field co-field--full">
-                                    <label class="co-label">العنوان</label>
-                                    <v-text-field v-model="addrForm.address" placeholder="ادخل العنوان" variant="outlined" density="compact" hide-details="auto" rounded="lg" bg-color="grey-lighten-5" class="mt-1" :error-messages="errors['addr.shipping.address'] || errors['addr.billing.address']" />
+                                    <label class="co-label">{{ t('address') }}</label>
+                                    <v-text-field v-model="addrForm.address" :placeholder="t('enter_address')" variant="outlined" density="compact" hide-details="auto" rounded="lg" bg-color="grey-lighten-5" class="mt-1" :error-messages="errors['addr.shipping.address'] || errors['addr.billing.address']" />
                                 </div>
                             </div>
                         </template>
@@ -237,6 +262,8 @@
 import { ref, computed } from 'vue';
 import { usePage, router } from '@inertiajs/vue3';
 import axios from 'axios';
+import { useLocale } from '../../composables/useLocale';
+const { t } = useLocale();
 
 const { props } = usePage();
 const user          = computed(() => props.auth?.user);
@@ -266,10 +293,16 @@ const userAddresses = ref(props.userAddresses || []);
 
 const submitting     = ref(false);
 const errors         = ref({});
-const couponCode     = ref('');
-const discountCode   = ref('');
+const discountInput  = ref('');
+const discountError  = ref('');
+const discountLoading = ref(false);
+const appliedDiscount = ref(null); // { code, value, type }
 const joinNews       = ref(false);
 const guestMode      = ref('guest');
+
+function goToLogin() {
+    window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
+}
 const shippingOption = ref(
     props.shipping?.add_pickup_from_store ? 'noShipping' :
     props.shipping?.add_normal_price      ? 'fixed_shipping' :
@@ -304,9 +337,17 @@ const filteredCities = computed(() =>
 );
 
 const cityShippingPrice = computed(() => {
-    if (!addrForm.value.city_id) return 0;
+    // For saved address: look up city_id from the selected user address
+    let cityId = addrForm.value.city_id;
+
+    if (user.value && form.value.user_address && form.value.user_address !== 'add_address') {
+        const savedAddr = userAddresses.value.find(a => String(a.id) === String(form.value.user_address));
+        if (savedAddr?.city_id) cityId = savedAddr.city_id;
+    }
+
+    if (!cityId) return 0;
     // eslint-disable-next-line eqeqeq
-    const city = cities.value.find(c => c.id == addrForm.value.city_id);
+    const city = cities.value.find(c => c.id == cityId);
     return city?.shipping_price || 0;
 });
 
@@ -319,28 +360,72 @@ const shippingCost = computed(() => {
 });
 
 const grandTotal = computed(() =>
-    Math.ceil(Number(cartTotal.value) + Number(shippingCost.value) - Number(discountPrice.value))
+    Math.ceil(Number(cartTotal.value) + Number(shippingCost.value) - Number(discountSaving.value))
 );
+
+async function applyDiscount() {
+    if (!discountInput.value.trim()) return;
+    discountError.value   = '';
+    discountLoading.value = true;
+    try {
+        const { data } = await axios.post('/checkout/apply-discount', {
+            discount_code: discountInput.value.trim(),
+        });
+        appliedDiscount.value = {
+            code:  data.discount_code,
+            value: data.discount_value,
+            type:  data.discount_type,
+        };
+        discountPrice.value = data.discount_type === 'percentage'
+            ? Math.ceil(cartTotal.value * data.discount_value / 100)
+            : data.discount_value;
+        discountInput.value = '';
+    } catch (e) {
+        const res = e.response?.data;
+        if (res?.requires_login) {
+            discountError.value = '__login__';
+        } else {
+            discountError.value = res?.message || t('error_occurred');
+        }
+    } finally {
+        discountLoading.value = false;
+    }
+}
+
+function removeDiscount() {
+    appliedDiscount.value = null;
+    discountPrice.value   = 0;
+    discountInput.value   = '';
+    discountError.value   = '';
+}
+
+const discountSaving = computed(() => {
+    if (!appliedDiscount.value) return 0;
+    if (appliedDiscount.value.type === 'percentage') {
+        return Math.ceil(cartTotal.value * appliedDiscount.value.value / 100);
+    }
+    return appliedDiscount.value.value;
+});
 
 async function submit() {
     if (!form.value.terms) {
-        errors.value = { terms: 'يجب الموافقة على الشروط والأحكام' };
+        errors.value = { terms: t('agree_terms_required') };
         return;
     }
 
     // Validate guest / new address fields
     const isGuest = !user.value;
-    const needsAddressForm = isGuest || form.value.user_address === 'add_address';
+    const needsAddressForm = isGuest ? guestMode.value === 'guest' : form.value.user_address === 'add_address';
 
     if (needsAddressForm) {
         const fieldErrors = {};
-        if (!addrForm.value.first_name?.trim())   fieldErrors['addr.billing.first_name']   = ['الاسم الأول مطلوب'];
-        if (!addrForm.value.last_name?.trim())    fieldErrors['addr.billing.last_name']    = ['اسم العائلة مطلوب'];
-        if (!addrForm.value.phone_number?.trim()) fieldErrors['addr.billing.phone_number'] = ['رقم الجوال مطلوب'];
-        if (!addrForm.value.address?.trim())      fieldErrors['addr.billing.address']      = ['العنوان مطلوب'];
-        if (!addrForm.value.country_id)           fieldErrors['addr.billing.country_id']   = ['الدولة مطلوبة'];
-        if (!addrForm.value.city_id)              fieldErrors['addr.billing.city_id']      = ['المدينة مطلوبة'];
-        if (isGuest && !addrForm.value.email?.trim()) fieldErrors['guest_email'] = ['البريد الإلكتروني مطلوب'];
+        if (!addrForm.value.first_name?.trim())   fieldErrors['addr.billing.first_name']   = [t('first_name_required')];
+        if (!addrForm.value.last_name?.trim())    fieldErrors['addr.billing.last_name']    = [t('last_name_required')];
+        if (!addrForm.value.phone_number?.trim()) fieldErrors['addr.billing.phone_number'] = [t('phone_required')];
+        if (!addrForm.value.address?.trim())      fieldErrors['addr.billing.address']      = [t('address_required')];
+        if (!addrForm.value.country_id)           fieldErrors['addr.billing.country_id']   = [t('country_required')];
+        if (!addrForm.value.city_id)              fieldErrors['addr.billing.city_id']      = [t('city_required')];
+        if (isGuest && !addrForm.value.email?.trim()) fieldErrors['guest_email'] = [t('email_required')];
 
         if (Object.keys(fieldErrors).length) {
             errors.value = fieldErrors;
@@ -397,7 +482,7 @@ async function submit() {
         if (e.response?.status === 422) {
             errors.value = e.response.data.errors || {};
         } else {
-            errors.value = { general: e.response?.data?.message || e.message || 'حدث خطأ' };
+            errors.value = { general: e.response?.data?.message || e.message || t('error_occurred') };
             console.error('Checkout error:', e.response?.data);
         }
     } finally {
@@ -443,8 +528,48 @@ async function submit() {
 .co-radio-item input { accent-color: #3949ab; }
 
 /* Discount */
-.co-discount-row { display: flex; align-items: center; gap: 10px; }
-.co-discount-label { font-size: 12px; color: #374151; font-weight: 600; min-width: 150px; }
+.co-discount-login-msg {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: #92400e;
+}
+
+.co-discount-input-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.co-discount-applied {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: #15803d;
+}
+
+.co-discount-remove {
+    margin-right: auto;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    padding: 0;
+}
+.co-discount-remove:hover { color: #ef4444; }
 
 /* Cart item */
 .co-item {

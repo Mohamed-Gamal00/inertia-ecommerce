@@ -1,57 +1,69 @@
 @extends('dashboard.index')
-
 @section('title', 'تعديل سؤال')
 
 @section('breadcrumb')
     @parent
-    <li class="breadcrumb-item"><a href="{{ route('common_questions.index') }}">الاسئلة الشائعة</a></li>
-    <li class="breadcrumb-item">تعديل سؤال</li>
+    <li class="breadcrumb-item"><a href="{{ route('common_questions.index') }}">الأسئلة الشائعة</a></li>
+    <li class="breadcrumb-item active">تعديل سؤال</li>
 @endsection
 
 @section('section')
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    {{-- Form Start --}}
-                    <div class="container">
-                        <form action="{{ route('common_questions.update', $commonQuestion->id) }}" method="POST">
-                            @csrf
-                            @method('PUT')
-                            <div class="form-group">
-                                <label for="title">العنوان</label>
-                                <input type="text" class="form-control" id="title" name="title"
-                                    value="{{ $commonQuestion->title }}" required>
-                            </div>
-                            <div class="form-group my-3">
-                                <label for="description">الوصف</label>
-                                <textarea class="form-control" id="description" name="description" rows="3" required>{{ $commonQuestion->description }}</textarea>
-                            </div>
-                            <button type="submit" class="btn btn-success my-3">تعديل</button>
-                        </form>
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-bottom fw-bold">
+                <i class="mdi mdi-pencil-outline me-2 text-primary"></i>
+                تعديل السؤال
+            </div>
+            <div class="card-body">
+
+                @if($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0 ps-3">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
+
+                <form action="{{ route('common_questions.update', $commonQuestion->id) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                            السؤال <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" name="title" class="form-control @error('title') is-invalid @enderror"
+                            value="{{ old('title', $commonQuestion->title) }}" />
+                        @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
 
-                </div><!-- end cardbody -->
-            </div><!-- end card -->
-        </div> <!-- end col -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                            الإجابة <span class="text-danger">*</span>
+                        </label>
+                        <textarea name="description" rows="5"
+                            class="form-control @error('description') is-invalid @enderror">{{ old('description', $commonQuestion->description) }}</textarea>
+                        @error('description')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="mdi mdi-content-save me-1"></i>
+                            حفظ التعديلات
+                        </button>
+                        <a href="{{ route('common_questions.index') }}" class="btn btn-outline-secondary px-4">
+                            إلغاء
+                        </a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
     </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        document.getElementById('currency').addEventListener('change', function() {
-            var selectedCountryId = this.value;
-            var cityCheckboxes = document.querySelectorAll('.city-checkbox');
-
-            cityCheckboxes.forEach(function(checkbox) {
-                var currencyId = checkbox.getAttribute('data-currency-id');
-                if (selectedCountryId === '' || currencyId !== selectedCountryId) {
-                    checkbox.parentElement.parentElement.style.display = 'none';
-                } else {
-                    checkbox.parentElement.parentElement.style.display = 'block';
-                }
-            });
-        });
-    </script>
+</div>
 
 @endsection

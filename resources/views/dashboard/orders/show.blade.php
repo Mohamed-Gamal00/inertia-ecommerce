@@ -172,10 +172,28 @@
                                 <td colspan="3" class="text-end fw-bold">تكلفة الشحن</td>
                                 <td class="text-center fw-bold">{{ $order->shipping_price ?? 0 }} ر.س</td>
                             </tr>
+                            @if($order->discountCode)
+                            <tr>
+                                <td colspan="3" class="text-end fw-bold text-success">
+                                    <i class="mdi mdi-tag-outline me-1"></i>
+                                    كود الخصم
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success ms-1" style="font-size:12px">
+                                        {{ $order->discountCode->code }}
+                                    </span>
+                                </td>
+                                <td class="text-center fw-bold text-success">
+                                    @if($order->discountCode->discount_type === 'percentage')
+                                        - {{ $order->discountCode->price }}%
+                                    @else
+                                        - {{ $order->discountCode->price }} ر.س
+                                    @endif
+                                </td>
+                            </tr>
+                            @endif
                             <tr>
                                 <td colspan="3" class="text-end fw-bold fs-6">الإجمالي الكلي</td>
                                 <td class="text-center fw-bold fs-6 text-primary">
-                                    {{ number_format($order->total_price + ($order->shipping_price ?? 0), 2) }} ر.س
+                                    {{ number_format($order->total_price, 2) }} ر.س
                                 </td>
                             </tr>
                         </tfoot>
@@ -199,9 +217,22 @@
                 <h5 class="card-title fw-bold mb-4">
                     <i class="mdi mdi-account me-2 text-primary"></i>
                     بيانات العميل
+                    @if(!$order->user_id)
+                        <span class="badge bg-secondary ms-2" style="font-size:11px">زائر</span>
+                    @endif
                 </h5>
 
                 @php $addr = $order->addresses->first(); @endphp
+
+                @if($order->user_id && $order->user)
+                <div class="mb-3 p-2 rounded" style="background:#f0f2ff; border:1px solid #c5cae9">
+                    <div class="text-muted small mb-1">عميل مسجل</div>
+                    <a href="{{ route('clients.edit', $order->user_id) }}" class="fw-bold text-primary text-decoration-none">
+                        <i class="mdi mdi-account-circle me-1"></i>
+                        {{ $order->user->first_name }} {{ $order->user->family_name }}
+                    </a>
+                </div>
+                @endif
 
                 @if($addr)
                 <ul class="list-unstyled mb-0">
@@ -248,6 +279,29 @@
                             </div>
                         </div>
                     </li>
+                    @if($order->discountCode)
+                    <li class="d-flex align-items-start gap-2 mt-3 pt-3" style="border-top:1px solid #f3f4f6">
+                        <i class="mdi mdi-tag-outline text-success mt-1"></i>
+                        <div>
+                            <div class="text-muted small">كود الخصم المستخدم</div>
+                            <div class="d-flex align-items-center gap-2 mt-1 flex-wrap">
+                                <span class="badge fs-6 px-3 py-2" style="background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; font-family:monospace; letter-spacing:1px">
+                                    {{ $order->discountCode->code }}
+                                </span>
+                                <span class="badge bg-success">
+                                    @if($order->discountCode->discount_type === 'percentage')
+                                        خصم {{ $order->discountCode->price }}%
+                                    @else
+                                        خصم {{ $order->discountCode->price }} ر.س
+                                    @endif
+                                </span>
+                            </div>
+                            <div class="text-muted mt-1" style="font-size:11px">
+                                {{ $order->discountCode->name }}
+                            </div>
+                        </div>
+                    </li>
+                    @endif
                 </ul>
                 @else
                 <p class="text-muted">لا توجد بيانات عنوان</p>

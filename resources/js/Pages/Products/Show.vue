@@ -1,13 +1,18 @@
 <template>
     <div class="pd-page">
+        <SeoHead
+            :title="product.name"
+            :description="product.description"
+            :image="product.image_url"
+        />
 
         <!-- Breadcrumb -->
         <div class="pd-breadcrumb">
             <v-container>
                 <div class="d-flex align-center" style="gap:6px; font-size:13px; color:#6b7280">
-                    <a href="/" class="text-decoration-none text-grey-darken-1">الرئيسية</a>
+                    <a href="/" class="text-decoration-none text-grey-darken-1">{{ t('home') }}</a>
                     <v-icon size="14" color="grey">mdi-chevron-left</v-icon>
-                    <a href="/products" class="text-decoration-none text-grey-darken-1">المنتجات</a>
+                    <a href="/products" class="text-decoration-none text-grey-darken-1">{{ t('products') }}</a>
                     <v-icon size="14" color="grey">mdi-chevron-left</v-icon>
                     <span class="text-primary font-weight-medium">{{ product.name }}</span>
                 </div>
@@ -75,11 +80,11 @@
                         <!-- Rating row -->
                         <div class="d-flex align-center mb-4" style="gap:10px">
                             <v-rating :model-value="4.5" half-increments readonly color="amber" density="compact" size="small" />
-                            <span class="text-grey" style="font-size:12px">4.5 (24 تقييم)</span>
+                            <span class="text-grey" style="font-size:12px">4.5 (24 {{ t('quickview_rating') }})</span>
                             <v-divider vertical class="mx-1" style="height:14px" />
                             <span :class="product.quantity > 0 ? 'text-green' : 'text-red'" style="font-size:12px; font-weight:600">
                                 <v-icon size="12">mdi-circle-small</v-icon>
-                                {{ product.quantity > 0 ? 'متوفر' : 'غير متوفر' }}
+                                {{ product.quantity > 0 ? t('in_stock') : t('not_available') }}
                             </span>
                         </div>
 
@@ -88,9 +93,7 @@
                             <template v-if="product.discount_price && product.discount_price < product.price">
                                 <span class="pd-price-new">${{ Math.ceil(product.discount_price) }}</span>
                                 <span class="pd-price-old">${{ product.price }}</span>
-                                <v-chip color="red" size="x-small" variant="flat" class="ms-2">
-                                    وفّر ${{ Math.ceil(product.price - product.discount_price) }}
-                                </v-chip>
+                                <v-chip color="red" size="x-small" variant="flat" class="ms-2">{{ t('save') }} ${{ Math.ceil(product.price - product.discount_price) }}</v-chip>
                             </template>
                             <template v-else>
                                 <span class="pd-price-new">${{ Math.ceil(product.price) }}</span>
@@ -107,12 +110,12 @@
                         <!-- Meta info -->
                         <div class="pd-meta">
                             <div class="pd-meta-row" v-if="product.parent">
-                                <span class="pd-meta-label">الماركة</span>
-                                <span class="pd-meta-value">{{ product.parent.name }}</span>
+                                <span class="pd-meta-label">{{ t('brand') }}</span>
+                                <span class="pd-meta-value">{{ pick(product.parent, 'name') }}</span>
                             </div>
                             <div class="pd-meta-row">
-                                <span class="pd-meta-label">الكمية المتاحة</span>
-                                <span class="pd-meta-value">{{ product.quantity }} قطعة</span>
+                                <span class="pd-meta-label">{{ t('available_qty') }}</span>
+                                <span class="pd-meta-value">{{ product.quantity }} {{ t('pieces') }}</span>
                             </div>
                         </div>
 
@@ -120,19 +123,13 @@
 
                         <!-- Quantity selector -->
                         <div class="d-flex align-center mb-5" style="gap:16px">
-                            <span class="pd-meta-label">الكمية</span>
+                            <span class="pd-meta-label">{{ t('quantity') }}</span>
                             <div class="pd-qty">
-                                <button @click="quantity > 1 ? quantity-- : null">
-                                    <v-icon size="16">mdi-minus</v-icon>
-                                </button>
+                                <button @click="quantity > 1 ? quantity-- : null"><v-icon size="16">mdi-minus</v-icon></button>
                                 <span>{{ quantity }}</span>
-                                <button @click="quantity < product.quantity ? quantity++ : null">
-                                    <v-icon size="16">mdi-plus</v-icon>
-                                </button>
+                                <button @click="quantity < product.quantity ? quantity++ : null"><v-icon size="16">mdi-plus</v-icon></button>
                             </div>
-                            <span class="text-grey-darken-1" style="font-size:13px">
-                                الإجمالي: <strong class="text-primary">${{ subtotal }}</strong>
-                            </span>
+                            <span class="text-grey-darken-1" style="font-size:13px">{{ t('subtotal') }}: <strong class="text-primary">${{ subtotal }}</strong></span>
                         </div>
 
                         <!-- Action buttons -->
@@ -144,11 +141,7 @@
                                 style="flex:1; text-transform:none; font-size:15px; font-weight:600"
                                 :loading="btnLoading"
                                 :disabled="product.quantity < 1"
-                                prepend-icon="mdi-cart-plus"
-                                @click="addToCart"
-                            >
-                                أضف للسلة
-                            </v-btn>
+                            prepend-icon="mdi-cart-plus" @click="addToCart">{{ t('add_to_cart') }}</v-btn>
                             <v-btn
                                 variant="outlined"
                                 color="primary"
@@ -163,20 +156,10 @@
                             </v-btn>
                         </div>
 
-                        <!-- Trust badges -->
                         <div class="pd-badges">
-                            <div class="pd-badge-item">
-                                <v-icon size="18" color="primary">mdi-truck-fast-outline</v-icon>
-                                <span>شحن سريع</span>
-                            </div>
-                            <div class="pd-badge-item">
-                                <v-icon size="18" color="primary">mdi-shield-check-outline</v-icon>
-                                <span>دفع آمن</span>
-                            </div>
-                            <div class="pd-badge-item">
-                                <v-icon size="18" color="primary">mdi-refresh</v-icon>
-                                <span>إرجاع مجاني</span>
-                            </div>
+                            <div class="pd-badge-item"><v-icon size="18" color="primary">mdi-truck-fast-outline</v-icon><span>{{ t('fast_shipping') }}</span></div>
+                            <div class="pd-badge-item"><v-icon size="18" color="primary">mdi-shield-check-outline</v-icon><span>{{ t('secure_payment') }}</span></div>
+                            <div class="pd-badge-item"><v-icon size="18" color="primary">mdi-refresh</v-icon><span>{{ t('free_returns') }}</span></div>
                         </div>
                     </div>
                 </v-col>
@@ -184,7 +167,7 @@
 
             <!-- Features section -->
             <div v-if="product.features?.length" class="pd-features mt-10">
-                <h3 class="pd-section-title">مواصفات المنتج</h3>
+                <h3 class="pd-section-title">{{ t('product_specs') }}</h3>
                 <v-row class="mt-3">
                     <v-col v-for="f in product.features" :key="f.id" cols="12" sm="6" md="4">
                         <div class="pd-feature-card">
@@ -199,6 +182,71 @@
             </div>
         </v-container>
 
+        <!-- Reviews Section -->
+        <v-container class="pb-6">
+            <div class="reviews-section">
+                <div class="d-flex align-center justify-space-between mb-4">
+                    <h3 class="font-weight-bold" style="font-size:18px">
+                        {{ t('reviews_title') }}
+                        <span v-if="reviewsCount" class="text-grey-darken-1 font-weight-regular" style="font-size:14px">({{ reviewsCount }})</span>
+                    </h3>
+                    <div v-if="reviewsAvg" class="d-flex align-center gap-2">
+                        <v-rating :model-value="reviewsAvg" half-increments readonly color="amber" density="compact" size="small" />
+                        <span class="font-weight-bold" style="font-size:15px">{{ reviewsAvg?.toFixed(1) }}</span>
+                    </div>
+                </div>
+
+                <!-- Write review (logged in only) -->
+                <div v-if="user" class="review-form mb-5">
+                    <div class="font-weight-bold mb-2" style="font-size:14px">{{ t('write_review') }}</div>
+                    <div class="d-flex align-center gap-2 mb-3">
+                        <v-rating v-model="newRate" color="amber" density="compact" size="small" hover />
+                        <span class="text-grey" style="font-size:12px">{{ rateLabels[newRate - 1] || t('choose_rating') }}</span>
+                    </div>
+                    <v-textarea v-model="newComment" :placeholder="t('review_placeholder')" variant="outlined" density="compact" rounded="lg" rows="3" hide-details="auto" bg-color="grey-lighten-5" class="mb-3" :error-messages="reviewError" />
+                    <v-btn color="primary" rounded="lg" style="text-transform:none" :loading="submittingReview" :disabled="!newRate || !newComment" @click="submitReview">{{ t('submit_review') }}</v-btn>
+                </div>
+                <div v-else class="review-login-prompt">
+                    <v-icon size="18" color="grey" class="me-2">mdi-account-outline</v-icon>
+                    <a href="/login" class="text-primary text-decoration-none font-weight-bold">{{ t('login_to_review') }}</a>
+                    {{ t('to_write_review') }}
+                </div>
+
+                <!-- Reviews list -->
+                <div v-if="reviews.length" class="reviews-list">
+                    <div v-for="r in reviews" :key="r.id" class="review-item">
+                        <div class="d-flex align-center gap-3 mb-2">
+                            <div class="review-avatar">{{ r.user_name?.charAt(0) }}</div>
+                            <div>
+                                <div class="font-weight-bold" style="font-size:13px">{{ r.user_name }}</div>
+                                <div class="text-grey" style="font-size:11px">{{ r.created_at }}</div>
+                            </div>
+                            <v-rating :model-value="r.rate" readonly color="amber" density="compact" size="x-small" class="ms-auto" />
+                        </div>
+                        <p style="font-size:13px; color:#374151; line-height:1.7; margin:0">{{ r.comment }}</p>
+                    </div>
+                </div>
+                <div v-else-if="!loadingReviews" class="text-center py-6 text-grey" style="font-size:13px">{{ t('no_reviews') }}</div>
+            </div>
+        </v-container>
+
+        <!-- Recently Viewed -->
+        <v-container v-if="recentlyViewed.length" class="pb-10">
+            <div class="d-flex align-center justify-space-between mb-4">
+                <h3 class="font-weight-bold" style="font-size:18px">{{ t('recently_viewed') }}</h3>
+                <a href="/products" class="text-primary text-decoration-none" style="font-size:13px">{{ t('view_all') }}</a>
+            </div>
+            <v-row>
+                <v-col
+                    v-for="item in recentlyViewed"
+                    :key="item.id"
+                    cols="6" sm="4" md="3" lg="2"
+                >
+                    <ProductCard :item="item" @quick-view="p => Emitter.emit('openQuickView', p)" />
+                </v-col>
+            </v-row>
+        </v-container>
+
         <v-snackbar v-model="snackbar" location="top right" :color="snackbarColor" timeout="2000">
             {{ snackbarMessage }}
         </v-snackbar>
@@ -206,13 +254,19 @@
 </template>
 
 <script setup>
-import { ref, computed, inject } from 'vue';
+import { ref, computed, inject, onMounted } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
+import { useRecentlyViewed } from '../../composables/useRecentlyViewed';
+import { useLocale } from '../../composables/useLocale';
+import ProductCard from '../../components/Shared/ProductCard.vue';
+import SeoHead from '../../components/Shared/SeoHead.vue';
 
 const { props } = usePage();
 const product = props.product;
 const Emitter = inject('Emitter');
+const { add: addToRecent, getExcluding } = useRecentlyViewed();
+const { t, pick } = useLocale();
 
 const activeImage = ref(product.image_url);
 const quantity    = ref(1);
@@ -221,6 +275,58 @@ const btnLoading  = ref(false);
 const snackbar    = ref(false);
 const snackbarMessage = ref('');
 const snackbarColor   = ref('success');
+const recentlyViewed  = ref([]);
+
+onMounted(() => {
+    // Track this product as viewed
+    addToRecent(product);
+    // Load recently viewed (excluding current)
+    recentlyViewed.value = getExcluding(product.id);
+    // Load reviews
+    loadReviews();
+});
+
+// Reviews
+const reviews        = ref([]);
+const reviewsAvg     = ref(0);
+const reviewsCount   = ref(0);
+const loadingReviews = ref(false);
+const newRate        = ref(0);
+const newComment     = ref('');
+const submittingReview = ref(false);
+const reviewError    = ref('');
+const user = usePage().props.auth?.user;
+const rateLabels = computed(() => [t('rate_bad'), t('rate_ok'), t('rate_good'), t('rate_very_good'), t('rate_excellent')]);
+
+async function loadReviews() {
+    loadingReviews.value = true;
+    try {
+        const { data } = await axios.get(`/reviews/${product.id}`);
+        reviews.value      = data.reviews;
+        reviewsAvg.value   = data.avg;
+        reviewsCount.value = data.count;
+    } catch {}
+    loadingReviews.value = false;
+}
+
+async function submitReview() {
+    reviewError.value = '';
+    submittingReview.value = true;
+    try {
+        await axios.post('/reviews', {
+            product_id: product.id,
+            rate:       newRate.value,
+            comment:    newComment.value,
+        });
+        newRate.value    = 0;
+        newComment.value = '';
+        await loadReviews();
+    } catch (e) {
+        reviewError.value = e.response?.data?.message || t('error_occurred');
+    } finally {
+        submittingReview.value = false;
+    }
+}
 
 const discountPercent = computed(() => {
     if (!product.discount_price || !product.price) return 0;
@@ -239,10 +345,10 @@ async function addToCart() {
     try {
         const { data } = await axios.post('/cart/add', { product_id: product.id, quantity: quantity.value });
         Emitter.emit('cart-item-added', data.items);
-        snackbarMessage.value = 'تم إضافة المنتج للسلة';
+        snackbarMessage.value = t('product_added_to_cart');
         snackbarColor.value = 'success';
     } catch (e) {
-        snackbarMessage.value = e.response?.data?.message || 'حدث خطأ';
+        snackbarMessage.value = e.response?.data?.message || t('error_occurred');
         snackbarColor.value = 'error';
     } finally {
         btnLoading.value = false;
@@ -440,5 +546,55 @@ async function addToCart() {
     border-radius: 12px;
     padding: 14px;
     height: 100%;
+}
+
+/* Reviews */
+.reviews-section {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    padding: 24px;
+}
+
+.review-form {
+    background: #f8f9fb;
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+}
+
+.review-login-prompt {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    color: #6b7280;
+    background: #f8f9fb;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    border: 1px solid #e5e7eb;
+}
+
+.reviews-list { display: flex; flex-direction: column; gap: 16px; }
+
+.review-item {
+    padding: 16px;
+    border: 1px solid #f3f4f6;
+    border-radius: 12px;
+    background: #fafafa;
+}
+
+.review-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #e8eaf6;
+    color: #1a237e;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 </style>

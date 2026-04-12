@@ -5,12 +5,11 @@
             <!-- Header -->
             <v-card class="px-0" elevation="0">
                 <v-card-title class="pl-0 pr-0 d-flex justify-space-between align-center w-100" style="font-size:17px;font-weight:bold">
-                    سلة التسوق
-                    <v-icon @click="drawer = false">mdi-close</v-icon>
+                    {{ t('cart_title') }}                    <v-icon @click="drawer = false">mdi-close</v-icon>
                 </v-card-title>
-                <v-card-text class="px-0" style="color:#6f6f6f">{{ cartItems.length }} منتج</v-card-text>
+                <v-card-text class="px-0" style="color:#6f6f6f">{{ cartItems.length }} {{ t('cart_items') }}</v-card-text>
                 <v-card-text class="px-0 text-center" style="color:#6f6f6f" v-if="!cartItems.length">
-                    السلة فارغة
+                    {{ t('cart_empty') }}
                 </v-card-text>
 
                 <!-- Free shipping progress -->
@@ -51,9 +50,9 @@
                     </div>
                     <v-card-text class="px-0 pt-1" style="color:#6f6f6f; font-size:13px">
                         <span v-if="total < freeShippingThreshold">
-                            {{ freeShippingThreshold - total }} ر.س متبقية للشحن المجاني
+                            {{ freeShippingThreshold - total }} ر.س {{ t('cart_free_shipping_remaining') }}
                         </span>
-                        <span v-else class="text-green">تهانينا! شحن مجاني على طلبك</span>
+                        <span v-else class="text-green">{{ t('cart_free_shipping_congrats') }}</span>
                     </v-card-text>
                 </template>
             </v-card>
@@ -87,15 +86,15 @@
             <!-- Footer actions -->
             <v-card class="mt-4" elevation="0" v-if="cartItems.length">
                 <div class="d-flex justify-space-between px-2 mb-3">
-                    <span style="font-weight:600">الإجمالي</span>
+                    <span style="font-weight:600">{{ t('cart_total') }}</span>
                     <span style="font-weight:700; font-size:16px">{{ total }} ر.س</span>
                 </div>
                 <v-card-actions class="flex-column gap-2">
                     <v-btn block variant="elevated" color="primary" height="44" style="border-radius:22px; text-transform:none" href="/checkout">
-                        إتمام الشراء
+                        {{ t('cart_checkout') }}
                     </v-btn>
                     <v-btn block variant="outlined" color="primary" height="44" style="border-radius:22px; text-transform:none" @click="drawer = false">
-                        متابعة التسوق
+                        {{ t('cart_continue') }}
                     </v-btn>
                 </v-card-actions>
             </v-card>
@@ -107,6 +106,8 @@
 <script setup>
 import { ref, computed, inject, onMounted } from 'vue';
 import axios from 'axios';
+import { useLocale } from '../../composables/useLocale';
+const { t } = useLocale();
 
 const Emitter = inject('Emitter');
 const drawer = ref(false);
@@ -164,7 +165,7 @@ onMounted(() => {
     Emitter.on('cart-item-added', (items) => {
         cartItems.value = items;
         Emitter.emit('cart-updated', items.length);
-        drawer.value = true;
+        // Don't auto-open drawer — let the fly animation handle the feedback
     });
 });
 </script>

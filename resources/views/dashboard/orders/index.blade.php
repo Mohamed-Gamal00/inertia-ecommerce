@@ -47,10 +47,13 @@
                             @forelse ($orders as $order)
                                 <tr data-id="5">
                                     <td data-field="id">{{ $order->number }}</td>
-                                    <td>{{ $order->user ? $order->user->first_name : 'زائر' }}</td>
-                                    {{-- <td data-field="id">{{ $order->addresses->first()->first_name }} {{ $order->addresses->first()->last_name }}</td> --}}
-
-                                    <td data-field="id">{{ $order->user->id ? $order->user->email : 'زائر' }}</td>
+                                    <td>
+                                        {{ $order->customer_name }}
+                                        @if(!$order->user_id)
+                                            <span class="badge bg-secondary ms-1" style="font-size:10px">زائر</span>
+                                        @endif
+                                    </td>
+                                    <td data-field="id">{{ $order->customer_email }}</td>
                                     <td data-field="id">{{ $order->addresses->first()->country->name_ar ?? '-' }}</td>
                                     <td data-field="id">{{ $order->addresses->first()->city->name_ar ?? '-' }}</td>
 

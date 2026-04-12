@@ -2,31 +2,38 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\Product;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class Company extends Model
+class Company extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
-    protected $fillable = ['name', 'name_en', 'image', 'product_id'];
+    protected $guard = 'vendor';
 
+    protected $fillable = [
+        'name', 'name_en', 'image',
+        'email', 'password', 'phone', 'description',
+        'status', 'is_vendor',
+    ];
+
+    protected $hidden = ['password', 'remember_token'];
+
+    protected $casts = ['password' => 'hashed', 'is_vendor' => 'boolean'];
 
     public function getImageUrlAttribute()
     {
-        if (!$this->image) {
-            return asset('assets/images/no-image.jpg');
-        }
+        if (!$this->image) return asset('assets/images/no-image.jpg');
         return asset('storage/' . $this->image);
     }
 
     public function scopeFilter(Builder $builder, $filters)
     {
-        $builder->when($filters['name'] ?? false, function ($builder, $value) {
-            $builder->where('companies.name', 'LIKE', '%' . $value . '%');
-        });
+        $builder->when($filters['name'] ?? false, fn($b, $v) =>
+            $b->where('companies.name', 'LIKE', '%' . $v . '%')
+        );
     }
 
     public function products()
@@ -37,11 +44,6 @@ class Company extends Model
     public function getCurrentNameLangAttribute()
     {
         $locale = app()->getLocale();
-        if ($locale === 'ar' || empty($this->name_en)) {
-            return $this->name;
-        }
-        return $this->name_en;
+        return ($locale === 'ar' || empty($this->name_en)) ? $this->name : $this->name_en;
     }
-
-
 }

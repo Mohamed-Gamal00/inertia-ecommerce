@@ -1,533 +1,356 @@
 @extends('dashboard.index')
 
-@section('title', 'انشاء منتج')
+@section('title', 'إنشاء منتج')
 
 @section('breadcrumb')
     @parent
     <li class="breadcrumb-item"><a href="{{ route('products.index') }}">المنتجات</a></li>
-    <li class="breadcrumb-item">انشاء منتج</li>
+    <li class="breadcrumb-item active">إنشاء منتج</li>
 @endsection
 
 @section('section')
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    @if ($errors->any())
-                        <div class="alert alert-danger">
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
+
+@if ($errors->any())
+<div class="alert alert-danger alert-dismissible fade show mb-4">
+    <i class="mdi mdi-alert-circle-outline me-2"></i>
+    <strong>يرجى تصحيح الأخطاء التالية:</strong>
+    <ul class="mb-0 mt-1 ps-3">
+        @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
+
+<form class="repeater" action="{{ route('products.store') }}" method="post" enctype="multipart/form-data">
+@csrf
+
+<div class="row g-4">
+
+    {{-- ══════════════════════════════════════
+         LEFT COLUMN: Main info + Media
+    ══════════════════════════════════════ --}}
+    <div class="col-lg-8">
+
+        {{-- Basic Info --}}
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-transparent border-bottom fw-bold">
+                <i class="mdi mdi-information-outline me-2 text-primary"></i>
+                المعلومات الأساسية
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">اسم المنتج <span class="text-danger">*</span></label>
+                        <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
+                            value="{{ old('name') }}" placeholder="اسم المنتج بالعربي" />
+                        @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">اسم المنتج بالإنجليزية</label>
+                        <input type="text" name="name_en" class="form-control @error('name_en') is-invalid @enderror"
+                            value="{{ old('name_en') }}" placeholder="Product name in English" dir="ltr" />
+                        @error('name_en')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">الوصف</label>
+                        <textarea name="description" rows="4" class="form-control"
+                            placeholder="وصف تفصيلي للمنتج...">{{ old('description') }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Pricing & Stock --}}
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-transparent border-bottom fw-bold">
+                <i class="mdi mdi-cash-multiple me-2 text-primary"></i>
+                السعر والمخزون
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">السعر <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="number" name="price" step="0.01" min="0"
+                                class="form-control @error('price') is-invalid @enderror"
+                                value="{{ old('price') }}" placeholder="0.00" />
+                            <span class="input-group-text">ر.س</span>
                         </div>
-                    @endif
-                    {{-- Form Start --}}
-                    <form class="repeater" action="{{ route('products.store') }}" method="post"
-                        enctype="multipart/form-data">
-                        @csrf
-                        <div class="row mb-3 mt-3">
-                            <label for="example-text-input" class="col-sm-2 col-form-label fw-bold">اسم المنتج</label>
-                            <div class="col-sm-10">
-                                <x-form.input type="text" name="name" value="{{ old('name') }}" />
-                            </div>
+                        @error('price')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">سعر الخصم</label>
+                        <div class="input-group">
+                            <input type="number" name="discount_price" step="0.01" min="0"
+                                class="form-control" value="{{ old('discount_price') }}" placeholder="0.00" />
+                            <span class="input-group-text">ر.س</span>
                         </div>
-                        <div class="row mb-3 mt-3">
-                            <label for="example-text-input" class="col-sm-2 col-form-label fw-bold">اسم المنتج باللغة
-                                الانجليزية</label>
-                            <div class="col-sm-10">
-                                <x-form.input type="text" name="name_en" value="{{ old('name_en') }}" />
-                            </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">الكمية <span class="text-danger">*</span></label>
+                        <input type="number" name="quantity" min="0"
+                            class="form-control @error('quantity') is-invalid @enderror"
+                            value="{{ old('quantity') }}" placeholder="0" />
+                        @error('quantity')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">الوزن (كجم)</label>
+                        <div class="input-group">
+                            <input type="number" name="weight" step="0.01" min="0"
+                                class="form-control" value="{{ old('weight') }}" placeholder="0.00" />
+                            <span class="input-group-text">كجم</span>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                        <div class="row mb-3">
-                            <label for="example-text-input" class="col-sm-2 col-form-label fw-bold">السعر الحالي</label>
-                            <div class="col-sm-10">
-                                <x-form.input type="number" name="price" value="{{ old('price') }}" />
-                            </div>
+        {{-- Main Image + Gallery --}}
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-transparent border-bottom fw-bold">
+                <i class="mdi mdi-image-multiple-outline me-2 text-primary"></i>
+                الصور
+            </div>
+            <div class="card-body">
+                {{-- Main image --}}
+                <label class="form-label fw-semibold">الصورة الرئيسية <span class="text-danger">*</span></label>
+                <div class="d-flex align-items-start gap-4 mb-4">
+                    <div class="main-img-preview-wrap">
+                        <img id="mainImgPreview" src="{{ asset('assets/images/upload-image.jpg') }}"
+                            class="rounded border" style="width:120px; height:120px; object-fit:cover" />
+                    </div>
+                    <div class="flex-grow-1">
+                        <input type="file" name="image" id="mainImageInput" class="form-control @error('image') is-invalid @enderror"
+                            accept="image/*" onchange="previewMainImage(event)" />
+                        <div class="form-text">PNG, JPG, WEBP — الحد الأقصى 2MB</div>
+                        @error('image')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                </div>
+
+                {{-- Gallery --}}
+                <label class="form-label fw-semibold">صور إضافية</label>
+                <div class="image-upload-container d-flex flex-wrap gap-2 mb-2" id="galleryContainer"></div>
+                <button type="button" class="btn btn-outline-success btn-sm" onclick="addProductImageUpload()">
+                    <i class="mdi mdi-plus me-1"></i> إضافة صورة
+                </button>
+            </div>
+        </div>
+
+        {{-- Features repeater --}}
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-transparent border-bottom fw-bold">
+                <i class="mdi mdi-format-list-checks me-2 text-primary"></i>
+                مميزات المنتج <span class="text-muted fw-normal" style="font-size:12px">(اختياري)</span>
+            </div>
+            <div class="card-body">
+                <div data-repeater-list="product_features">
+                    <div class="row g-2 align-items-end mb-3 feature-row" data-repeater-item>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold small">اسم الميزة</label>
+                            <input type="text" name="feature_name" class="form-control form-control-sm"
+                                placeholder="مثال: المادة" />
                         </div>
-
-                        <div class="row mb-3">
-                            <label for="example-text-input" class="col-sm-2 col-form-label fw-bold">السعر بعد
-                                الخصم</label>
-                            <div class="col-sm-10">
-                                <x-form.input type="number" name="discount_price" value="{{ old('discount_price') }}" />
-                            </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold small">الاسم بالإنجليزية</label>
+                            <input type="text" name="feature_name_en" class="form-control form-control-sm"
+                                placeholder="e.g. Material" dir="ltr" />
                         </div>
-
-                        <div class="row mb-3">
-                            <label for="example-text-input" class="col-sm-2 col-form-label fw-bold">الوزن (كجم)</label>
-                            <div class="col-sm-10">
-                                <x-form.input type="number" name="weight" value="{{ old('weight') }}" />
-                            </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small">القيمة</label>
+                            <input type="text" name="feature_description" class="form-control form-control-sm"
+                                placeholder="مثال: قطن 100%" />
                         </div>
-
-                        <div class="row mb-3">
-                            <label for="example-text-input" class="col-sm-2 col-form-label fw-bold">الكميه</label>
-                            <div class="col-sm-10">
-                                <x-form.input type="number" name="quantity" value="{{ old('quantity') }}" />
-                            </div>
+                        <div class="col-md-2">
+                            <input data-repeater-delete type="button" class="btn btn-outline-danger btn-sm w-100" value="حذف" />
                         </div>
+                    </div>
+                </div>
+                <input data-repeater-create type="button" class="btn btn-outline-primary btn-sm"
+                    value="+ إضافة ميزة" />
+            </div>
+        </div>
 
-                        <div class="row mb-3">
-                            <label for="example-number-input" class="col-sm-2 col-form-label fw-bold">الوصف</label>
-                            <div class="col-sm-10">
-                                <textarea class="form-control" rows="7" name="description">{{ old('description') }}</textarea>
-                            </div>
-                        </div>
-
-                        @if ($companies)
-                            <div class="row mb-3">
-                                <label class="col-sm-2 col-form-label fw-bold">البراند</label>
-                                <div class="col-sm-10">
-                                    <select name="company_id" class="form-select" aria-label="البراند الخاص بالمنتج">
-                                        <option value="" hidden selected disabled>اختر البراند الخاص بالمنتج</option>
-                                        @foreach ($companies as $company)
-                                            <option value="{{ $company->id }}">
-                                                {{ $company->CurrentNameLang }}</option>
-                                        @endforeach
-
-                                    </select>
-                                    @error('company_id')
-                                        <span class="error">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                        @endif
-
-
-                        {{-- الاقسام --}}
-                        <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label fw-bold">القسم</label>
-                            <div class="col-sm-10">
-                                @php
-                                    function getSubCategories($subCategories, $prefix = '')
-                                    {
-                                        $html = '';
-                                        foreach ($subCategories as $category) {
-                                            $html .=
-                                                '<option value="' .
-                                                $category->id .
-                                                '">' .
-                                                $prefix .
-                                                $category->name .
-                                                '</option>';
-                                            if ($category->children->isNotEmpty()) {
-                                                $html .= getSubCategories(
-                                                    $category->children,
-                                                    $prefix . $category->name . '/',
-                                                );
-                                            }
-                                        }
-                                        return $html;
-                                    }
-                                @endphp
-                                <select name='parent_id' id="category" class="form-control">
-                                    <option value="">اختار</option>
-                                    {!! getSubCategories($subCategories) !!}
-                                </select>
-
-
-                                @error('status')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        {{-- الخيارات --}}
-                        <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label fw-bold">الخيارات</label>
-                            <div class="col-sm-10">
-                                <select name="choice_id[]" id="choices" class="form-select multi-select" multiple>
-                                    <!-- سيتم تعبئتها ديناميكيًا من خلال الـ JavaScript -->
-                                </select>
-                            </div>
-                        </div>
-
-                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-                        <script>
-                            $(document).ready(function() {
-                                $.ajax({
-                                    url: '{{ route('fetch.choices') }}', // تأكد أن هذا يعيد فقط الخيارات الرئيسية
-                                    type: 'GET',
-                                    success: function(response) {
-                                        let choicesDropdown = $('#choices');
-                                        choicesDropdown.empty(); // تفريغ القائمة قبل الإضافة
-
-                                        response.forEach(function(choice) {
-                                            let mainOption = $('<option>', {
-                                                value: choice.id,
-                                                text: choice.name
-                                            });
-
-                                            choicesDropdown.append(mainOption); // إضافة الخيار الرئيسي فقط
-                                        });
-                                    },
-                                    error: function(xhr, status, error) {
-                                        console.error("Error fetching choices:", error);
-                                    }
-                                });
-                            });
-                        </script>
-
-
-
-                        <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label fw-bold">حالة النشاط </label>
-                            <div class="col-sm-10">
-                                <select class="form-select" name="status" aria-label="Default select example">
-                                    @error('status')
-                                        <span class="error">{{ $message }}</span>
-                                    @enderror
-                                    <option hidden disabled>اختر حالة المنتج</option>
-                                    <option selected value="active">نشط</option>
-                                    <option value="archived">غير نشط</option>
-                                </select>
-                                @error('status')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label fw-bold">حالة التوفر</label>
-                            <div class="col-sm-10">
-                                <select class="form-select" name="product_availability_id"
-                                    aria-label="Default select example">
-                                    <option value="" disabled selected hidden>اختر حالة التوفر للمنتج</option>
-                                    @forelse($availability_status as $availability)
-                                        <option value="{{ $availability->id }}">{{ $availability->name }}</option>
-                                    @empty
-                                    @endforelse
-                                </select>
-                                @error('product_availability_id')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label fw-bold">نوع المنتج</label>
-                            <div class="col-sm-10">
-                                <select class="form-select" name="is_special" aria-label="Default select example">
-                                    @error('is_special')
-                                        <span class="error">{{ $message }}</span>
-                                    @enderror
-                                    <option value="1">مميز</option>
-                                    <option value="0" selected>عادي</option>
-                                </select>
-                                @error('status')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        {{-- الصورة الرئيسية --}}
-                        <div class="row mb-3">
-                            <label for="example-text-input" class="col-sm-2 col-form-label fw-bold">الصورة
-                                الرئيسية</label>
-                            <div class="col-sm-10">
-                                <input type="file" class="form-control" name="image" id="imageUpload"
-                                    data-buttonname="btn-secondary" accept="image/*">
-                                @error('image')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                        <img src="#" id="imagePreview" class="img-thumbnail rounded mb-5" alt="Preview"
-                            style="width: 150px; display: none;">
-                        {{-- الصور --}}
-                        <div class="form-body">
-                            <button type="button" class="btn btn-success" onclick="addProductImageUpload()">المزيد من
-                                الصور
-                            </button>
-                            <div class="image-upload-container">
-                                <div class="image-upload-one">
-                                    <!-- Existing image upload elements if any -->
-                                </div>
-                            </div>
-                        </div>
-
-
-                        {{-- الالوان --}}
-                        <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label fw-bold">الألوان</label>
-                            <div class="col-sm-10">
-
-                                <select name="colors[]" id="subcategory1" class="form-select multi-select"
-                                    aria-label="الألوان" multiple>
-                                    @foreach ($colors as $color)
-                                        <option value="{{ $color->id }}">{{ $color->name }}</option>
-                                    @endforeach
-                                </select>
-
-                                @error('colors')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                        {{-- مميزات المنتج --}}
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h4 class="card-title">اضافة مميزات للمنتج ( اختياري )</h4>
-                                        <div data-repeater-list="product_features">
-                                            <div class="row" data-repeater-item>
-                                                <div class="mb-3 col-lg-2">
-                                                    <label class="form-label fw-bold" for="name">الاسم</label>
-                                                    <input type="text" id="name" name="feature_name"
-                                                        class="form-control" placeholder="اكتب اسم الميزه" />
-                                                    @error('feature_name')
-                                                        <span class="error">{{ $message }}</span>
-                                                    @enderror
-                                                </div>
-
-                                                <div class="mb-3 col-lg-2">
-                                                    <label class="form-label fw-bold" for="name">الاسم
-                                                        بالانجليزي</label>
-                                                    <input type="text" id="name" name="feature_name_en"
-                                                        class="form-control" placeholder="الاسم بالانجلليزي" />
-                                                    @error('feature_name_en')
-                                                        <span class="error">{{ $message }}</span>
-                                                    @enderror
-                                                </div>
-                                                <!-- end col -->
-                                                <div class="mb-3 col-lg-4">
-                                                    <label class="form-label fw-bold">الميزه</label>
-                                                    <input type="text" name="feature_description" class="form-control"
-                                                        placeholder="اكتب وصف الميزه" />
-                                                    @error('feature_description')
-                                                        <span class="error">{{ $message }}</span>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-lg-2 col-sm-4 align-self-center">
-                                                    <label class="form-label fw-bold"></label>
-                                                    <div class="d-grid">
-                                                        <input data-repeater-delete type="button"
-                                                            class="btn btn-primary mb-2" value="مسح" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <input data-repeater-create type="button" class="btn btn-success mt-2 mt-sm-0"
-                                            value="اضافة المزيد" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-
-                            <div>
-
-                                <button class="btn btn-primary" type="submit">حفظ المنتج</button>
-                            </div>
-                    </form>
-                </div><!-- end cardbody -->
-            </div><!-- end card -->
-        </div> <!-- end col -->
     </div>
 
-    <style>
-        .image-upload-container {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-        }
+    {{-- ══════════════════════════════════════
+         RIGHT COLUMN: Settings
+    ══════════════════════════════════════ --}}
+    <div class="col-lg-4">
 
-        .image-upload-one {
-            margin: 10px;
-        }
+        {{-- Publish --}}
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-transparent border-bottom fw-bold">
+                <i class="mdi mdi-publish me-2 text-primary"></i>
+                النشر
+            </div>
+            <div class="card-body d-flex flex-column gap-3">
+                <div>
+                    <label class="form-label fw-semibold">حالة النشاط</label>
+                    <select name="status" class="form-select @error('status') is-invalid @enderror">
+                        <option value="active" selected>نشط</option>
+                        <option value="archived">غير نشط</option>
+                    </select>
+                    @error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                </div>
+                <div>
+                    <label class="form-label fw-semibold">نوع المنتج</label>
+                    <select name="is_special" class="form-select">
+                        <option value="0" selected>عادي</option>
+                        <option value="1">مميز</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label fw-semibold">حالة التوفر</label>
+                    <select name="product_availability_id" class="form-select">
+                        <option value="" disabled selected>اختر حالة التوفر</option>
+                        @foreach($availability_status as $a)
+                            <option value="{{ $a->id }}">{{ $a->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mt-2">
+                    <i class="mdi mdi-content-save me-1"></i>
+                    حفظ المنتج
+                </button>
+            </div>
+        </div>
 
-        .image-container {
-            position: relative;
-            width: 200px;
-            height: 200px;
-        }
+        {{-- Category --}}
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-transparent border-bottom fw-bold">
+                <i class="mdi mdi-shape-outline me-2 text-primary"></i>
+                التصنيف
+            </div>
+            <div class="card-body d-flex flex-column gap-3">
+                <div>
+                    <label class="form-label fw-semibold">القسم <span class="text-danger">*</span></label>
+                    @php
+                        function getSubCategories($subCategories, $prefix = '') {
+                            $html = '';
+                            foreach ($subCategories as $category) {
+                                $html .= '<option value="' . $category->id . '">' . $prefix . $category->name . '</option>';
+                                if ($category->children->isNotEmpty()) {
+                                    $html .= getSubCategories($category->children, $prefix . $category->name . ' / ');
+                                }
+                            }
+                            return $html;
+                        }
+                    @endphp
+                    <select name="parent_id" id="category" class="form-select @error('parent_id') is-invalid @enderror">
+                        <option value="">اختر القسم</option>
+                        {!! getSubCategories($subCategories) !!}
+                    </select>
+                    @error('parent_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                </div>
 
-        .image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+                @if($companies)
+                <div>
+                    <label class="form-label fw-semibold">البراند</label>
+                    <select name="company_id" class="form-select">
+                        <option value="">بدون براند</option>
+                        @foreach($companies as $company)
+                            <option value="{{ $company->id }}">{{ $company->CurrentNameLang }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @endif
+            </div>
+        </div>
 
-        .image-container {
-            position: relative;
-            display: inline-block;
-        }
+        {{-- Colors & Choices --}}
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-transparent border-bottom fw-bold">
+                <i class="mdi mdi-palette-outline me-2 text-primary"></i>
+                الألوان والخيارات
+            </div>
+            <div class="card-body d-flex flex-column gap-3">
+                <div>
+                    <label class="form-label fw-semibold">الألوان</label>
+                    <select name="colors[]" id="subcategory1" class="form-select multi-select" multiple>
+                        @foreach($colors as $color)
+                            <option value="{{ $color->id }}">{{ $color->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label fw-semibold">الخيارات</label>
+                    <select name="choice_id[]" id="choices" class="form-select multi-select" multiple></select>
+                </div>
+            </div>
+        </div>
 
-        .image-container:hover .overlay {
-            opacity: 1;
-        }
+    </div>
+</div>
 
-        .image-container:hover .button-remove2 {
-            opacity: 1;
-        }
+</form>
 
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            /* Adjust opacity to your preference */
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
-        }
+{{-- ── Styles ── --}}
+<style>
+.main-img-preview-wrap img { transition: opacity 0.2s; }
+.feature-row { background: #f8f9fb; border-radius: 8px; padding: 10px; }
+</style>
 
-        .button-remove2 {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(1);
-            /* Adjust the transform origin to center */
-            background-color: transparent;
-            border: none;
-            color: #fff;
-            /* Adjust color as per your design */
-            font-weight: bold;
-            font-size: 40px;
-            padding: 8px 12px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-            /* Apply transition for both opacity and transform */
-            z-index: 1;
-            opacity: 0;
-        }
+{{-- ── Scripts ── --}}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function () {
+    $('.multi-select').select2({ width: '100%' });
 
-        .button-remove2:hover {
-            transform: translate(-50%, -50%) scale(1.2);
-            /* Scale up the button slightly more on hover */
-        }
-
-        .image-upload-one {
-            animation: fadeIn 0.5s ease forwards;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-    </style>
-
-    <script></script>
-
-
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <script>
-        $(document).ready(function() {
-            $('.multi-select').select2();
+    // Load choices on page load
+    $.get('{{ route('fetch.choices') }}', function (response) {
+        response.forEach(function (choice) {
+            $('#choices').append('<option value="' + choice.id + '">' + choice.name + '</option>');
         });
-    </script>
+        $('#choices').trigger('change.select2');
+    });
+});
 
-    <script>
-        document.getElementById('category').addEventListener('change', function() {
-            var categoryId = this.value;
-            var subcategorySelect = document.getElementById('subcategory');
+function previewMainImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => document.getElementById('mainImgPreview').src = e.target.result;
+    reader.readAsDataURL(file);
+}
 
-            // Clear existing options
-            subcategorySelect.innerHTML = '';
+let uploadIndex = 1;
+function addProductImageUpload() {
+    const idx = uploadIndex++;
+    const wrap = document.createElement('div');
+    wrap.id = 'gallery-' + idx;
+    wrap.style.cssText = 'position:relative; width:90px; height:90px;';
+    wrap.innerHTML = `
+        <label style="cursor:pointer; display:block; width:100%; height:100%;">
+            <img id="gp-${idx}" src="{{ asset('assets/images/upload-image.jpg') }}"
+                style="width:100%; height:100%; object-fit:cover; border-radius:8px; border:1px solid #e5e7eb;" />
+            <input type="file" hidden name="header[${idx}][image]" accept="image/*"
+                onchange="previewGallery(event, ${idx})" />
+        </label>
+        <button type="button" onclick="removeGallery(${idx})"
+            style="position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%;
+                   background:#ef4444; color:white; border:none; cursor:pointer; font-size:12px; line-height:1;
+                   display:flex; align-items:center; justify-content:center;">×</button>`;
+    document.getElementById('galleryContainer').appendChild(wrap);
+}
 
-            // If no main category is selected, hide subcategory select
-            if (categoryId === '') {
-                subcategorySelect.style.display = 'none';
-                return;
-            }
+function previewGallery(event, idx) {
+    const reader = new FileReader();
+    reader.onload = e => document.getElementById('gp-' + idx).src = e.target.result;
+    reader.readAsDataURL(event.target.files[0]);
+}
 
-            subcategorySelect.style.display = 'block'; // Show subcategory select
+function removeGallery(idx) {
+    document.getElementById('gallery-' + idx)?.remove();
+}
 
-            fetch(`/admin/sub_category/${categoryId}`)
-                .then(response => response.json())
-                .then(data => {
-                    var defaultOption = new Option('', '');
-                    subcategorySelect.appendChild(defaultOption);
+window.onload = () => addProductImageUpload();
+</script>
 
-                    data.forEach(subcategory => {
-                        var option = new Option(subcategory.name, subcategory.id);
-                        subcategorySelect.appendChild(option);
-                    });
-                });
-        });
-    </script>
-
-    <script>
-        window.onload = function() {
-            addProductImageUpload();
-        };
-
-        function previewImage(event, index) {
-            const input = event.target;
-            const reader = new FileReader();
-            reader.onload = function() {
-                const preview = document.getElementById(`preview-${index}`);
-                preview.src = reader.result;
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
-
-        function removeImage(index) {
-            const preview = document.getElementById(`preview-${index}`);
-            const input = document.getElementById(`file-ip-${index}`);
-            input.value = "";
-            const container = document.querySelector(
-                `.image-upload-container #image-upload-${index}`
-            );
-            container.parentNode.removeChild(container);
-        }
-
-        let uploadIndex = 2; // Start with 2 as there's already one input
-
-        function addProductImageUpload() {
-            const container = document.querySelector(".image-upload-container");
-            const newInput = document.createElement("div");
-            newInput.classList.add("image-upload-one");
-            newInput.innerHTML = `
-                          <div class="image-upload-container">
-                            <div class="image-upload-one" id="image-upload-${uploadIndex}">
-                              <div class="center">
-                                <div class="form-input">
-                                  <label for="file-ip-${uploadIndex}">
-                                    <div class="image-container">
-                                      <img alt="Preview" src="" data-holder-rendered="true" id="preview-${uploadIndex}">
-                                      <div class="overlay"></div>
-                                      <input type="file" hidden id="file-ip-${uploadIndex}" name="header[${uploadIndex}][image]" accept="image/*" onchange="previewImage(event, ${uploadIndex})">
-                                      <button class="button-remove2" type="button" onclick="removeImage(${uploadIndex})">x</button>
-                                    </div>
-                                  </label>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        `;
-            container.appendChild(newInput);
-
-            const baseUrl = window.location.origin;
-            const relativeImagePath = "/assets/images/upload-image.jpg";
-            const fullImageUrl = baseUrl + relativeImagePath;
-            document.getElementById(`preview-${uploadIndex}`).src = fullImageUrl;
-
-            newInput.style.opacity = 0;
-            setTimeout(() => {
-                newInput.style.opacity = 1;
-            }, 10);
-            uploadIndex++;
-        }
-    </script>
-
-
-    @push('scripts')
-        <script src="{{ asset('assets/libs/jquery.repeater/jquery.repeater.min.js') }}"></script>
-
-        <script src="{{ asset('assets/js/pages/form-repeater.int.js') }}"></script>
-    @endpush
+@push('scripts')
+    <script src="{{ asset('assets/libs/jquery.repeater/jquery.repeater.min.js') }}"></script>
+    <script src="{{ asset('assets/js/pages/form-repeater.int.js') }}"></script>
+@endpush
 
 @endsection

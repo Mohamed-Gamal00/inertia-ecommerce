@@ -1,23 +1,42 @@
 <script setup>
 import { defineProps, computed } from 'vue'
+import SeoHead from '../components/Shared/SeoHead.vue';
 
 const props = defineProps({
     products: {
         type: Array,
         default: () => [],
     },
+    banners: {
+        type: Array,
+        default: () => [],
+    },
+    homeDesigns: {
+        type: Object,
+        default: () => ({}),
+    },
 });
+
+// Static fallbacks (used when no image is set in DB)
+import bandLeft  from '@/assets/images/band-left-cover.webp';
+import bandRight from '@/assets/images/band-right-cover.webp';
+import tvBanner  from '@/assets/images/tv-banner.webp';
+
+const bandLeftSrc  = computed(() => props.homeDesigns?.home_band_left  || bandLeft);
+const bandRightSrc = computed(() => props.homeDesigns?.home_band_right || bandRight);
+const tvBannerSrc  = computed(() => props.homeDesigns?.home_tv_banner  || tvBanner);
 </script>
 
 
 <template>
     <div class="home">
-        <UpperPanner />
+        <SeoHead />
+        <UpperPanner :banners="banners" />
         <TheFeatures />
         <TopOffers />
         <ProductsComponents
             :products="products"
-            title="Flash Deals"
+            title="section_flash_deals"
             titleColor="red"
         />
 
@@ -26,22 +45,22 @@ const props = defineProps({
         <QualityFeatuers />
         <ProductsComponents
             :products="products"
-            title="Top Mobile Phones"
+            title="section_top_mobiles"
             titleColor="#404040"
         />
         <v-container fluid>
             <v-row>
                 <v-col cols="6" class="pr-5">
                     <img
-                        src="@/assets/images/band-left-cover.webp"
+                        :src="bandLeftSrc"
                         alt="band-left-cover"
                         class="w-100"
                     />
                 </v-col>
                 <v-col cols="6" class="pl-5">
                     <img
-                        src="@/assets/images/band-right-cover.webp"
-                        alt="band-left-cover"
+                        :src="bandRightSrc"
+                        alt="band-right-cover"
                         class="w-100"
                     />
                 </v-col>
@@ -49,12 +68,12 @@ const props = defineProps({
         </v-container>
         <ProductsComponents
             :products="products"
-            title="Top Fragrances"
+            title="section_top_fragrances"
             titleColor="#404040"
         />
         <img
-            src="@/assets/images/tv-banner.webp"
-            alt="band-left-cover"
+            :src="tvBannerSrc"
+            alt="tv-banner"
             class="w-100"
         />
 

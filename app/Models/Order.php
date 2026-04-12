@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\DiscountCode;
 use App\Models\OrderAddress;
 
 
@@ -14,6 +15,8 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
+        'guest_id',
+        'discount_code_id',
         'cookie_id',
         'payment_method',
         'status',
@@ -43,15 +46,64 @@ class Order extends Model
         if ($number) {
             return $number + 1; // this will be the next number
         }
-        return $year . '000001';
+
+        return $year.'000001';
     }
 
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id')
             ->withDefault([
-                'first_name' => 'زائر'
+                'first_name' => 'زائر',
             ]);
+    }
+
+    public function guest()
+    {
+        return $this->belongsTo(\App\Models\Guest::class, 'guest_id', 'id');
+    }
+
+    public function discountCode()
+    {
+        return $this->belongsTo(DiscountCode::class, 'discount_code_id', 'id');
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(\App\Models\PaymentTransaction::class, 'order_id', 'id');
+    }
+
+    public function latestTransaction()
+    {
+        return $this->hasOne(\App\Models\PaymentTransaction::class, 'order_id', 'id')->latestOfMany();
+    }
+
+    /**
+     * Get the display name for the order owner (user or guest).
+     */
+    public function getCustomerNameAttribute(): string
+    {
+        if ($this->user_id && $this->user) {
+            return trim($this->user->first_name . ' ' . $this->user->family_name);
+        }
+        if ($this->guest_id && $this->guest) {
+            return trim($this->guest->first_name . ' ' . $this->guest->family_name) ?: 'زائر';
+        }
+        // fallback: read from order address
+        $addr = $this->addresses()->first();
+        return $addr ? trim($addr->first_name . ' ' . $addr->last_name) : 'زائر';
+    }
+
+    public function getCustomerEmailAttribute(): string
+    {
+        if ($this->user_id && $this->user) {
+            return $this->user->email ?? '—';
+        }
+        if ($this->guest_id && $this->guest) {
+            return $this->guest->email ?? '—';
+        }
+        $addr = $this->addresses()->first();
+        return $addr?->email ?? '—';
     }
 
     public function products()
@@ -87,6 +139,20 @@ class Order extends Model
         });
     }
 
+    /**
+     * Orders that include this vendor's products (by company_id on order or on line items).
+     */
+    public function scopeVisibleToVendorCompany(Builder $builder, int $vendorCompanyId): void
+    {
+        $builder->where(function (Builder $q) use ($vendorCompanyId) {
+            $q->where('company_id', $vendorCompanyId)
+                ->orWhere(function (Builder $q2) use ($vendorCompanyId) {
+                    $q2->whereNull('company_id')
+                        ->whereHas('orderItems.product', fn ($p) => $p->where('company_id', $vendorCompanyId));
+                });
+        });
+    }
+
     public function billingAddress()
     {
         // will return colleciton
@@ -102,7 +168,6 @@ class Order extends Model
         return $this->hasOne(OrderAddress::class, 'order_id', 'order')
             ->where('type', '=', 'shipping');
     }
-
 
     public function choices()
     {

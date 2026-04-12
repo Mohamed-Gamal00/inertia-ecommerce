@@ -1,9 +1,9 @@
 <template>
     <div style="background:#f5f6fa; min-height:100vh; padding-bottom:48px">
         <div style="background:linear-gradient(135deg,#c62828,#e53935); padding:40px 16px 50px">
-            <h1 class="text-white font-weight-bold text-center" style="font-size:28px">🔥 العروض والتخفيضات</h1>
+            <h1 class="text-white font-weight-bold text-center" style="font-size:28px">{{ t('offers_title') }}</h1>
             <p class="text-center mt-2" style="color:rgba(255,255,255,0.85); font-size:14px">
-                {{ products.total }} منتج بأسعار مخفضة
+                {{ products.total }} {{ t('discounted_products') }}
             </p>
         </div>
 
@@ -16,7 +16,7 @@
 
             <div v-else style="text-align:center; padding:64px 0">
                 <v-icon size="64" color="grey-lighten-1">mdi-tag-off-outline</v-icon>
-                <p style="margin-top:12px; color:#9ca3af">لا توجد عروض متاحة حالياً</p>
+                <p style="margin-top:12px; color:#9ca3af">{{ t('no_offers') }}</p>
             </div>
 
             <div class="d-flex justify-center mt-8" v-if="products.last_page > 1">
@@ -30,6 +30,8 @@
 import { ref, watch, inject } from 'vue';
 import { router } from '@inertiajs/vue3';
 import ProductCard from '../../components/Shared/ProductCard.vue';
+import { useLocale } from '../../composables/useLocale';
+const { t } = useLocale();
 
 const props = defineProps({ products: Object });
 const Emitter = inject('Emitter');

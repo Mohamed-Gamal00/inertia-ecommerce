@@ -125,6 +125,13 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     //----------------------------------------------/Companies routes
     Route::resource('/companies', CompaniesController::class);
 
+    //----------------------------------------------/Vendors routes
+    Route::get('/vendors', [\App\Http\Controllers\Dashboard\VendorsController::class, 'index'])->name('vendors.index');
+    Route::get('/vendors/{id}', [\App\Http\Controllers\Dashboard\VendorsController::class, 'show'])->name('vendors.show');
+    Route::put('/vendors/{id}/approve', [\App\Http\Controllers\Dashboard\VendorsController::class, 'approve'])->name('vendors.approve');
+    Route::put('/vendors/{id}/suspend', [\App\Http\Controllers\Dashboard\VendorsController::class, 'suspend'])->name('vendors.suspend');
+    Route::delete('/vendors/{id}', [\App\Http\Controllers\Dashboard\VendorsController::class, 'destroy'])->name('vendors.destroy');
+
     //----------------------------------------------/stores routes
     Route::resource('/store_featuers', StoreFatuerController::class);
 
@@ -152,6 +159,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::post('/header_banner_en/store', [HeaderBanerController::class, 'frontHeaderStoreAndUpdate_en'])->name('header_banner_en.sotreAndUpdate');
 
     //----------------------------------------------/Animated Advertisements
+    Route::post('advertisements/{advertisement}/toggle', [AdvertisementController::class, 'toggle'])->name('advertisements.toggle');
     Route::resource('advertisements', AdvertisementController::class);
 
     //----------------------------------------------/static pages
@@ -167,7 +175,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::resource('bulk_orders', BulkOrderController::class);
 
     //----------------------------------------------/payments
-    // Route::get('/payments', [\App\Http\Controllers\Dashboard\PaymentController::class, 'index'])->name('payments.index');
+    Route::get('/payments', [\App\Http\Controllers\Dashboard\PaymentController::class, 'index'])->name('payments.index');
+    Route::get('/payments/{id}', [\App\Http\Controllers\Dashboard\PaymentController::class, 'show'])->name('payments.show');
 
     //----------------------------------------------/Countries and Cities
     Route::get('/countries/{countryId}/cities', [CountriesController::class, 'getCitiesByCountry']);

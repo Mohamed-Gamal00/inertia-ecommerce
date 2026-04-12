@@ -1,7 +1,7 @@
 <template>
     <div class="shop-withus py-14">
         <div class="title mb-8">
-            <h2 class="text-center"><span>Why Shop</span> With Us</h2>
+            <h2 class="text-center"><span>{{ t('why_us_title') }}</span></h2>
         </div>
 
         <v-container fluid>
@@ -56,36 +56,33 @@
     </div>
 </template>
 
-<script>
-export default {
-    name: "WhyShopWithUs",
-    data() {
-        return {
-            cards: [
-                {
-                    title: "Free Shipping On First Order",
-                    desc: "Get your first order delivered for free anywhere.",
-                    image: new URL('@/assets/images/free-shipping.png', import.meta.url).href,
-                },
-                {
-                    title: "Weekly Flash Sale",
-                    desc: "Save big with discounts every weekend.",
-                    image: new URL('@/assets/images/weekly-flash-sales.png', import.meta.url).href,
-                },
-                {
-                    title: "Annual Payment Discount",
-                    desc: "Pay annually and enjoy exclusive savings.",
-                    image: new URL('@/assets/images/discount.png', import.meta.url).href,
-                },
-                {
-                    title: "Cashback Reward Program",
-                    desc: "Earn cashback on every purchase you make.",
-                    image: new URL('@/assets/images/cash-back.png', import.meta.url).href,
-                },
-            ],
-        };
+<script setup>
+import { computed } from 'vue';
+import { useLocale } from '../../composables/useLocale';
+const { t } = useLocale();
+
+const cards = computed(() => [
+    {
+        title: t('why_quality'),
+        desc:  t('why_quality_desc'),
+        image: new URL('@/assets/images/free-shipping.png', import.meta.url).href,
     },
-};
+    {
+        title: t('why_shipping'),
+        desc:  t('why_shipping_desc'),
+        image: new URL('@/assets/images/weekly-flash-sales.png', import.meta.url).href,
+    },
+    {
+        title: t('why_payment'),
+        desc:  t('why_payment_desc'),
+        image: new URL('@/assets/images/discount.png', import.meta.url).href,
+    },
+    {
+        title: t('why_support'),
+        desc:  t('why_support_desc'),
+        image: new URL('@/assets/images/cash-back.png', import.meta.url).href,
+    },
+]);
 </script>
 
 <style lang="scss" scoped>

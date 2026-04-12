@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\DiscountCode;
 use App\Models\ShippingTypesAndPrice;
+use App\Models\UserDiscountCode;
 use App\Repositories\Cart\CartRepository;
 use App\Services\CheckOut\CheckoutServices;
+use App\Support\CartSingleVendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -27,6 +29,12 @@ class CheckoutController extends Controller
     {
         if ($cart->get()->count() == 0) {
             return redirect()->route('home');
+        }
+
+        try {
+            CartSingleVendor::assertCheckoutCartSingleVendor($cart->get());
+        } catch (\InvalidArgumentException $e) {
+            return redirect()->route('home')->withErrors(['cart' => $e->getMessage()]);
         }
 
         foreach ($cart->get() as $item) {
@@ -152,7 +160,13 @@ class CheckoutController extends Controller
             $cartItems = $this->checkoutService->getCartItems($user);
 
             if ($cartItems->isEmpty()) {
-                return response()->json(['message' => 'لا يمكن اتمام الطلب والسلة فارغة'], 422);
+                return response()->json(['message' => __('flash.cart_empty_checkout')], 422);
+            }
+
+            try {
+                CartSingleVendor::assertCheckoutCartSingleVendor($cartItems);
+            } catch (\InvalidArgumentException $e) {
+                return response()->json(['message' => $e->getMessage()], 422);
             }
 
         } catch (\Exception $e) {
@@ -165,7 +179,6 @@ class CheckoutController extends Controller
             $this->checkoutService->checkJoinNews($request, $user);
 
             $order = $this->checkoutService->createOrder($request, $user, $shipping_price);
-
             $this->checkoutService->createOrderItems($order, $user);
 
             $this->checkoutService->isAddingNewAddress($order, $request, $user);
@@ -177,13 +190,98 @@ class CheckoutController extends Controller
 
             $this->checkoutService->sendNotificationToAdmin($order);
 
+            // Clear applied discount from session
+            session()->forget('applied_discount_code_id');
+
             DB::commit();
 
             return $this->checkoutService->checkPaymentMethod($request, $order);
 
         } catch (Throwable $e) {
             DB::rollBack();
-            return response()->json(['message' => 'فشل إنشاء الطلب', 'error' => $e->getMessage()], 500);
+            return response()->json(['message' => __('flash.order_creation_failed'), 'error' => $e->getMessage()], 500);
         }
+    }
+
+    /**
+     * Validate and apply a discount code — returns JSON for the Vue checkout page.
+     */
+    public function applyDiscount(Request $request)
+    {
+        $request->validate(['discount_code' => 'required|string']);
+
+        $user = Auth::guard('web')->user();
+
+        // 1. Guests cannot use discount codes
+        if (!$user) {
+            return response()->json([
+                'message'       => __('flash.login_required_discount'),
+                'requires_login' => true,
+            ], 401);
+        }
+
+        $code = DiscountCode::where('code', $request->discount_code)
+            ->where('status', 'active')
+            ->where('number_of_used', '>', 0)
+            ->first();
+
+        if (!$code) {
+            return response()->json(['message' => __('flash.invalid_discount_code')], 422);
+        }
+
+        // 2. If code is product-specific, check that at least one cart item matches
+        $cartItems = $this->checkoutService->getCartItems($user);
+        $isGlobal  = $code->products()->count() === 0;
+
+        if (!$isGlobal) {
+            $codeProductIds  = $code->products->pluck('id')->toArray();
+            $cartProductIds  = $cartItems->pluck('product_id')->toArray();
+            $hasMatchingItem = count(array_intersect($codeProductIds, $cartProductIds)) > 0;
+
+            if (!$hasMatchingItem) {
+                return response()->json([
+                    'message' => __('flash.discount_not_applicable'),
+                ], 422);
+            }
+        }
+
+        $cookieId    = Cart::getCookieId();
+        $alreadyUsed = UserDiscountCode::where('cookie_id', $cookieId)
+            ->where('discount_id', $code->id)
+            ->exists();
+
+        if ($alreadyUsed) {
+            return response()->json(['message' => __('flash.discount_already_used')], 422);
+        }
+
+        // Register usage & decrement
+        UserDiscountCode::create(['cookie_id' => $cookieId, 'discount_id' => $code->id]);
+        $code->decrement('number_of_used');
+
+        // Apply discount to matching cart items only
+        foreach ($cartItems as $item) {
+            if ($isGlobal || $code->products->contains($item->product_id)) {
+                $discountAmount = $code->discount_type === 'percentage'
+                    ? (($item->product->discount_price ?? $item->product->price) * $code->price) / 100
+                    : $code->price;
+
+                $original               = $item->product->discount_price ?? $item->product->price;
+                $item->discounted_price = max(0, $original - $discountAmount);
+                $item->save();
+            }
+        }
+
+        $newTotal = $this->checkoutService->calculateTotal($user);
+
+        // Store in session so createOrder can attach it to the order
+        session(['applied_discount_code_id' => $code->id]);
+
+        return response()->json([
+            'message'        => __('flash.discount_applied_success'),
+            'discount_code'  => $code->code,
+            'discount_value' => (float) $code->price,
+            'discount_type'  => $code->discount_type,
+            'new_total'      => (float) $newTotal,
+        ]);
     }
 }

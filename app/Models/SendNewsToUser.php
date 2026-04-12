@@ -13,4 +13,13 @@ class SendNewsToUser extends Model
     public $timestamps = false;
     protected $table = 'send_news_to_users';
     protected $fillable = ['subscription_email'];
+
+    /**
+     * Route notifications for the mail channel.
+     * Laravel needs this to know which email address to send to.
+     */
+    public function routeNotificationForMail(): string
+    {
+        return $this->subscription_email;
+    }
 }

@@ -9,11 +9,16 @@ class DiscountCode extends Model
 {
   use HasFactory;
 
-  protected $fillable = ['name', 'code', 'price', 'status', 'discount_type', 'number_of_used', 'product_ids'];
+  protected $fillable = ['name', 'code', 'price', 'status', 'discount_type', 'number_of_used', 'product_ids', 'company_id'];
 
   public function products()
   {
     return $this->belongsToMany(Product::class, 'discount_code_product');
   }
-  
+
+  public function company()
+  {
+    return $this->belongsTo(Company::class, 'company_id', 'id');
+  }
+
 }

@@ -8,6 +8,7 @@ use App\Models\MainCategory;
 use App\Models\Product;
 use App\Models\ProductAvailability;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class ProductSeeder extends Seeder
 {
@@ -23,10 +24,16 @@ class ProductSeeder extends Seeder
         $black = Color::updateOrCreate(['color_code' => '#000000'], ['name' => 'أسود']);
         $white = Color::updateOrCreate(['color_code' => '#FFFFFF'], ['name' => 'أبيض']);
 
-        // Company
+        // Default catalog vendor (products in seed reference this company)
         $company = Company::updateOrCreate(
             ['name' => 'الشركة الافتراضية'],
-            ['name_en' => 'Default Company']
+            [
+                'name_en' => 'Default Company',
+                'email' => 'default-store@example.test',
+                'password' => Hash::make('password'),
+                'is_vendor' => true,
+                'status' => 'active',
+            ]
         );
 
         // Categories
@@ -54,7 +61,7 @@ class ProductSeeder extends Seeder
                 'price'                  => 1999.00,
                 'discount_price'         => 1799.00,
                 'quantity'               => 50,
-                'status'                 => true,
+                'status'                 => "active",
                 'is_special'             => true,
                 'weight'                 => 0.2,
                 'category_id'            => $electronics->id,
@@ -69,7 +76,7 @@ class ProductSeeder extends Seeder
                 'price'                  => 3500.00,
                 'discount_price'         => null,
                 'quantity'               => 20,
-                'status'                 => true,
+                'status'                 => "active",
                 'is_special'             => false,
                 'weight'                 => 1.8,
                 'category_id'            => $electronics->id,
@@ -84,7 +91,7 @@ class ProductSeeder extends Seeder
                 'price'                  => 89.00,
                 'discount_price'         => 69.00,
                 'quantity'               => 200,
-                'status'                 => true,
+                'status'                 => "active",
                 'is_special'             => false,
                 'weight'                 => 0.3,
                 'category_id'            => $clothing->id,
@@ -99,7 +106,7 @@ class ProductSeeder extends Seeder
                 'price'                  => 350.00,
                 'discount_price'         => null,
                 'quantity'               => 80,
-                'status'                 => true,
+                'status'                 => "active",
                 'is_special'             => true,
                 'weight'                 => 0.9,
                 'category_id'            => $clothing->id,
@@ -114,7 +121,7 @@ class ProductSeeder extends Seeder
                 'price'                  => 450.00,
                 'discount_price'         => 399.00,
                 'quantity'               => 30,
-                'status'                 => true,
+                'status'                 => "active",
                 'is_special'             => false,
                 'weight'                 => 3.5,
                 'category_id'            => $home->id,
@@ -129,7 +136,7 @@ class ProductSeeder extends Seeder
                 'price'                  => 299.00,
                 'discount_price'         => null,
                 'quantity'               => 0,
-                'status'                 => false,
+                'status'                 => "active",
                 'is_special'             => false,
                 'weight'                 => 4.0,
                 'category_id'            => $home->id,

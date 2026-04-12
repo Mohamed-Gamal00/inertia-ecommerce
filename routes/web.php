@@ -39,6 +39,23 @@ Route::middleware('auth:web')->group(function () {
     })->name('account');
 });
 
+// Newsletter subscription
+Route::post('/subscribe', [\App\Http\Controllers\Inertia\NewsletterController::class, 'store'])->name('newsletter.subscribe');
+
+// Language switcher
+Route::post('/locale/{lang}', function (string $lang) {
+    if (in_array($lang, ['ar', 'en'])) {
+        session(['locale' => $lang]);
+    }
+    return back();
+})->name('locale.switch');
+// Search (live JSON for navbar + full page redirect)
+Route::get('/search', [\App\Http\Controllers\Inertia\SearchController::class, 'search'])->name('search');
+// Reviews (public read)
+Route::get('/reviews/{productId}', [\App\Http\Controllers\Inertia\ReviewController::class, 'index'])->name('reviews.index');
+// Compare
+Route::get('/compare', [\App\Http\Controllers\Inertia\CompareController::class, 'index'])->name('compare');
+
 Route::get('/', [\App\Http\Controllers\Inertia\HomeController::class, 'index'])->name('home');
 
 // Offers
@@ -76,9 +93,11 @@ Route::delete('/cart/{id}', [\App\Http\Controllers\Inertia\CartController::class
 // Checkout
 Route::get('/checkout', [\App\Http\Controllers\Inertia\CheckoutController::class, 'create'])->name('checkout');
 Route::post('/checkout', [\App\Http\Controllers\Inertia\CheckoutController::class, 'store'])->name('checkout.store');
+Route::post('/checkout/apply-discount', [\App\Http\Controllers\Inertia\CheckoutController::class, 'applyDiscount'])->name('checkout.discount');
 
-// Payment page (web)
-Route::get('/payment/{order_number}', [\App\Http\Controllers\Api\PaymentController::class, 'index'])->name('user.payment');
+// Payment page (web) — works for both guests and authenticated users
+Route::get('/payment/{order_number}', [\App\Http\Controllers\Inertia\PaymentController::class, 'show'])->name('user.payment');
+Route::get('/payment/{order_number}/callback', [\App\Http\Controllers\Inertia\PaymentController::class, 'callback'])->name('payment.callback');
 
 
 Route::prefix('products')->group(function () {
@@ -114,6 +133,7 @@ Route::middleware('auth:web')->group(function () {
 
     Route::post('/wishlist/add/{product}', [\App\Http\Controllers\Inertia\WishListController::class, 'add'])->name('wishlist.add');
     Route::post('/wishlist/remove/{product}', [\App\Http\Controllers\Inertia\WishListController::class, 'remove'])->name('wishlist.remove');
+    Route::post('/reviews', [\App\Http\Controllers\Inertia\ReviewController::class, 'store'])->name('reviews.store');
 
     //    Route::get('/user_wishlist', [UserProfileController::class, 'userWishList'])->name('user.wishlist');
     // Route::get('/user_info', [UserProfileController::class, 'userInfo'])->name('user.info');
@@ -162,3 +182,4 @@ Route::middleware('auth:web')->group(function () {
 //Route::get('/user_orders/{number}/payment/callback', [\App\Http\Controllers\Front\PaymentController::class, 'callback'])->name('payment.callback');
 
 require __DIR__ . '/dashboard.php';
+require __DIR__ . '/vendor.php';

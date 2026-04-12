@@ -7,8 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
 use App\Models\Guest;
 use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\OrderStatus;
+use App\Services\Vendor\VendorOrderNotificationService;
 use Illuminate\Http\Request;
 
 class GuestOrdersController extends Controller
@@ -16,13 +16,14 @@ class GuestOrdersController extends Controller
     public function mainOrders(Request $request)
     {
         $guest = $request->header('guest-id');
-//        return $guest;
+        //        return $guest;
         $orders = Order::latest()
             ->with('products', 'orderStatus', 'orderItems', 'orderItems.product')
             ->where('guest_id', $guest)
             ->where('return_order', false)
             ->paginate(6);
-//        return $orders;
+
+        //        return $orders;
         return response()->json([
             'orders' => OrderResource::collection($orders),
 
@@ -33,12 +34,12 @@ class GuestOrdersController extends Controller
     {
         $guest = $request->header('guest-id');
         $number = $request->header('number');
-        if (!$number) {
+        if (! $number) {
             return response()->json([
                 'message' => 'Order number is required in the header',
                 'errors' => [
-                    'number' => ['Order number is required.']
-                ]
+                    'number' => ['Order number is required.'],
+                ],
             ], 400); // Bad Request
         }
 
@@ -49,14 +50,15 @@ class GuestOrdersController extends Controller
             ->where('number', $number)
             ->first();
 
-        if (!$order) {
+        if (! $order) {
             return ApiResponse::sendResponse(200, 'الطلب غير موجود');
         }
-//        return $order;
+        //        return $order;
         $data = [
-            'order' => new  OrderResource($order),
+            'order' => new OrderResource($order),
             'order status' => $order->orderStatus->getCurrentNameLangAttribute(),
         ];
+
         return ApiResponse::sendResponse(200, '', $data);
     }
 
@@ -66,7 +68,6 @@ class GuestOrdersController extends Controller
             'product_id' => 'required|exists:order_items,product_id',
             'order_number' => 'required|string|exists:orders,number',
         ]);
-
 
         $order = Order::where('number', $request->order_number)->firstOrFail();
         $orderItem = $order->orderItems()->where('product_id', $request->product_id)->firstOrFail();
@@ -93,24 +94,24 @@ class GuestOrdersController extends Controller
         ]);
 
         // Check if the order has no remaining items and delete it if necessary
-        if (!$order->orderItems()->exists()) {
+        if (! $order->orderItems()->exists()) {
             $order->delete();
         }
+
         return ApiResponse::sendResponse(200, 'تم الحذف بنجاح');
     }
 
-
-    /*  المرتجعات  */
+    /*  المرتجعات */
     public function returns(Request $request)
     {
         $guest_id = $request->header('guest-id');
-//        return $guest_id;
+        //        return $guest_id;
         // Fetch user with related return products and orders with products
         $returnProducts = Guest::with('returnProducts', 'orders.products')
             ->where('id', $guest_id)
             ->first();
 
-        if (!$returnProducts) {
+        if (! $returnProducts) {
             return response()->json(['message' => 'Guest or related data not found'], 404);
         }
         $finalOrderStatus = max(OrderStatus::pluck('arrangement')->toArray());
@@ -121,30 +122,29 @@ class GuestOrdersController extends Controller
         if ($products->isEmpty()) {
             return response()->json([
                 'status_code' => 404,
-                'message' => 'لا يوجد مرتجعات'
+                'message' => 'لا يوجد مرتجعات',
             ], 404);
         }
-
 
         // Return JSON response
         return response()->json([
             'status_code' => 200,
             'message' => 'success',
             'data' => [
-//                'order_status' => $orderStatus, // Assuming OrderStatusResource for order statuses
+                //                'order_status' => $orderStatus, // Assuming OrderStatusResource for order statuses
                 'products' => OrderResource::collection($products), // Assuming OrderResource is used for orders
-            ]
+            ],
         ]);
     }
 
-    /*  make return order  */
+    /*  make return order */
 
     public function store(Request $request)
     {
 
         $statusId = OrderStatus::where('default_status', true)->first();
 
-        if (!$statusId) {
+        if (! $statusId) {
             return response()->json(['status_code' => 400, 'message' => 'Default order status not found'], 400);
         }
 
@@ -156,18 +156,23 @@ class GuestOrdersController extends Controller
         if ($request->return_order_id) {
             $order = Order::where('id', $request->return_order_id)->first();
 
-            if (!$order) {
+            if (! $order) {
                 return response()->json(['status_code' => 404, 'message' => 'Order not found'], 404);
             }
 
+            $wasAlreadyReturn = (bool) $order->return_order;
+
             $order->update([
                 'return_order' => true,
-                'order_status_id' => $statusId->id
+                'order_status_id' => $statusId->id,
             ]);
+
+            if (! $wasAlreadyReturn) {
+                VendorOrderNotificationService::notifyReturnRequested($order->fresh());
+            }
         }
+
         return response()->json(['status_code' => 200, 'message' => 'تم ارجاع الطلب بنجاح']);
 
     }
-
-
 }

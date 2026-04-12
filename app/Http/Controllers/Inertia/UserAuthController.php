@@ -10,6 +10,7 @@ use App\Models\Country;
 use App\Models\User;
 use App\Models\User_verfication;
 use App\Models\UserAddress;
+use App\Services\CheckOut\CheckoutServices;
 use App\Services\SMSGateways\moraSms;
 use App\Services\VerificationServices;
 use Illuminate\Http\Request;
@@ -22,11 +23,13 @@ class UserAuthController extends Controller
 {
     public $sms_service;
     public $moraSms;
+    protected CheckoutServices $checkoutServices;
 
-    public function __construct(VerificationServices $services, moraSms $moraSmsGateway)
+    public function __construct(VerificationServices $services, moraSms $moraSmsGateway, CheckoutServices $checkoutServices)
     {
-        $this->sms_service = $services;
-        $this->moraSms = $moraSmsGateway;
+        $this->sms_service      = $services;
+        $this->moraSms          = $moraSmsGateway;
+        $this->checkoutServices = $checkoutServices;
     }
 
     /* ================== AUTH VIEWS ================== */
@@ -78,7 +81,7 @@ class UserAuthController extends Controller
             ]);
 
             UserAddress::create([
-                'address_title' => 'العنوان الأساسي',
+                'address_title' => __('flash.main_address_label'),
                 'first_name'    => $user->first_name,
                 'family_name'   => $user->family_name,
                 'phone_number'  => $user->phone_number,
@@ -92,6 +95,9 @@ class UserAuthController extends Controller
             Auth::guard('web')->login($user);
         });
 
+        // Merge any guest cart items into the newly registered user's cart
+        $this->checkoutServices->mergeGuestCart(Auth::guard('web')->id());
+
         return redirect()->route('home');
     }
 
@@ -102,13 +108,16 @@ class UserAuthController extends Controller
             'password' => 'required',
         ]);
 
-        // dd($credentials);
         if (Auth::guard('web')->attempt($credentials)) {
             $request->session()->regenerate();
+
+            // Merge any guest cart items into the now-authenticated user's cart
+            $this->checkoutServices->mergeGuestCart(Auth::guard('web')->id());
+
             return redirect()->route('home');
         }
 
-        return back()->withErrors(['email' => 'بيانات الدخول غير صحيحة.']);
+        return back()->withErrors(['email' => trans('auth.failed')]);
     }
 
     public function logout(Request $request)
@@ -125,7 +134,7 @@ class UserAuthController extends Controller
         $request->validate(['code' => 'required']);
         $user_id = session('user_id');
         if (!$user_id) {
-            return back()->with('error', 'انتهت الجلسة، حاول مرة أخرى.');
+            return back()->with('error', __('flash.session_expired'));
         }
 
         $user = User::find($user_id);
@@ -136,10 +145,10 @@ class UserAuthController extends Controller
             Auth::login($user);
             session()->forget(['user_id', 'verification_code']);
 
-            return redirect()->route('home')->with('success', 'تم تفعيل حسابك بنجاح');
+            return redirect()->route('home')->with('success', __('flash.account_activated'));
         }
 
-        return back()->with('error', 'الرمز غير صالح.');
+        return back()->with('error', __('flash.invalid_code'));
     }
 
     public function forgotPassword(Request $request)
@@ -153,7 +162,7 @@ class UserAuthController extends Controller
 
         session(['user_id' => $user->id, 'verification_code' => $verificationData->code]);
 
-        return back()->with('success', 'تم إرسال كود التحقق لإعادة تعيين كلمة المرور.');
+        return back()->with('success', __('flash.otp_sent'));
     }
 
     public function passwordUpdate(Request $request)
@@ -162,12 +171,12 @@ class UserAuthController extends Controller
         $user = User::find(session('user_id'));
 
         if (!$user) {
-            return redirect()->route('user.forgotPasswordView')->with('error', 'انتهت الجلسة، حاول مرة أخرى.');
+            return redirect()->route('user.forgotPasswordView')->with('error', __('flash.session_expired'));
         }
 
         $user->update(['password' => Hash::make($request->password)]);
         session()->forget(['user_id', 'verification_code']);
 
-        return redirect()->route('login')->with('success', 'تم تحديث كلمة المرور بنجاح.');
+        return redirect()->route('login')->with('success', __('flash.password_updated'));
     }
 }

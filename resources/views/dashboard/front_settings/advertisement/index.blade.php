@@ -4,7 +4,6 @@
 @section('breadcrumb')
     @parent
     <li class="breadcrumb-item active" aria-current="page">شريط متحرك</li>
-
 @endsection
 
 @section('section')
@@ -14,14 +13,11 @@
             <div class="card">
                 <div class="card-body">
 
-
                     <x-alert type='success' />
                     <x-alert type='dark' />
 
-
                     <div class="container">
-                        {{-- <a href="{{ route('advertisements.create') }}" class="btn btn-primary">اضف شريط متحرك</a> --}}
-                        <table class="table mt-3">
+                        <table class="table mt-3 align-middle">
                             <thead>
                                 <tr>
                                     <th>العنوان</th>
@@ -33,29 +29,40 @@
                                 @foreach ($advertisements as $advertisement)
                                     <tr>
                                         <td>{{ $advertisement->title }}</td>
-                                        <td>{{ $advertisement->is_active ? 'مفعل' : 'غير مفعل ' }}</td>
                                         <td>
+                                            <span class="badge {{ $advertisement->is_active ? 'bg-success' : 'bg-secondary' }} fs-6 px-3 py-2">
+                                                {{ $advertisement->is_active ? 'مفعل' : 'غير مفعل' }}
+                                            </span>
+                                        </td>
+                                        <td class="d-flex align-items-center gap-2">
+
+                                            {{-- Toggle button --}}
+                                            <form action="{{ route('advertisements.toggle', $advertisement->id) }}" method="POST">
+                                                @csrf
+                                                <button type="submit"
+                                                    class="btn btn-sm {{ $advertisement->is_active ? 'btn-danger' : 'btn-success' }}"
+                                                    title="{{ $advertisement->is_active ? 'إيقاف' : 'تفعيل' }}">
+                                                    <i class="fas {{ $advertisement->is_active ? 'fa-toggle-on' : 'fa-toggle-off' }} me-1"></i>
+                                                    {{ $advertisement->is_active ? 'إيقاف' : 'تفعيل' }}
+                                                </button>
+                                            </form>
+
+                                            {{-- Edit button --}}
                                             <a href="{{ route('advertisements.edit', $advertisement->id) }}"
-                                                style="font-size: 12px" ; class="btn btn-primary waves-effect waves-light"
-                                                title="تعديل">
+                                                class="btn btn-sm btn-primary" title="تعديل">
                                                 <i class="fas fa-pencil-alt"></i>
                                             </a>
-                                            {{-- <form action="{{ route('advertisements.destroy', $advertisement->id) }}"
-                                                method="POST" style="display:inline;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-danger">Delete</button>
-                                            </form> --}}
+
                                         </td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
-                    <!-- end -->
+
                 </div>
             </div>
-        </div> <!-- end col -->
+        </div>
     </div>
 
 @endsection

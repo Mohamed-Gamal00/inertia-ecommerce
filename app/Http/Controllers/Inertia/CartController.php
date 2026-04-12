@@ -51,10 +51,14 @@ class CartController extends Controller
         $product = Product::findOrFail($request->product_id);
 
         if ($product->quantity < ($request->quantity ?? 1)) {
-            return response()->json(['message' => 'الكمية غير متاحة'], 422);
+            return response()->json(['message' => __('flash.quantity_not_available')], 422);
         }
 
-        $this->cart->add($product, $request->quantity ?? 1, $request->color_id);
+        try {
+            $this->cart->add($product, $request->quantity ?? 1, $request->color_id);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
         $items = $this->cart->get()->map(fn($item) => [
             'id'             => $item->id,
@@ -68,7 +72,7 @@ class CartController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'تم إضافة المنتج للسلة',
+            'message' => __('flash.product_added_to_cart'),
             'items'   => $items,
             'count'   => $items->count(),
             'total'   => $this->cart->total(),

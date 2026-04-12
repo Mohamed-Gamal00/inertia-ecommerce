@@ -19,7 +19,12 @@ class DiscountRepository implements Discount_codesInterface
 
   public function getMainDiscountCode()
   {
-    return $this->discount_code->latest()->paginate();
+    return $this->discount_code->whereNull('company_id')->latest()->paginate();
+  }
+
+  public function getVendorDiscountCodes($vendorId)
+  {
+    return $this->discount_code->where('company_id', $vendorId)->latest()->paginate();
   }
 
   public function store($data)
