@@ -113,7 +113,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::post('/product_images/delete', [ProductsController::class, 'imageDelete'])->name('image.delete');
 
     Route::get('/sub_category/{categoryId}', [ProductsController::class, 'subCategory'])->name('sub_category');
-    Route::post('/search', [ProductsController::class, 'search'])->name('search');
+    Route::post('/search', [ProductsController::class, 'search'])->name('admin.search');
     Route::get('/products/out_of_stock', [ProductsController::class, 'outOfStock'])->name('out_of_stock');
     Route::get('/fetch-choices', [ProductsController::class, 'fetchChoices'])->name('fetch.choices');
 

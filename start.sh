@@ -4,7 +4,7 @@
 
 echo "🚀 Starting Laravel application on Railway..."
 
-# Set proper permissions for Laravel
+# Ensure directories exist with proper permissions
 echo "📁 Setting up directories and permissions..."
 mkdir -p storage/framework/{sessions,views,cache,testing}
 mkdir -p storage/logs
@@ -17,33 +17,29 @@ if [ -z "$APP_KEY" ]; then
     php artisan key:generate --force
 fi
 
-# Clear any existing cache first
-echo "🧹 Clearing existing cache..."
+# Clear any problematic cache
+echo "🧹 Clearing cache..."
 php artisan config:clear
 php artisan route:clear
 php artisan view:clear
-php artisan cache:clear
 
-# Cache configuration for production (only if no database errors)
-echo "⚙️ Caching configuration..."
+# Cache configurations safely
+echo "⚙️ Caching configurations..."
 php artisan config:cache
 php artisan event:cache
-
-# Only cache routes if they don't have conflicts
-echo "🛣️ Attempting to cache routes..."
-if php artisan route:cache; then
-    echo "✅ Routes cached successfully"
-else
-    echo "⚠️ Route caching failed, continuing without route cache"
-fi
-
-# Cache views
 php artisan view:cache
+
+# Skip route caching to avoid naming conflicts
+echo "⚠️ Skipping route cache due to naming conflicts"
 
 # Run migrations if database is available
 if [ ! -z "$MYSQLHOST" ] && [ ! -z "$MYSQLDATABASE" ]; then
     echo "🗄️ Running database migrations..."
-    php artisan migrate --force
+    if php artisan migrate --force; then
+        echo "✅ Migrations completed successfully"
+    else
+        echo "⚠️ Migration failed, continuing without database"
+    fi
 else
     echo "⚠️ Database not configured, skipping migrations"
 fi
