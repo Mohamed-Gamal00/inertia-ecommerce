@@ -4,6 +4,7 @@ namespace App\Repositories\Cart;
 
 use App\Models\Cart;
 use App\Models\Product;
+use App\Support\CartSingleVendor;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -21,6 +22,11 @@ class CartModelRepository implements CartRepository
 
     public function add(Product $product, $quantity = 1, $color_id = null)
     {
+        $existingLines = Cart::with('product')->where('status', 0)->get();
+        if ($message = CartSingleVendor::validateCartLinesForProduct($existingLines, $product)) {
+            throw new \InvalidArgumentException($message);
+        }
+
         $item = Cart::where('product_id', '=', $product->id)
             ->where('status', 0)
             ->first();
