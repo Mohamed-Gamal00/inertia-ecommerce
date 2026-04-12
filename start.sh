@@ -17,18 +17,37 @@ if [ -z "$APP_KEY" ]; then
     php artisan key:generate --force
 fi
 
-# Cache configuration for production
+# Clear any existing cache first
+echo "🧹 Clearing existing cache..."
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+php artisan cache:clear
+
+# Cache configuration for production (only if no database errors)
 echo "⚙️ Caching configuration..."
 php artisan config:cache
-php artisan route:cache
+php artisan event:cache
+
+# Only cache routes if they don't have conflicts
+echo "🛣️ Attempting to cache routes..."
+if php artisan route:cache; then
+    echo "✅ Routes cached successfully"
+else
+    echo "⚠️ Route caching failed, continuing without route cache"
+fi
+
+# Cache views
 php artisan view:cache
 
 # Run migrations if database is available
-if [ ! -z "$MYSQLHOST" ]; then
+if [ ! -z "$MYSQLHOST" ] && [ ! -z "$MYSQLDATABASE" ]; then
     echo "🗄️ Running database migrations..."
     php artisan migrate --force
+else
+    echo "⚠️ Database not configured, skipping migrations"
 fi
 
 # Start the application
-echo "🌐 Starting web server..."
+echo "🌐 Starting web server on port ${PORT:-8000}..."
 exec php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
