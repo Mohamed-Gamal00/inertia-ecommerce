@@ -92,6 +92,20 @@
             </ul>
         </li>
 
+        {{-- ══ Vendors ══ --}}
+        <li class="menu-title">البائعون</li>
+
+        <li>
+            <a href="{{ route('vendors.index') }}" class="waves-effect">
+                @php $pendingVendors = \App\Models\Company::where('is_vendor', true)->where('status', 'pending')->count(); @endphp
+                @if($pendingVendors > 0)
+                    <span class="badge rounded-pill bg-warning text-dark float-end">{{ $pendingVendors }}</span>
+                @endif
+                <i class="mdi mdi-store-outline"></i>
+                <span>البائعون</span>
+            </a>
+        </li>
+
         {{-- ══ Customers ══ --}}
         <li class="menu-title">العملاء</li>
 

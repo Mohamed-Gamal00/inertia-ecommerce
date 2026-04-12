@@ -9,7 +9,7 @@
                     {{ t('register_tagline') }}
                 </p>
                 <div class="steps">
-                    <div class="step-item" v-for="(s, i) in currentSteps" :key="i">
+                    <div class="step-item" v-for="(s, i) in steps" :key="i">
                         <div class="step-num">{{ i + 1 }}</div>
                         <span class="text-white" style="font-size:14px">{{ s }}</span>
                     </div>
@@ -28,14 +28,7 @@
                 <h2 class="font-weight-bold mb-1" style="font-size:26px">{{ t('register_title') }}</h2>
                 <p class="text-grey-darken-1 mb-6" style="font-size:14px">{{ t('register_subtitle') }}</p>
 
-                <!-- Vendor pending notice -->
-                <v-alert v-if="registerType === 'vendor'" type="info" variant="tonal" rounded="lg" class="mb-5" density="compact">
-                    <v-icon size="16" class="me-1">mdi-information-outline</v-icon>
-                    سيتم مراجعة طلبك من قِبل الإدارة قبل تفعيل حسابك
-                </v-alert>
-
-                <!-- ===== USER FORM ===== -->
-                <v-form v-if="registerType === 'user'" @submit.prevent="submitUser">
+                <v-form @submit.prevent="submit">
                     <v-row dense>
                         <v-col cols="12" md="6">
                             <label class="field-label">{{ t('first_name') }}</label>
@@ -74,12 +67,7 @@
                             <v-text-field v-model="form.password_confirmation" placeholder="••••••••" :type="showPass2 ? 'text' : 'password'" variant="outlined" density="comfortable" hide-details="auto" class="mt-1 mb-3" prepend-inner-icon="mdi-lock-check-outline" :append-inner-icon="showPass2 ? 'mdi-eye-off' : 'mdi-eye'" @click:append-inner="showPass2 = !showPass2" rounded="lg" bg-color="grey-lighten-5" />
                         </v-col>
                     </v-row>
-                    <v-btn type="submit" color="primary" block height="48" rounded="lg" :loading="userForm.processing" class="mt-2" style="font-size:15px; font-weight:600; text-transform:none">
-                        إنشاء حساب عميل
-                    </v-btn>
-                </v-form>
-
-                    <v-btn type="submit" color="primary" block height="48" rounded="lg" :loading="loading" class="mt-2" style="font-size:15px; font-weight:600; text-transform:none">
+                    <v-btn type="submit" color="primary" block height="48" rounded="lg" :loading="form.processing" class="mt-2" style="font-size:15px; font-weight:600; text-transform:none">
                         {{ t('register_btn') }}
                     </v-btn>
                 </v-form>
@@ -92,20 +80,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Vendor success dialog -->
-    <v-dialog v-model="vendorSuccess" max-width="420" persistent>
-        <v-card rounded="xl" class="pa-6 text-center">
-            <v-icon size="56" color="success" class="mb-3">mdi-check-circle-outline</v-icon>
-            <h3 class="font-weight-bold mb-2">تم إرسال طلبك!</h3>
-            <p class="text-grey-darken-1 mb-5" style="font-size:14px">
-                سيتم مراجعة طلبك من قِبل الإدارة وسنتواصل معك عبر البريد الإلكتروني عند التفعيل.
-            </p>
-            <v-btn color="primary" block rounded="lg" style="text-transform:none" href="/login">
-                العودة لتسجيل الدخول
-            </v-btn>
-        </v-card>
-    </v-dialog>
 </template>
 
 <script setup>
@@ -125,7 +99,6 @@ const form = useForm({
     password: '', password_confirmation: '', address: '', country_id: '', city_id: '',
 });
 
-const loading = ref(false);
 const showPass = ref(false);
 const showPass2 = ref(false);
 
@@ -138,49 +111,8 @@ const filteredCities = computed(() =>
 );
 
 const submit = () => {
-    loading.value = true;
-    form.post('/register', { preserveState: true, onFinish: () => (loading.value = false) });
+    form.post('/register', { preserveState: true });
 };
-</script>
-
-<style scoped>
-.auth-page {
-    display: flex;
-    min-height: 100vh;
-    direction: rtl;
-}
-
-.auth-left {
-    width: 38%;
-    background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 48px;
-    position: relative;
-    overflow: hidden;
-}
-
-function submitUser() {
-    userForm.post('/register', { preserveState: true });
-}
-
-async function submitVendor() {
-    vendorSubmitting.value = true;
-    vendorErrors.value = {};
-    try {
-        await axios.post('/vendor/register', vendorForm.value);
-        vendorSuccess.value = true;
-    } catch (e) {
-        if (e.response?.status === 422) {
-            vendorErrors.value = e.response.data.errors || {};
-        } else {
-            vendorErrors.value = { general: e.response?.data?.message || 'حدث خطأ' };
-        }
-    } finally {
-        vendorSubmitting.value = false;
-    }
-}
 </script>
 
 <style scoped>
@@ -193,14 +125,4 @@ async function submitVendor() {
 .auth-right { flex:1; display:flex; align-items:center; justify-content:center; background:#ffffff; padding:32px; overflow-y:auto; }
 .auth-form-wrapper { width:100%; max-width:520px; padding:8px 0; }
 .field-label { font-size:13px; font-weight:600; color:#374151; }
-
-/* Type toggle */
-.type-toggle { display:flex; background:#f3f4f6; border-radius:12px; padding:4px; gap:4px; }
-.type-btn {
-    flex:1; display:flex; align-items:center; justify-content:center;
-    padding:10px 16px; border-radius:10px; border:none; background:transparent;
-    font-size:14px; font-weight:600; color:#6b7280; cursor:pointer;
-    transition:all 0.2s;
-}
-.type-btn--active { background:white; color:#1a237e; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
 </style>

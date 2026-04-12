@@ -9,9 +9,15 @@ use Illuminate\Support\Facades\Hash;
 
 class VendorsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $vendors = Company::where('is_vendor', true)->withCount('products')->latest()->paginate(20);
+        $query = Company::where('is_vendor', true)->withCount('products')->latest();
+
+        if ($request->filled('status') && in_array($request->status, ['active', 'pending', 'suspended'])) {
+            $query->where('status', $request->status);
+        }
+
+        $vendors = $query->paginate(20)->withQueryString();
         return view('dashboard.vendors.index', compact('vendors'));
     }
 

@@ -27,6 +27,7 @@ class Order extends Model
         'totalBeforeDiscount',
         'total_price',
         'shipping_price',
+        'company_id',
     ];
 
     protected static function booted()
