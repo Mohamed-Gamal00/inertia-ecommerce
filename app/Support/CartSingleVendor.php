@@ -24,21 +24,8 @@ final class CartSingleVendor
      */
     public static function validateCartLinesForProduct(Collection $cartLines, Product $productToAdd): ?string
     {
-        $withProduct = $cartLines->filter(fn ($line) => $line->product);
-        if ($withProduct->isEmpty()) {
-            return null;
-        }
-
-        $keys = $withProduct->map(fn ($line) => self::vendorKey($line->product))->unique()->values();
-        if ($keys->count() > 1) {
-            return 'سلة التسوق تحتوي على منتجات من بائعين مختلفين. يرجى إفراغ السلة والبدء من جديد.';
-        }
-
-        $newKey = self::vendorKey($productToAdd);
-        if ($keys->first() !== $newKey) {
-            return 'لا يمكن إضافة منتج من بائع مختلف. أكمل طلبك الحالي أو أفرغ السلة.';
-        }
-
+        // Multi-vendor support: Allow products from different vendors
+        // The checkout process will handle splitting orders by vendor
         return null;
     }
 
@@ -49,26 +36,33 @@ final class CartSingleVendor
      */
     public static function assertCheckoutCartSingleVendor(Collection $cartLines): void
     {
-        $withProduct = $cartLines->filter(fn ($line) => $line->product);
-        if ($withProduct->isEmpty()) {
-            return;
-        }
-
-        $keys = $withProduct->map(fn ($line) => self::vendorKey($line->product))->unique();
-        if ($keys->count() > 1) {
-            throw new \InvalidArgumentException(
-                'لا يمكن إتمام الطلب: السلة تحتوي على منتجات من أكثر من بائع. أفرغ السلة أو أزل المنتجات غير المتوافقة.'
-            );
-        }
+        // Multi-vendor support: No longer enforce single vendor restriction
+        // The MultiVendorOrderService will handle splitting orders by vendor
+        return;
     }
 
     /**
      * Resolved company_id for a single-vendor cart (null = legacy / platform bucket).
+     * For multi-vendor carts, returns null (will be handled by MultiVendorOrderService)
      *
      * @param  Collection<int, \App\Models\Cart>  $cartLines
      */
     public static function resolveCompanyId(Collection $cartLines): ?int
     {
+        $withProduct = $cartLines->filter(fn ($line) => $line->product);
+        if ($withProduct->isEmpty()) {
+            return null;
+        }
+
+        // Check if cart has multiple vendors
+        $vendorIds = $withProduct->map(fn ($line) => $line->product->company_id)->unique()->filter();
+        
+        // If multiple vendors, return null (multi-vendor cart)
+        if ($vendorIds->count() > 1) {
+            return null;
+        }
+
+        // Single vendor cart
         $first = $cartLines->first(fn ($line) => $line->product);
         if (! $first || ! $first->product) {
             return null;

@@ -22,7 +22,10 @@ class DatabaseSeeder extends Seeder
         $this->call(ProductSeeder::class);
         $this->call(DesignSeeder::class);
         $this->call(StaticPagesSeeder::class);
-        $this->call(VendorSeeder::class);
+        
+        // Multi-Vendor System Seeders
+        $this->call(MultiVendorSeeder::class);
+        
         // \App\Models\User::factory(10)->create();
 
         // \App\Models\User::factory()->create([

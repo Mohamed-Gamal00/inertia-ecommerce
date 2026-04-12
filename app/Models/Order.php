@@ -28,6 +28,8 @@ class Order extends Model
         'total_price',
         'shipping_price',
         'company_id',
+        'parent_order_id',
+        'is_parent',
     ];
 
     protected static function booted()
@@ -175,5 +177,36 @@ class Order extends Model
         return $this->belongsToMany(Choice::class, 'order_choices')
             ->withPivot('sub_choice_id')
             ->withTimestamps();
+    }
+
+    // Multi-vendor relationships
+    public function parentOrder()
+    {
+        return $this->belongsTo(Order::class, 'parent_order_id');
+    }
+
+    public function subOrders()
+    {
+        return $this->hasMany(Order::class, 'parent_order_id');
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
+
+    public function earnings()
+    {
+        return $this->hasMany(VendorEarning::class, 'order_id');
+    }
+
+    public function scopeParentOrders($query)
+    {
+        return $query->where('is_parent', true);
+    }
+
+    public function scopeSubOrders($query)
+    {
+        return $query->whereNotNull('parent_order_id');
     }
 }

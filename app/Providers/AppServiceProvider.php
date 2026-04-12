@@ -27,6 +27,10 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrapFive();
         require_once app_path('Helper/TextTranslate.php');
 
+        // Register observers
+        \App\Models\Order::observe(\App\Observers\OrderObserver::class);
+        \App\Models\Company::observe(\App\Observers\CompanyObserver::class);
+
         Inertia::share([
             'categories' => fn() => MainCategory::select('id', 'name', 'name_en', 'slug', 'image')->get()->map(fn($c) => [
                 'id'        => $c->id,

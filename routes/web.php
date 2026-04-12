@@ -110,6 +110,11 @@ Route::prefix('categories')->group(function () {
     Route::get('/{slug}', [CategoryController::class, 'show'])->name('categories.show');
 });
 
+// Vendor Storefront (Public)
+Route::prefix('store')->name('store.')->group(function () {
+    Route::get('/{slug}', [\App\Http\Controllers\VendorStorefrontController::class, 'show'])->name('show');
+    Route::get('/{slug}/products', [\App\Http\Controllers\VendorStorefrontController::class, 'products'])->name('products');
+});
 
 
 

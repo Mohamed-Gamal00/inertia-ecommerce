@@ -126,11 +126,24 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::resource('/companies', CompaniesController::class);
 
     //----------------------------------------------/Vendors routes
-    Route::get('/vendors', [\App\Http\Controllers\Dashboard\VendorsController::class, 'index'])->name('vendors.index');
-    Route::get('/vendors/{id}', [\App\Http\Controllers\Dashboard\VendorsController::class, 'show'])->name('vendors.show');
-    Route::put('/vendors/{id}/approve', [\App\Http\Controllers\Dashboard\VendorsController::class, 'approve'])->name('vendors.approve');
-    Route::put('/vendors/{id}/suspend', [\App\Http\Controllers\Dashboard\VendorsController::class, 'suspend'])->name('vendors.suspend');
-    Route::delete('/vendors/{id}', [\App\Http\Controllers\Dashboard\VendorsController::class, 'destroy'])->name('vendors.destroy');
+    Route::prefix('vendors')->name('vendors.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Dashboard\VendorManagementController::class, 'index'])->name('index');
+        Route::get('/{vendor}', [\App\Http\Controllers\Dashboard\VendorManagementController::class, 'show'])->name('show');
+        Route::put('/{vendor}/status', [\App\Http\Controllers\Dashboard\VendorManagementController::class, 'updateStatus'])->name('status');
+        Route::put('/{vendor}/approve', [\App\Http\Controllers\Dashboard\VendorManagementController::class, 'approve'])->name('approve');
+        Route::put('/{vendor}/suspend', [\App\Http\Controllers\Dashboard\VendorManagementController::class, 'suspend'])->name('suspend');
+        Route::put('/{vendor}/commission', [\App\Http\Controllers\Dashboard\VendorManagementController::class, 'updateCommission'])->name('commission');
+        Route::delete('/{vendor}', [\App\Http\Controllers\Dashboard\VendorManagementController::class, 'destroy'])->name('destroy');
+    });
+
+    //----------------------------------------------/Vendor Payouts routes
+    Route::prefix('payouts')->name('payouts.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Dashboard\VendorPayoutController::class, 'index'])->name('index');
+        Route::get('/{payout}', [\App\Http\Controllers\Dashboard\VendorPayoutController::class, 'show'])->name('show');
+        Route::post('/generate', [\App\Http\Controllers\Dashboard\VendorPayoutController::class, 'generate'])->name('generate');
+        Route::put('/{payout}/mark-paid', [\App\Http\Controllers\Dashboard\VendorPayoutController::class, 'markAsPaid'])->name('mark-paid');
+        Route::put('/{payout}/status', [\App\Http\Controllers\Dashboard\VendorPayoutController::class, 'updateStatus'])->name('status');
+    });
 
     //----------------------------------------------/stores routes
     Route::resource('/store_featuers', StoreFatuerController::class);

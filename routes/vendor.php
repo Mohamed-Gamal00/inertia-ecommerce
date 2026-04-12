@@ -5,7 +5,9 @@ use App\Http\Controllers\Vendor\VendorDashboardController;
 use App\Http\Controllers\Vendor\VendorDiscountCodeController;
 use App\Http\Controllers\Vendor\VendorNotificationController;
 use App\Http\Controllers\Vendor\VendorOrderController;
+use App\Http\Controllers\Vendor\VendorPayoutController;
 use App\Http\Controllers\Vendor\VendorProductController;
+use App\Http\Controllers\Vendor\VendorProfileController;
 use App\Http\Controllers\Vendor\VendorReportController;
 use App\Http\Controllers\Vendor\VendorReturnController;
 use Illuminate\Support\Facades\Route;
@@ -40,13 +42,24 @@ Route::prefix('vendor')->name('vendor.')->middleware('vendor')->group(function (
     Route::post('/notifications/read-all', [VendorNotificationController::class, 'markAllRead'])->name('notifications.read-all');
     Route::post('/notifications/{id}/read', [VendorNotificationController::class, 'read'])->name('notifications.read');
 
-    Route::get('/profile', [VendorDashboardController::class, 'profile'])->name('profile');
-    Route::put('/profile',   [VendorDashboardController::class, 'profileUpdate'])->name('profile.update');
+    // Profile & Branding
+    Route::get('/profile', [VendorProfileController::class, 'edit'])->name('profile');
+    Route::get('/profile/edit', [VendorProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [VendorProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [VendorProfileController::class, 'updatePassword'])->name('profile.password');
+    
     Route::get('/customers', [VendorDashboardController::class, 'customers'])->name('customers');
 
     // Discount Codes
     Route::get('/discount-codes/search-products', [VendorDiscountCodeController::class, 'searchProducts'])->name('discount_code.search-products');
     Route::resource('discount_code', VendorDiscountCodeController::class);
 
+    // Reports
     Route::get('/reports', [VendorReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/export', [VendorReportController::class, 'export'])->name('reports.export');
+
+    // Payouts & Earnings
+    Route::get('/payouts', [VendorPayoutController::class, 'index'])->name('payouts.index');
+    Route::get('/payouts/{id}', [VendorPayoutController::class, 'show'])->name('payouts.show');
+    Route::get('/earnings', [VendorPayoutController::class, 'earnings'])->name('earnings.index');
 });
