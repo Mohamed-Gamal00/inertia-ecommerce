@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 
 class Setting extends Model
 {
@@ -52,6 +53,22 @@ class Setting extends Model
         'canonical_url',
         'robots_index',
     ];
+
+    /**
+     * Override the fill method to only fill attributes that have corresponding columns
+     */
+    public function fill(array $attributes)
+    {
+        // Get actual table columns
+        $columns = Schema::getColumnListing($this->getTable());
+        
+        // Filter attributes to only include existing columns
+        $filteredAttributes = array_filter($attributes, function($key) use ($columns) {
+            return in_array($key, $columns);
+        }, ARRAY_FILTER_USE_KEY);
+        
+        return parent::fill($filteredAttributes);
+    }
 
     public function getImageUrlAttribute()
     {
