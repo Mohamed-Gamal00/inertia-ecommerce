@@ -1,4 +1,5 @@
 import "./bootstrap";
+import "../css/app.css"; // Import CSS into JS
 import { createApp, h } from "vue";
 import { createInertiaApp } from "@inertiajs/vue3";
 import Layout from "./layouts/AppLayout.vue";
