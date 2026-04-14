@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\MainCategorySetting;
+use Illuminate\Support\Facades\Storage;
 
 class MainCategory extends Model
 {
@@ -64,6 +65,6 @@ class MainCategory extends Model
     if (!$this->image) {
       return asset('assets/images/no-image.jpg');
     }
-    return asset('storage/' . $this->image);
+    return Storage::url($this->image);
   }
 }

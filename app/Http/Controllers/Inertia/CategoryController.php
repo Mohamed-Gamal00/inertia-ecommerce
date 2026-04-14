@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\MainCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class CategoryController extends Controller
@@ -17,7 +18,7 @@ class CategoryController extends Controller
             'id'        => $c->id,
             'name'      => $c->name,
             'slug'      => $c->slug,
-            'image_url' => $c->image ? asset('storage/' . $c->image) : null,
+            'image_url' => $c->image ? Storage::url($c->image) : null,
         ]);
 
         return Inertia::render('Categories/Index', [
