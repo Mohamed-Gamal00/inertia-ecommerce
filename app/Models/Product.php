@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 // use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\SubSettings;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class Product extends Model
@@ -174,7 +175,7 @@ class Product extends Model
             return $this->image;
         }
 
-        return url('storage/' . $this->image);
+        return Storage::url($this->image);
     }
 
 
