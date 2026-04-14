@@ -64,7 +64,7 @@ const tvBannerSrc  = computed(() => props.homeDesigns?.home_tv_banner  || tvBann
                         class="w-100"
                     />
                 </v-col>
-            </v-row>
+            </v-row> 
         </v-container>
         <ProductsComponents
             :products="products"

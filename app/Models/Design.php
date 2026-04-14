@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Design extends Model
 {
@@ -17,7 +18,7 @@ class Design extends Model
         if (!$this->image) {
             return asset('assets/images/category.jpg');
         }
-        return asset('storage/' . $this->image);
+        return Storage::url($this->image);
     }
 
     public function getCurrentImageLangAttribute()

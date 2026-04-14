@@ -222,6 +222,6 @@ Route::middleware(['changeLanguage'])->group(function () {
 });
 
 
-Route::get('/payment-page/{order_number}', [\App\Http\Controllers\Api\PaymentController::class, 'index'])->name('user.payment');
+Route::get('/payment-page/{order_number}', [\App\Http\Controllers\Api\PaymentController::class, 'index'])->name('api.user.payment');
 /*عملية الدفع*/
-Route::get('/payment-page/{number}/payment/callback', [\App\Http\Controllers\Api\PaymentController::class, 'callback'])->name('payment.callback');
+Route::get('/payment-page/{number}/payment/callback', [\App\Http\Controllers\Api\PaymentController::class, 'callback'])->name('api.payment.callback');

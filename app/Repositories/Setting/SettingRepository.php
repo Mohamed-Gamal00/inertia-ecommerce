@@ -4,6 +4,7 @@ namespace App\Repositories\Setting;
 
 use App\Helper\Helper;
 use App\Models\Setting;
+use Illuminate\Support\Facades\Schema;
 
 class SettingRepository implements SettingInterface
 {
@@ -19,11 +20,18 @@ class SettingRepository implements SettingInterface
   {
     return $this->color->findOrFail($id);
   }
+  
   public function update($data, $id)
   {
     $settings = $this->color->findOrFail($id);
-    // dd($data);
-    $settings->update($data);
+    
+    // Filter data to only include columns that exist in the table
+    $columns = Schema::getColumnListing('settings');
+    $filteredData = array_filter($data, function($key) use ($columns) {
+        return in_array($key, $columns);
+    }, ARRAY_FILTER_USE_KEY);
+    
+    $settings->update($filteredData);
     return $settings->wasChanged();
   }
 }

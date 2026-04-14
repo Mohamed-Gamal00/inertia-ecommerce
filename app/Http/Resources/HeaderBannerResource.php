@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class HeaderBannerResource extends JsonResource
 {
@@ -15,7 +16,7 @@ class HeaderBannerResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'image' => asset('storage/' . $this->current_image_lang),
+            'image' => $this->current_image_lang ? Storage::url($this->current_image_lang) : null,
             'link' => $this->image_link,
         ];
     }

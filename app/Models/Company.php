@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class Company extends Authenticatable
 {
@@ -26,7 +27,7 @@ class Company extends Authenticatable
     public function getImageUrlAttribute()
     {
         if (!$this->image) return asset('assets/images/no-image.jpg');
-        return asset('storage/' . $this->image);
+        return Storage::url($this->image);
     }
 
     public function scopeFilter(Builder $builder, $filters)

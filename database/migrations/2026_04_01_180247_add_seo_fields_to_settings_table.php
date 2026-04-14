@@ -8,29 +8,32 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('settings', function (Blueprint $table) {
-            // Global SEO
-            $table->string('seo_meta_title')->nullable()->after('description');
-            $table->text('seo_meta_description')->nullable()->after('seo_meta_title');
-            $table->string('seo_meta_keywords')->nullable()->after('seo_meta_description');
+            // Check if columns don't already exist before adding them
+            if (!Schema::hasColumn('settings', 'seo_meta_title')) {
+                // Global SEO
+                $table->string('seo_meta_title')->nullable();
+                $table->text('seo_meta_description')->nullable();
+                $table->string('seo_meta_keywords')->nullable();
 
-            // Open Graph (Facebook / WhatsApp / LinkedIn)
-            $table->string('og_title')->nullable()->after('seo_meta_keywords');
-            $table->text('og_description')->nullable()->after('og_title');
-            $table->string('og_image')->nullable()->after('og_description');
+                // Open Graph (Facebook / WhatsApp / LinkedIn)
+                $table->string('og_title')->nullable();
+                $table->text('og_description')->nullable();
+                $table->string('og_image')->nullable();
 
-            // Twitter Card
-            $table->string('twitter_card')->nullable()->default('summary_large_image')->after('og_image');
-            $table->string('twitter_title')->nullable()->after('twitter_card');
-            $table->text('twitter_description')->nullable()->after('twitter_title');
-            $table->string('twitter_image')->nullable()->after('twitter_description');
+                // Twitter Card
+                $table->string('twitter_card')->nullable()->default('summary_large_image');
+                $table->string('twitter_title')->nullable();
+                $table->text('twitter_description')->nullable();
+                $table->string('twitter_image')->nullable();
 
-            // Technical SEO
-            $table->string('google_analytics_id')->nullable()->after('twitter_image');
-            $table->string('google_tag_manager_id')->nullable()->after('google_analytics_id');
-            $table->string('google_site_verification')->nullable()->after('google_tag_manager_id');
-            $table->string('canonical_url')->nullable()->after('google_site_verification');
-            $table->enum('robots_index', ['index,follow', 'noindex,nofollow', 'index,nofollow', 'noindex,follow'])
-                  ->default('index,follow')->after('canonical_url');
+                // Technical SEO
+                $table->string('google_analytics_id')->nullable();
+                $table->string('google_tag_manager_id')->nullable();
+                $table->string('google_site_verification')->nullable();
+                $table->string('canonical_url')->nullable();
+                $table->enum('robots_index', ['index,follow', 'noindex,nofollow', 'index,nofollow', 'noindex,follow'])
+                      ->default('index,follow');
+            }
         });
     }
 
