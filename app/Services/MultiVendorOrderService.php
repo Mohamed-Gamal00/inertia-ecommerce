@@ -6,6 +6,7 @@ use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\VendorEarning;
+use App\Services\Vendor\VendorOrderNotificationService;
 use Illuminate\Support\Facades\DB;
 
 class MultiVendorOrderService
@@ -30,7 +31,11 @@ class MultiVendorOrderService
             // Create sub-orders for each vendor
             $subOrders = [];
             foreach ($itemsByVendor as $vendorId => $items) {
-                $subOrders[] = $this->createSubOrder($parentOrder, $orderData, $items, $vendorId);
+                $subOrder = $this->createSubOrder($parentOrder, $orderData, $items, $vendorId);
+                $subOrders[] = $subOrder;
+
+                // Notify vendor of new order
+                $this->notifyVendor($subOrder);
             }
 
             return [
@@ -63,12 +68,15 @@ class MultiVendorOrderService
     {
         $orderData['company_id'] = $vendorId;
         $orderData['is_parent'] = false;
-        
+
         $order = Order::create($orderData);
-        
+
         $this->attachOrderItems($order, $cartItems);
         $this->createEarnings($order);
-        
+
+        // Notify vendor of new order
+        $this->notifyVendor($order);
+
         return $order;
     }
 
@@ -79,7 +87,7 @@ class MultiVendorOrderService
     {
         $orderData['is_parent'] = true;
         $orderData['company_id'] = null; // Parent has no specific vendor
-        
+
         return Order::create($orderData);
     }
 
@@ -111,10 +119,10 @@ class MultiVendorOrderService
         ];
 
         $subOrder = Order::create($subOrderData);
-        
+
         $this->attachOrderItems($subOrder, $items);
         $this->createEarnings($subOrder);
-        
+
         return $subOrder;
     }
 
@@ -124,8 +132,9 @@ class MultiVendorOrderService
     protected function attachOrderItems(Order $order, $cartItems)
     {
         foreach ($cartItems as $item) {
+            // Use discounted price if available, otherwise use product price
             $price = $item->discounted_price ?? $item->product->discount_price ?? $item->product->price;
-            
+
             $orderItem = OrderItem::create([
                 'order_id' => $order->id,
                 'product_id' => $item->product_id,
@@ -135,13 +144,16 @@ class MultiVendorOrderService
             ]);
 
             // Attach choices if any
-            if ($item->choices) {
+            if ($item->choices && $item->choices->count() > 0) {
                 foreach ($item->choices as $choice) {
                     $orderItem->choices()->attach($choice->id, [
                         'sub_choice_id' => $choice->pivot->sub_choice_id ?? null,
                     ]);
                 }
             }
+
+            // Decrement product quantity
+            $item->product->decrement('quantity', $item->quantity);
         }
     }
 
@@ -186,5 +198,27 @@ class MultiVendorOrderService
         };
 
         $order->earnings()->update(['status' => $earningStatus]);
+    }
+
+    /**
+     * Notify vendor of new order
+     */
+    protected function notifyVendor(Order $order)
+    {
+        if (!$order->company_id || !$order->company) {
+            return; // Skip if no vendor assigned
+        }
+
+        try {
+            // Use existing vendor notification service
+            VendorOrderNotificationService::notifyNewOrder($order);
+        } catch (\Exception $e) {
+            // Log error but don't fail the order creation
+            \Log::error('Failed to notify vendor of new order', [
+                'order_id' => $order->id,
+                'vendor_id' => $order->company_id,
+                'error' => $e->getMessage()
+            ]);
+        }
     }
 }

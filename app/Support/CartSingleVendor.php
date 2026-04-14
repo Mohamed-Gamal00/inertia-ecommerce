@@ -36,7 +36,7 @@ final class CartSingleVendor
      */
     public static function assertCheckoutCartSingleVendor(Collection $cartLines): void
     {
-        // Multi-vendor support: No longer enforce single vendor restriction
+        // Multi-vendor support: Allow checkout with multiple vendors
         // The MultiVendorOrderService will handle splitting orders by vendor
         return;
     }
@@ -56,7 +56,7 @@ final class CartSingleVendor
 
         // Check if cart has multiple vendors
         $vendorIds = $withProduct->map(fn ($line) => $line->product->company_id)->unique()->filter();
-        
+
         // If multiple vendors, return null (multi-vendor cart)
         if ($vendorIds->count() > 1) {
             return null;

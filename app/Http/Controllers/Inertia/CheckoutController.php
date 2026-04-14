@@ -9,6 +9,7 @@ use App\Models\ShippingTypesAndPrice;
 use App\Models\UserDiscountCode;
 use App\Repositories\Cart\CartRepository;
 use App\Services\CheckOut\CheckoutServices;
+use App\Services\MultiVendorOrderService;
 use App\Support\CartSingleVendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,10 +20,14 @@ use Throwable;
 class CheckoutController extends Controller
 {
     protected CheckoutServices $checkoutService;
+    protected MultiVendorOrderService $multiVendorService;
 
-    public function __construct(CheckoutServices $checkoutService)
-    {
+    public function __construct(
+        CheckoutServices $checkoutService,
+        MultiVendorOrderService $multiVendorService
+    ) {
         $this->checkoutService = $checkoutService;
+        $this->multiVendorService = $multiVendorService;
     }
 
     public function create(CartRepository $cart)
@@ -178,16 +183,67 @@ class CheckoutController extends Controller
         try {
             $this->checkoutService->checkJoinNews($request, $user);
 
-            $order = $this->checkoutService->createOrder($request, $user, $shipping_price);
-            $this->checkoutService->createOrderItems($order, $user);
+            // Get cart items for multi-vendor processing
+            $cartItems = $this->checkoutService->getCartItems($user);
 
-            $this->checkoutService->isAddingNewAddress($order, $request, $user);
+            if ($cartItems->isEmpty()) {
+                return response()->json(['message' => __('flash.cart_empty_checkout')], 422);
+            }
 
+            // For guest checkout: create or update a Guest record
+            $guestId = null;
+            if (!$user) {
+                $cookieId = Cart::getCookieId();
+                $addr = $request->addr['billing'] ?? [];
+                $guest = \App\Models\Guest::updateOrCreate(
+                    ['cookie_id' => $cookieId],
+                    [
+                        'first_name'   => $addr['first_name'] ?? null,
+                        'family_name'  => $addr['last_name'] ?? null,
+                        'email'        => $request->guest_email ?? null,
+                        'phone_number' => $addr['phone_number'] ?? null,
+                        'address'      => $addr['address'] ?? null,
+                    ]
+                );
+                $guestId = $guest->id;
+            }
+
+            // Prepare order data for multi-vendor service
+            $orderData = [
+                'user_id' => $user?->id,
+                'guest_id' => $guestId,
+                'discount_code_id' => session('applied_discount_code_id'),
+                'payment_method' => $request->payment_method,
+                'order_status_id' => \App\Models\OrderStatus::where('default_status', true)->first()->id,
+                'note' => $request->note,
+                'shipping_price' => $shipping_price,
+                'totalBeforeDiscount' => $this->checkoutService->calculateTotalBeforeDiscount($user),
+                'total_price' => $this->checkoutService->calculateTotal($user),
+                'cookie_id' => $user ? null : Cart::getCookieId(),
+                'payment_status' => 'pending',
+            ];
+
+            // Use MultiVendorOrderService to create orders (automatically splits by vendor)
+            $orderResult = $this->multiVendorService->createMultiVendorOrder($orderData, $cartItems);
+
+            // Get the main order for payment processing
+            if (is_array($orderResult)) {
+                // Multi-vendor: use parent order for payment
+                $order = $orderResult['parent_order'];
+                $subOrders = $orderResult['sub_orders'];
+
+                // Add addresses to parent order and all sub-orders
+                foreach (array_merge([$order], $subOrders) as $orderToProcess) {
+                    $this->checkoutService->isAddingNewAddress($orderToProcess, $request, $user);
+                }
+            } else {
+                // Single vendor: use the order directly
+                $order = $orderResult;
+                $this->checkoutService->isAddingNewAddress($order, $request, $user);
+            }
 
             $this->checkoutService->disActiveProduct($cartItems);
-
             $this->checkoutService->updateProductStatue($user);
-
             $this->checkoutService->sendNotificationToAdmin($order);
 
             // Clear applied discount from session
