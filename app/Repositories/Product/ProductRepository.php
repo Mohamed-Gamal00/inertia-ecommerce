@@ -186,20 +186,7 @@ class ProductRepository implements ProudctInterface
         return DB::transaction(function () use ($id) {
             $product = $this->getById($id);
 
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
-            }
-            // Delete associated product images
-            $images = ProductImage::where('product_id', $product->id)->get();
-            foreach ($images as $image) {
-                // Delete the image file from storage
-                Storage::disk('public')->delete($image->image);
-
-                // Delete the image record from the database
-                $image->delete();
-            }
-
-            // Delete the product
+            // Just soft delete the product, don't delete images
             $product->delete();
 
             return $product;

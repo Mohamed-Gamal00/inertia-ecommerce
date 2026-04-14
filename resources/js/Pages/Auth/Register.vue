@@ -28,19 +28,6 @@
                 <h2 class="font-weight-bold mb-1" style="font-size:26px">{{ t('register_title') }}</h2>
                 <p class="text-grey-darken-1 mb-6" style="font-size:14px">{{ t('register_subtitle') }}</p>
 
-                <!-- General Error Alert -->
-                <v-alert v-if="generalError" type="error" variant="tonal" rounded="lg" class="mb-5" density="compact" closable @click:close="generalError = ''">
-                    <v-icon size="16" class="me-1">mdi-alert-circle-outline</v-icon>
-                    {{ generalError }}
-                </v-alert>
-
-                <!-- Success Alert -->
-                <v-alert v-if="successMessage" type="success" variant="tonal" rounded="lg" class="mb-5" density="compact" closable @click:close="successMessage = ''">
-                    <v-icon size="16" class="me-1">mdi-check-circle-outline</v-icon>
-                    {{ successMessage }}
-                </v-alert>
-
-                <!-- Registration Form -->
                 <v-form @submit.prevent="submit">
                     <v-row dense>
                         <v-col cols="12" md="6">
@@ -196,18 +183,7 @@
                             />
                         </v-col>
                     </v-row>
-                    
-                    <v-btn 
-                        type="submit" 
-                        color="primary" 
-                        block 
-                        height="48" 
-                        rounded="lg" 
-                        :loading="loading" 
-                        :disabled="loading"
-                        class="mt-2" 
-                        style="font-size:15px; font-weight:600; text-transform:none"
-                    >
+                    <v-btn type="submit" color="primary" block height="48" rounded="lg" :loading="loading" class="mt-2" style="font-size:15px; font-weight:600; text-transform:none">
                         {{ t('register_btn') }}
                     </v-btn>
                 </v-form>
@@ -227,20 +203,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Success Dialog -->
-    <v-dialog v-model="showSuccessDialog" max-width="420" persistent>
-        <v-card rounded="xl" class="pa-6 text-center">
-            <v-icon size="56" color="success" class="mb-3">mdi-check-circle-outline</v-icon>
-            <h3 class="font-weight-bold mb-2">تم إنشاء الحساب بنجاح!</h3>
-            <p class="text-grey-darken-1 mb-5" style="font-size:14px">
-                يمكنك الآن تسجيل الدخول باستخدام بياناتك.
-            </p>
-            <v-btn color="primary" block rounded="lg" style="text-transform:none" href="/login">
-                تسجيل الدخول
-            </v-btn>
-        </v-card>
-    </v-dialog>
 </template>
 
 <script setup>
@@ -427,20 +389,9 @@ watch([
     width: 300px;
     height: 300px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.05);
+    background: rgba(255, 255, 255, 0.05);
     top: -80px;
     right: -80px;
-}
-
-.auth-left::after {
-    content: '';
-    position: absolute;
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.05);
-    bottom: -60px;
-    left: -60px;
 }
 
 .auth-left-content {
@@ -459,7 +410,7 @@ watch([
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.2);
     color: white;
     display: flex;
     align-items: center;
