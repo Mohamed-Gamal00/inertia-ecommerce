@@ -16,6 +16,8 @@ class BrandsController extends Controller
             'name_en'       => $c->name_en,
             'image_url'     => $c->image_url,
             'products_count'=> $c->products_count,
+            'store_slug'    => $c->store_slug,
+            'is_vendor'     => $c->is_vendor,
         ]);
 
         return Inertia::render('Brands/Index', ['brands' => $brands]);

@@ -401,5 +401,24 @@
   "address_required": "العنوان مطلوب",
   "country_required": "الدولة مطلوبة",
   "city_required": "المدينة مطلوبة",
-  "email_required": "البريد الإلكتروني مطلوب"
+  "email_required": "البريد الإلكتروني مطلوب",
+
+  "vendor_info": "معلومات البائع",
+  "follow_us": "تابعنا",
+  "policies": "السياسات",
+  "return_policy": "سياسة الإرجاع",
+  "shipping_policy": "سياسة الشحن",
+  "vendor_products": "منتجات المتجر",
+  "no_products_vendor": "لا توجد منتجات في هذا المتجر حالياً",
+  "customer_reviews": "تقييمات العملاء",
+  "anonymous": "مجهول",
+  "reviews": "تقييم",
+  "no_products_brand": "لا توجد منتجات لهذه الماركة",
+  "sold_by": "يباع بواسطة",
+  "visit_store": "زيارة المتجر",
+  "vendors": "البائعون",
+  "all_vendors": "جميع البائعين",
+  "top_rated": "الأعلى تقييماً",
+  "verified_vendor": "بائع موثوق",
+  "business_hours": "ساعات العمل"
 }

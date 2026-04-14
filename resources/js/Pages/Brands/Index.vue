@@ -10,21 +10,33 @@
 
         <div style="padding:32px 16px; max-width:1200px; margin:0 auto">
             <div v-if="brands.length" style="display:flex; flex-wrap:wrap; justify-content:center; gap:16px">
-                <a
+                <div
                     v-for="brand in brands"
                     :key="brand.id"
-                    :href="`/brands/${brand.id}`"
-                    style="display:block; width:180px; text-decoration:none; flex-shrink:0"
+                    style="width:180px; flex-shrink:0"
                 >
                     <div class="brand-card">
-                        <div class="brand-logo">
-                            <img v-if="brand.image_url && !brand.image_url.includes('no-image')" :src="brand.image_url" :alt="pick(brand, 'name')" />
-                            <span v-else class="brand-initials">{{ brand.name_en?.charAt(0) || brand.name?.charAt(0) }}</span>
-                        </div>
-                        <div class="brand-name">{{ pick(brand, 'name') }}</div>
-                        <div class="brand-count">{{ brand.products_count }} {{ t('products_count') }}</div>
+                        <a :href="`/brands/${brand.id}`" style="text-decoration:none; color:inherit">
+                            <div class="brand-logo">
+                                <img v-if="brand.image_url && !brand.image_url.includes('no-image')" :src="brand.image_url" :alt="pick(brand, 'name')" />
+                                <span v-else class="brand-initials">{{ brand.name_en?.charAt(0) || brand.name?.charAt(0) }}</span>
+                            </div>
+                            <div class="brand-name">{{ pick(brand, 'name') }}</div>
+                            <div class="brand-count">{{ brand.products_count }} {{ t('products_count') }}</div>
+                        </a>
+
+                        <!-- Add Vendor Store Link -->
+                        <a
+                            v-if="brand.is_vendor && brand.store_slug"
+                            :href="`/store/${brand.store_slug}`"
+                            class="store-link"
+                            @click.stop
+                        >
+                            <v-icon size="14">mdi-store</v-icon>
+                            {{ t('visit_store') }}
+                        </a>
                     </div>
-                </a>
+                </div>
             </div>
 
             <div v-else style="text-align:center; padding:64px 0">
@@ -94,5 +106,26 @@ const { t, pick } = useLocale();
 .brand-count {
     font-size: 11px;
     color: #9ca3af;
+}
+
+.store-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 12px;
+    padding: 6px 12px;
+    background: #1a237e;
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.store-link:hover {
+    background: #3949ab;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(26, 35, 126, 0.3);
 }
 </style>

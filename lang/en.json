@@ -401,5 +401,24 @@
   "address_required": "Address is required",
   "country_required": "Country is required",
   "city_required": "City is required",
-  "email_required": "Email is required"
+  "email_required": "Email is required",
+
+  "vendor_info": "Vendor Info",
+  "follow_us": "Follow Us",
+  "policies": "Policies",
+  "return_policy": "Return Policy",
+  "shipping_policy": "Shipping Policy",
+  "vendor_products": "Store Products",
+  "no_products_vendor": "No products available in this store",
+  "customer_reviews": "Customer Reviews",
+  "anonymous": "Anonymous",
+  "reviews": "reviews",
+  "no_products_brand": "No products for this brand",
+  "sold_by": "Sold by",
+  "visit_store": "Visit Store",
+  "vendors": "Vendors",
+  "all_vendors": "All Vendors",
+  "top_rated": "Top Rated",
+  "verified_vendor": "Verified Vendor",
+  "business_hours": "Business Hours"
 }
