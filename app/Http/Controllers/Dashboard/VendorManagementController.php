@@ -86,7 +86,7 @@ class VendorManagementController extends Controller
     /**
      * Show vendor details
      */
-    public function show(Company $vendor)
+    public function show(Company $vendor, Request $request)
     {
         $vendor->load(['products', 'payouts', 'reviews']);
 
@@ -101,7 +101,68 @@ class VendorManagementController extends Controller
             'total_paid' => $this->payoutService->getTotalPaid($vendor),
         ];
 
-        return view('dashboard.vendors.show', compact('vendor', 'stats'));
+        // Get orders for this vendor
+        $ordersQuery = \App\Models\Order::query()
+            ->where(function ($q) use ($vendor) {
+                // Orders directly assigned to this vendor
+                $q->where('company_id', $vendor->id)
+                  // Or orders containing products from this vendor
+                  ->orWhereHas('orderItems.product', function ($productQuery) use ($vendor) {
+                      $productQuery->where('company_id', $vendor->id);
+                  });
+            })
+            ->with([
+                'user',
+                'guest',
+                'orderItems.product',
+                'orderStatus',
+                'addresses' => function ($q) {
+                    $q->where('type', 'billing');
+                }
+            ])
+            ->latest();
+
+        // Filter by status if provided
+        if ($request->filled('order_status')) {
+            $ordersQuery->where('status', $request->order_status);
+        }
+
+        // Filter by order number if provided
+        if ($request->filled('order_search')) {
+            $ordersQuery->where('number', 'like', '%' . $request->order_search . '%');
+        }
+
+        $orders = $ordersQuery->paginate(10)->appends(request()->query());
+
+        // Get order status counts for this vendor
+        $orderStatusCounts = [
+            'all' => \App\Models\Order::where(function ($q) use ($vendor) {
+                $q->where('company_id', $vendor->id)
+                  ->orWhereHas('orderItems.product', function ($productQuery) use ($vendor) {
+                      $productQuery->where('company_id', $vendor->id);
+                  });
+            })->count(),
+            'pending' => \App\Models\Order::where(function ($q) use ($vendor) {
+                $q->where('company_id', $vendor->id)
+                  ->orWhereHas('orderItems.product', function ($productQuery) use ($vendor) {
+                      $productQuery->where('company_id', $vendor->id);
+                  });
+            })->where('status', 'pending')->count(),
+            'processing' => \App\Models\Order::where(function ($q) use ($vendor) {
+                $q->where('company_id', $vendor->id)
+                  ->orWhereHas('orderItems.product', function ($productQuery) use ($vendor) {
+                      $productQuery->where('company_id', $vendor->id);
+                  });
+            })->where('status', 'processing')->count(),
+            'completed' => \App\Models\Order::where(function ($q) use ($vendor) {
+                $q->where('company_id', $vendor->id)
+                  ->orWhereHas('orderItems.product', function ($productQuery) use ($vendor) {
+                      $productQuery->where('company_id', $vendor->id);
+                  });
+            })->where('status', 'completed')->count(),
+        ];
+
+        return view('dashboard.vendors.show', compact('vendor', 'stats', 'orders', 'orderStatusCounts'));
     }
 
     /**

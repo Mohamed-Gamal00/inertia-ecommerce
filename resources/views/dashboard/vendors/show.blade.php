@@ -50,7 +50,7 @@
 
     {{-- Info --}}
     <div class="col-lg-4">
-        <div class="card border-0 shadow-sm">
+        <div class="card border-0 shadow-sm mb-4">
             <div class="card-body">
                 <h5 class="card-title fw-bold mb-4">
                     <i class="mdi mdi-information-outline me-2 text-primary"></i>
@@ -83,6 +83,10 @@
                         <span class="text-muted small">المنتجات</span>
                         <span class="badge bg-primary">{{ $vendor->products_count }}</span>
                     </li>
+                    <li class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-muted small">إجمالي الطلبات</span>
+                        <span class="badge bg-info">{{ $orderStatusCounts['all'] }}</span>
+                    </li>
                     <li class="d-flex justify-content-between py-2">
                         <span class="text-muted small">تاريخ التسجيل</span>
                         <span class="fw-semibold small">{{ $vendor->created_at->format('d/m/Y') }}</span>
@@ -97,11 +101,77 @@
                 @endif
             </div>
         </div>
+
+        {{-- Order Statistics --}}
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+                <h6 class="card-title fw-bold mb-3">
+                    <i class="mdi mdi-chart-line me-2 text-success"></i>
+                    إحصائيات الطلبات
+                </h6>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <div class="text-center p-2 bg-warning bg-opacity-10 rounded">
+                            <div class="fw-bold text-warning">{{ $orderStatusCounts['pending'] }}</div>
+                            <small class="text-muted">قيد الانتظار</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center p-2 bg-info bg-opacity-10 rounded">
+                            <div class="fw-bold text-info">{{ $orderStatusCounts['processing'] }}</div>
+                            <small class="text-muted">قيد المعالجة</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center p-2 bg-success bg-opacity-10 rounded">
+                            <div class="fw-bold text-success">{{ $orderStatusCounts['completed'] }}</div>
+                            <small class="text-muted">مكتمل</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center p-2 bg-primary bg-opacity-10 rounded">
+                            <div class="fw-bold text-primary">{{ $orderStatusCounts['all'] }}</div>
+                            <small class="text-muted">إجمالي</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Financial Statistics --}}
+        @if(isset($stats))
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h6 class="card-title fw-bold mb-3">
+                    <i class="mdi mdi-currency-usd me-2 text-success"></i>
+                    الإحصائيات المالية
+                </h6>
+                <ul class="list-unstyled mb-0">
+                    <li class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-muted small">إجمالي الإيرادات</span>
+                        <span class="fw-bold text-success small">{{ number_format($stats['total_revenue'], 2) }} ر.س</span>
+                    </li>
+                    <li class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-muted small">إجمالي العمولات</span>
+                        <span class="fw-bold text-warning small">{{ number_format($stats['total_commission'], 2) }} ر.س</span>
+                    </li>
+                    <li class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-muted small">الرصيد المتاح</span>
+                        <span class="fw-bold text-info small">{{ number_format($stats['available_balance'], 2) }} ر.س</span>
+                    </li>
+                    <li class="d-flex justify-content-between py-2">
+                        <span class="text-muted small">إجمالي المدفوع</span>
+                        <span class="fw-bold text-primary small">{{ number_format($stats['total_paid'], 2) }} ر.س</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        @endif
     </div>
 
     {{-- Products --}}
     <div class="col-lg-8">
-        <div class="card border-0 shadow-sm">
+        <div class="card border-0 shadow-sm mb-4">
             <div class="card-body">
                 <h5 class="card-title fw-bold mb-4">
                     <i class="mdi mdi-shopping-outline me-2 text-primary"></i>
@@ -153,6 +223,163 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+
+        {{-- Orders Section --}}
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="mdi mdi-package-variant-closed me-2 text-primary"></i>
+                        طلبات البائع ({{ $orderStatusCounts['all'] }})
+                    </h5>
+                    <div class="d-flex gap-2">
+                        @if(Route::has('orders.index'))
+                            <a href="{{ route('orders.index', ['vendor_id' => $vendor->id]) }}" class="btn btn-sm btn-outline-info">
+                                <i class="mdi mdi-open-in-new me-1"></i>
+                                عرض جميع الطلبات
+                            </a>
+                        @endif
+                        <form method="GET" class="d-flex gap-2">
+                            <input type="text" name="order_search" class="form-control form-control-sm"
+                                   placeholder="رقم الطلب" value="{{ request('order_search') }}" style="width: 150px;">
+                            <select name="order_status" class="form-select form-select-sm" style="width: 120px;">
+                                <option value="">كل الحالات</option>
+                                <option value="pending" {{ request('order_status') === 'pending' ? 'selected' : '' }}>قيد الانتظار</option>
+                                <option value="processing" {{ request('order_status') === 'processing' ? 'selected' : '' }}>قيد المعالجة</option>
+                                <option value="completed" {{ request('order_status') === 'completed' ? 'selected' : '' }}>مكتمل</option>
+                                <option value="cancelled" {{ request('order_status') === 'cancelled' ? 'selected' : '' }}>ملغي</option>
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                <i class="mdi mdi-magnify"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Order Status Tabs --}}
+            <div class="card-body pt-0">
+                <ul class="nav nav-pills mb-3">
+                    <li class="nav-item">
+                        <a class="nav-link {{ !request('order_status') ? 'active' : '' }}"
+                           href="{{ route('vendors.show', $vendor->id) }}">
+                            الكل <span class="badge bg-secondary ms-1">{{ $orderStatusCounts['all'] }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request('order_status') === 'pending' ? 'active' : '' }}"
+                           href="{{ route('vendors.show', [$vendor->id, 'order_status' => 'pending']) }}">
+                            قيد الانتظار <span class="badge bg-warning ms-1">{{ $orderStatusCounts['pending'] }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request('order_status') === 'processing' ? 'active' : '' }}"
+                           href="{{ route('vendors.show', [$vendor->id, 'order_status' => 'processing']) }}">
+                            قيد المعالجة <span class="badge bg-info ms-1">{{ $orderStatusCounts['processing'] }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request('order_status') === 'completed' ? 'active' : '' }}"
+                           href="{{ route('vendors.show', [$vendor->id, 'order_status' => 'completed']) }}">
+                            مكتمل <span class="badge bg-success ms-1">{{ $orderStatusCounts['completed'] }}</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>رقم الطلب</th>
+                                <th>العميل</th>
+                                <th class="text-center">المبلغ الإجمالي</th>
+                                <th class="text-center">الحالة</th>
+                                <th class="text-center">تاريخ الطلب</th>
+                                <th class="text-center">إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($orders as $order)
+                            <tr>
+                                <td>
+                                    <div class="fw-bold text-primary">#{{ $order->number }}</div>
+                                    <small class="text-muted">{{ $order->orderItems->count() }} منتج</small>
+                                </td>
+                                <td>
+                                    <div>
+                                        <div class="fw-semibold">{{ $order->customer_name }}</div>
+                                        <small class="text-muted" dir="ltr">{{ $order->customer_email }}</small>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="fw-bold">{{ number_format($order->total_price, 2) }} ر.س</div>
+                                    @if($order->shipping_price > 0)
+                                        <small class="text-muted">+ {{ number_format($order->shipping_price, 2) }} شحن</small>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @php
+                                        $statusColors = [
+                                            'pending' => 'warning',
+                                            'processing' => 'info',
+                                            'shipped' => 'primary',
+                                            'delivered' => 'success',
+                                            'completed' => 'success',
+                                            'cancelled' => 'danger',
+                                            'refunded' => 'secondary'
+                                        ];
+                                        $statusLabels = [
+                                            'pending' => 'قيد الانتظار',
+                                            'processing' => 'قيد المعالجة',
+                                            'shipped' => 'تم الشحن',
+                                            'delivered' => 'تم التسليم',
+                                            'completed' => 'مكتمل',
+                                            'cancelled' => 'ملغي',
+                                            'refunded' => 'مسترد'
+                                        ];
+                                    @endphp
+                                    <span class="badge bg-{{ $statusColors[$order->status] ?? 'secondary' }}">
+                                        {{ $statusLabels[$order->status] ?? $order->status }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <div>{{ $order->created_at->format('d/m/Y') }}</div>
+                                    <small class="text-muted">{{ $order->created_at->format('H:i') }}</small>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-1">
+                                        @if(Route::has('orders.show'))
+                                            <a href="{{ route('orders.show', $order->id) }}" class="btn btn-sm btn-outline-primary" title="عرض الطلب">
+                                                <i class="mdi mdi-eye"></i>
+                                            </a>
+                                        @endif
+                                        @if(Route::has('orders.edit'))
+                                            <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-sm btn-outline-secondary" title="تعديل الطلب">
+                                                <i class="mdi mdi-pencil"></i>
+                                            </a>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-5">
+                                    <i class="mdi mdi-package-variant-closed-remove d-block mb-2" style="font-size:40px;opacity:0.3"></i>
+                                    لا توجد طلبات لهذا البائع
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                @if($orders->hasPages())
+                <div class="d-flex justify-content-center mt-3">
+                    {{ $orders->links() }}
+                </div>
+                @endif
             </div>
         </div>
     </div>
