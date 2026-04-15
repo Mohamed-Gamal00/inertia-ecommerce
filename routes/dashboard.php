@@ -128,7 +128,11 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     //----------------------------------------------/Vendors routes
     Route::prefix('vendors')->name('vendors.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Dashboard\VendorManagementController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Dashboard\VendorManagementController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Dashboard\VendorManagementController::class, 'store'])->name('store');
         Route::get('/{vendor}', [\App\Http\Controllers\Dashboard\VendorManagementController::class, 'show'])->name('show');
+        Route::get('/{vendor}/edit', [\App\Http\Controllers\Dashboard\VendorManagementController::class, 'edit'])->name('edit');
+        Route::put('/{vendor}', [\App\Http\Controllers\Dashboard\VendorManagementController::class, 'update'])->name('update');
         Route::put('/{vendor}/status', [\App\Http\Controllers\Dashboard\VendorManagementController::class, 'updateStatus'])->name('status');
         Route::put('/{vendor}/approve', [\App\Http\Controllers\Dashboard\VendorManagementController::class, 'approve'])->name('approve');
         Route::put('/{vendor}/suspend', [\App\Http\Controllers\Dashboard\VendorManagementController::class, 'suspend'])->name('suspend');

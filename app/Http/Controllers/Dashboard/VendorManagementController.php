@@ -2,13 +2,19 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Helper\Helper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\Vendor\VendorRequest;
 use App\Models\Company;
 use App\Services\VendorPayoutService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class VendorManagementController extends Controller
 {
+    use Helper;
+
     public function __construct(
         protected VendorPayoutService $payoutService
     ) {}
@@ -39,6 +45,45 @@ class VendorManagementController extends Controller
     }
 
     /**
+     * Show the form for creating a new vendor
+     */
+    public function create()
+    {
+        return view('dashboard.vendors.create');
+    }
+
+    /**
+     * Store a newly created vendor
+     */
+    public function store(VendorRequest $request)
+    {
+        $data = $request->validated();
+
+        // Handle image uploads
+        if ($request->hasFile('image')) {
+            $data['image'] = $this->uploadedImage($request, 'image', 'vendors');
+        }
+
+        if ($request->hasFile('cover_image')) {
+            $data['cover_image'] = $this->uploadedImage($request, 'cover_image', 'vendors');
+        }
+
+        // Hash password
+        if (isset($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
+        }
+
+        // Set vendor flag
+        $data['is_vendor'] = true;
+
+        // Create vendor
+        $vendor = Company::create($data);
+
+        return redirect()->route('vendors.index')
+            ->with('success', 'تم إنشاء البائع بنجاح');
+    }
+
+    /**
      * Show vendor details
      */
     public function show(Company $vendor)
@@ -57,6 +102,52 @@ class VendorManagementController extends Controller
         ];
 
         return view('dashboard.vendors.show', compact('vendor', 'stats'));
+    }
+
+    /**
+     * Show the form for editing the specified vendor
+     */
+    public function edit(Company $vendor)
+    {
+        return view('dashboard.vendors.edit', compact('vendor'));
+    }
+
+    /**
+     * Update the specified vendor
+     */
+    public function update(VendorRequest $request, Company $vendor)
+    {
+        $data = $request->validated();
+
+        // Handle image uploads
+        if ($request->hasFile('image')) {
+            // Delete old image
+            if ($vendor->image) {
+                Storage::disk('public')->delete($vendor->image);
+            }
+            $data['image'] = $this->uploadedImage($request, 'image', 'vendors');
+        }
+
+        if ($request->hasFile('cover_image')) {
+            // Delete old cover image
+            if ($vendor->cover_image) {
+                Storage::disk('public')->delete($vendor->cover_image);
+            }
+            $data['cover_image'] = $this->uploadedImage($request, 'cover_image', 'vendors');
+        }
+
+        // Hash password if provided
+        if (isset($data['password']) && !empty($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
+        } else {
+            unset($data['password']);
+        }
+
+        // Update vendor
+        $vendor->update($data);
+
+        return redirect()->route('vendors.index')
+            ->with('success', 'تم تحديث البائع بنجاح');
     }
 
     /**
@@ -119,7 +210,7 @@ class VendorManagementController extends Controller
 
         $vendor->delete();
 
-        return redirect()->route('dashboard.vendors.index')
+        return redirect()->route('vendors.index')
             ->with('success', 'تم حذف البائع بنجاح');
     }
 }

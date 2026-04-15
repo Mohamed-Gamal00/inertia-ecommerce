@@ -23,13 +23,19 @@
         <i class="mdi mdi-store-outline me-2 text-primary"></i>
         البائعون
     </h4>
-    @if($counts['pending'] > 0)
-    <div class="alert alert-warning border-0 shadow-sm mb-0 py-2 px-3 d-flex align-items-center gap-2">
-        <i class="mdi mdi-clock-alert-outline"></i>
-        <span>{{ $counts['pending'] }} بائع بانتظار الموافقة</span>
-        <a href="{{ route('vendors.index', ['status' => 'pending']) }}" class="btn btn-warning btn-sm ms-2">مراجعة</a>
+    <div class="d-flex align-items-center gap-2">
+        @if($counts['pending'] > 0)
+        <div class="alert alert-warning border-0 shadow-sm mb-0 py-2 px-3 d-flex align-items-center gap-2">
+            <i class="mdi mdi-clock-alert-outline"></i>
+            <span>{{ $counts['pending'] }} بائع بانتظار الموافقة</span>
+            <a href="{{ route('vendors.index', ['status' => 'pending']) }}" class="btn btn-warning btn-sm ms-2">مراجعة</a>
+        </div>
+        @endif
+        <a href="{{ route('vendors.create') }}" class="btn btn-primary">
+            <i class="mdi mdi-plus me-1"></i>
+            إضافة بائع جديد
+        </a>
     </div>
-    @endif
 </div>
 
 <x-alert type="success"/>
@@ -124,13 +130,16 @@
                                 </button>
                             </form>
                             @endif
-                            <a href="{{ route('vendors.show', $vendor->id) }}" class="btn btn-sm btn-outline-primary">
+                            <a href="{{ route('vendors.show', $vendor->id) }}" class="btn btn-sm btn-outline-primary" title="عرض">
                                 <i class="mdi mdi-eye"></i>
+                            </a>
+                            <a href="{{ route('vendors.edit', $vendor->id) }}" class="btn btn-sm btn-outline-secondary" title="تعديل">
+                                <i class="mdi mdi-pencil"></i>
                             </a>
                             <form method="POST" action="{{ route('vendors.destroy', $vendor->id) }}"
                                   onsubmit="return confirm('حذف هذا البائع نهائياً؟')">
                                 @csrf @method('DELETE')
-                                <button class="btn btn-sm btn-outline-danger">
+                                <button class="btn btn-sm btn-outline-danger" title="حذف">
                                     <i class="mdi mdi-delete"></i>
                                 </button>
                             </form>
