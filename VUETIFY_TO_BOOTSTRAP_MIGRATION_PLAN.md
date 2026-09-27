@@ -186,11 +186,90 @@ npm install bootstrap-vue-next
 
 ## Phase 2: Component Library Creation
 
-### Week 2-3 (10 days)
+### Week 2-3 (10 days) - **IN PROGRESS** ⏳
 
 **Goal**: Create reusable Bootstrap components that match Vuetify functionality
 
-#### 2.1 Create Component Directory Structure
+#### 2.1 Create Component Directory Structure ✅
+
+- [x] Create directory structure ✅
+- [x] Set up index.js for auto-imports (optional)
+
+#### 2.2 Core UI Components - **IN PROGRESS** ⏳
+
+##### BButton.vue ✅
+- [x] Create component ✅
+- [x] Support variants (primary, secondary, success, danger, etc.) ✅
+- [x] Support sizes (sm, md, lg) ✅
+- [x] Support disabled state ✅
+- [x] Support loading state ✅
+- [x] Add icon support ✅
+
+**Checklist**:
+- [x] BButton.vue created and tested ✅
+
+##### BCard.vue ✅
+- [x] Create component ✅
+- [x] Support header/footer slots ✅
+- [x] Support image prop ✅
+- [x] Support hover effect ✅
+
+**Checklist**:
+- [x] BCard.vue created and tested ✅
+
+##### BInput.vue ✅
+- [x] Create component ✅
+- [x] Support v-model ✅
+- [x] Support validation states ✅
+- [x] Support help text ✅
+- [x] Support prepend/append icons ✅
+
+**Checklist**:
+- [x] BInput.vue created and tested ✅
+
+##### BAlert.vue ✅
+- [x] Create component ✅
+- [x] Support variants ✅
+- [x] Support dismissible ✅
+- [x] Support icons ✅
+
+##### BModal.vue ✅
+- [x] Create component ✅
+- [x] Support sizes ✅
+- [x] Support centered ✅
+- [x] Support backdrop options ✅
+
+##### BSpinner.vue ✅
+- [x] Create component ✅
+- [x] Support border/grow types ✅
+- [x] Support sizes and variants ✅
+
+##### Other Core Components - **TODO** 📋
+
+- [ ] **BSelect.vue** - Dropdown select
+- [ ] **BTextarea.vue** - Multi-line input
+- [ ] **BCheckbox.vue** - Checkbox input
+- [ ] **BRadio.vue** - Radio button
+- [ ] **BBadge.vue** - Badge/chip component
+- [ ] **BPagination.vue** - Pagination
+- [ ] **BTabs.vue** - Tab navigation
+- [ ] **BDropdown.vue** - Dropdown menu
+- [ ] **BNavbar.vue** - Navigation bar
+- [ ] **BTable.vue** - Data table (if needed)
+
+#### 2.3 Register Components Globally (Optional) - TODO
+
+- [ ] Create plugin file
+- [ ] Auto-register all Bootstrap components
+- [ ] Import in app.js
+
+#### 2.4 Create Composables for Common Logic ✅
+
+- [x] **useToast.js** - Toast notifications ✅
+- [ ] **useModal.js** - Modal management
+- [ ] **useBreakpoints.js** - Responsive breakpoints
+
+**Status**: ⏳ Phase 2 In Progress - Core components created, form components pending
 
 ```bash
 resources/js/
