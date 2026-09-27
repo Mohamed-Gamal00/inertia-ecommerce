@@ -10,6 +10,13 @@ export default defineConfig({
             refresh: true,
         }),
         vue(),
-        vuetify({ autoImport: true }),
+        vuetify({ autoImport: true }), // Will be removed after migration
     ],
+    css: {
+        preprocessorOptions: {
+            scss: {
+                additionalData: `@import "bootstrap/scss/functions"; @import "bootstrap/scss/variables";`
+            }
+        }
+    }
 });

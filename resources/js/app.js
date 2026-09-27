@@ -5,15 +5,22 @@ import Layout from "./layouts/AppLayout.vue";
 
 import { ZiggyVue } from "ziggy-js";
 
-// Vuetify
+// ========================================
+// Bootstrap 5 (NEW - Migration in Progress)
+// ========================================
+import "./bootstrap-app";
+
+// ========================================
+// Vuetify (TEMPORARY - Will be removed after migration)
+// ========================================
 import "vuetify/styles";
 import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
-import { ar, en } from "vuetify/locale"; // 👈 استورد الترجمة الجاهزة
+import { ar, en } from "vuetify/locale";
 import "@mdi/font/css/materialdesignicons.css";
 
-// vue-i18n (لو عايز تضيف ترجمات خاصة بيك)
+// vue-i18n
 import { createI18n } from "vue-i18n";
 const i18n = createI18n({
     legacy: false,
@@ -25,13 +32,14 @@ const i18n = createI18n({
     },
 });
 
+// Vuetify instance (TEMPORARY)
 const vuetify = createVuetify({
     components,
     directives,
     locale: {
         locale: "ar",
         fallback: "en",
-        messages: { ar, en }, // 👈 ربط اللغة العربية والانجليزية الجاهزين من Vuetify
+        messages: { ar, en },
     },
 });
 
