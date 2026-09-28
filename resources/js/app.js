@@ -2,6 +2,7 @@ import "./bootstrap";
 import { createApp, h } from "vue";
 import { createInertiaApp } from "@inertiajs/vue3";
 import Layout from "./layouts/AppLayout.vue";
+import BootstrapLayout from "./layouts/AppLayoutBootstrap.vue";
 
 import { ZiggyVue } from "ziggy-js";
 
@@ -56,7 +57,14 @@ createInertiaApp({
     resolve: (name) => {
         const pages = import.meta.glob("./Pages/**/*.vue", { eager: true });
         let page = pages[`./Pages/${name}.vue`];
-        page.default.layout = page.default.layout || Layout;
+
+        // Use Bootstrap layout for test page
+        if (name === 'TestBootstrap') {
+            page.default.layout = BootstrapLayout;
+        } else {
+            page.default.layout = page.default.layout || Layout;
+        }
+
         return page;
     },
     setup({ el, App, props, plugin }) {

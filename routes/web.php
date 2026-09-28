@@ -56,6 +56,10 @@ Route::get('/reviews/{productId}', [\App\Http\Controllers\Inertia\ReviewControll
 // Compare
 Route::get('/compare', [\App\Http\Controllers\Inertia\CompareController::class, 'index'])->name('compare');
 
+Route::get('/test-bootstrap', function () {
+    return Inertia::render('TestBootstrap');
+})->name('test.bootstrap');
+
 Route::get('/', [\App\Http\Controllers\Inertia\HomeController::class, 'index'])->name('home');
 
 // Offers
