@@ -129,13 +129,59 @@ This document tracks the progress of migrating from Vuetify to Bootstrap UI.
 - [ ] AppFooter.vue
 - [ ] Mobile navigation
 
-### Phase 4: Page Migration (0%)
+### Phase 4: Page Migration (25%) 🔄 **IN PROGRESS**
+
+**Authentication Pages (100% complete):** ✅
+- ✅ **LoginBootstrap.vue** - Completed
+  - Split layout with branding panel
+  - Bootstrap form components (BInput, BButton, BAlert)
+  - Password visibility toggle
+  - Responsive design
+  - Test route: `/login-bootstrap`
+- ✅ **RegisterBootstrap.vue** - Completed
+  - Multi-column form layout
+  - Country/City cascading selects
+  - Password confirmation with visibility toggles
+  - Bootstrap grid system (Row/Col)
+  - Form validation error display
+  - Test route: `/register-bootstrap`
+- ✅ **ForgotPasswordBootstrap.vue** - Completed
+  - Simple phone number input form
+  - Success/error alerts
+  - Clean minimal design
+  - Test route: `/forgot-password-bootstrap`
+- ✅ **ResetPasswordBootstrap.vue** - Completed
+  - Dual password fields with visibility toggles
+  - Password confirmation
+  - Flash message support
+  - Test route: `/reset-password-bootstrap`
+
+**Static Pages (40% complete - 2/5):** 🔄
+- ✅ **PageBootstrap.vue** - Generic static page template
+  - Clean hero section
+  - HTML content rendering
+  - Responsive card layout
+  - Handles: Terms, Privacy, Shipping Policy, Exchanges & Returns
+  - Test route: `/terms-bootstrap`
+- ✅ **QuestionsBootstrap.vue** - FAQ page
+  - Searchable questions
+  - Category filtering (All, Shipping, Payment, Returns, Account)
+  - Accordion-style answers
+  - Contact CTA section
+  - Test route: `/faq-bootstrap`
+- [ ] All other static pages use PageBootstrap component
+
+**Simple Feature Pages (0%):**
+- [ ] Contact Us
+- [ ] Bulk Order form
+- [ ] Representative Order form
+
+**Complex Pages (0%):**
 - [ ] Homepage
 - [ ] Product pages
 - [ ] Cart & Checkout
-- [ ] Authentication pages
 - [ ] Profile pages
-- [ ] Other pages (25+ total)
+- [ ] Other pages
 
 ### Phase 5: Testing & QA (0%)
 - [ ] Functional testing

@@ -58,8 +58,17 @@ createInertiaApp({
         const pages = import.meta.glob("./Pages/**/*.vue", { eager: true });
         let page = pages[`./Pages/${name}.vue`];
 
-        // Use Bootstrap layout for test page
-        if (name === 'TestBootstrap') {
+        // Use Bootstrap layout for migrated pages
+        const bootstrapPages = [
+            'TestBootstrap',
+            'Auth/LoginBootstrap',
+            'Auth/RegisterBootstrap',
+            'Auth/ForgotPasswordBootstrap',
+            'Auth/ResetPasswordBootstrap',
+            'StaticPages/PageBootstrap',
+            'StaticPages/QuestionsBootstrap'
+        ];
+        if (bootstrapPages.includes(name)) {
             page.default.layout = BootstrapLayout;
         } else {
             page.default.layout = page.default.layout || Layout;

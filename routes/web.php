@@ -60,6 +60,39 @@ Route::get('/test-bootstrap', function () {
     return Inertia::render('TestBootstrap');
 })->name('test.bootstrap');
 
+// Bootstrap Migration Test Routes
+Route::get('/login-bootstrap', function () {
+    return Inertia::render('Auth/LoginBootstrap');
+})->name('login.bootstrap');
+
+Route::get('/register-bootstrap', function () {
+    $countries = \App\Models\Country::select('id', 'name_ar', 'name_en')->get();
+    $cities = \App\Models\City::select('id', 'name_ar', 'name_en', 'country_id')->get();
+    return Inertia::render('Auth/RegisterBootstrap', [
+        'countries' => $countries,
+        'cities' => $cities,
+    ]);
+})->name('register.bootstrap');
+
+Route::get('/forgot-password-bootstrap', function () {
+    return Inertia::render('Auth/ForgotPasswordBootstrap');
+})->name('forgot.bootstrap');
+
+Route::get('/reset-password-bootstrap', function () {
+    return Inertia::render('Auth/ResetPasswordBootstrap');
+})->name('reset.bootstrap');
+
+// Static Pages Bootstrap Tests
+Route::get('/terms-bootstrap', function () {
+    $page = \App\Models\Page::where('slug', 'terms-conditions')->first();
+    return Inertia::render('StaticPages/PageBootstrap', ['page' => $page]);
+})->name('terms.bootstrap');
+
+Route::get('/faq-bootstrap', function () {
+    $questions = \App\Models\CommonQuestion::where('active', 1)->get();
+    return Inertia::render('StaticPages/QuestionsBootstrap', ['questions' => $questions]);
+})->name('faq.bootstrap');
+
 Route::get('/', [\App\Http\Controllers\Inertia\HomeController::class, 'index'])->name('home');
 
 // Offers
