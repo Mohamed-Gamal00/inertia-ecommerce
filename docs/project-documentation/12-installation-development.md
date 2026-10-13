@@ -105,6 +105,15 @@ MAIL_ENCRYPTION=null
 MAIL_FROM_ADDRESS="hello@example.com"
 MAIL_FROM_NAME="${APP_NAME}"
 
+# Payment Gateway (Moyasar)
+MOYASAR_PUBLISHABLE_KEY=pk_test_your_publishable_key
+MOYASAR_SECRET_KEY=sk_test_your_secret_key
+
+# SMS Gateway
+SMS_API_KEY=your_sms_api_key
+SMS_USER_NAME=your_sms_username
+SMS_SENDER=YourCompany
+
 # Queue Configuration
 QUEUE_CONNECTION=sync  # Use 'redis' or 'database' for production
 
@@ -200,11 +209,11 @@ MOYASAR_PUBLISHABLE_KEY=your_publishable_key
 MOYASAR_SECRET_KEY=your_secret_key
 ```
 
-**Note**: These should also be configured in the admin dashboard settings table.
+**Note**: These credentials will be automatically populated in the settings table when running seeders (step 13).
 
 ### 12. Configure SMS Gateway
 
-Add SMS service credentials to `.env` or configure in admin dashboard:
+Add SMS service credentials to `.env`:
 
 ```env
 SMS_API_KEY=your_sms_api_key
@@ -212,11 +221,30 @@ SMS_USER_NAME=your_sms_username
 SMS_SENDER=YourCompany
 ```
 
-### 13. Seed Initial Data (RECOMMENDED)
+**Note**: These credentials will be automatically populated in the settings table when running seeders (step 13).
 
-Create an admin user and initial data:
+### 13. Seed Initial Data (REQUIRED)
 
-**Option 1: Use Tinker**
+Run the database seeders to populate initial data including settings, admin user, and configurations:
+
+```bash
+php artisan db:seed
+```
+
+Or during migration:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+**What gets seeded**:
+- Application settings (including Moyasar and SMS credentials from .env)
+- Default order statuses
+- Shipping configuration
+- Admin user (if AdminSeeder exists)
+
+**Manual Admin Creation** (if seeder doesn't exist):
+
 ```bash
 php artisan tinker
 ```
@@ -244,21 +272,9 @@ php artisan tinker
     'add_normal_price' => true,
     'normal_shipping_price' => 20.00
 ]);
-
-// Create settings record
-\App\Models\Setting::create([
-    'website_name' => 'Your Store',
-    'website_name_en' => 'Your Store',
-    'value_added_tax' => 15.00
-]);
 ```
 
-**Option 2: Create Seeders**
-
-Create seeder files in `database/seeders/` and run:
-```bash
-php artisan db:seed
-```
+**Note**: The SettingsSeeder automatically pulls Moyasar and SMS credentials from your `.env` file.
 
 ## Running the Application
 
