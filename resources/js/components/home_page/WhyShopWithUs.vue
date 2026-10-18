@@ -1,10 +1,14 @@
 <template>
     <div class="shop-withus py-14">
-        <div class="title mb-8">
-            <h2 class="text-center"><span>{{ t('why_us_title') }}</span></h2>
-        </div>
+        <v-container>
+            <!-- Section Title -->
+            <div class="text-center mb-8">
+                <h2 class="section-title mb-3">
+                    {{ t('why_us_title') }}
+                </h2>
+            </div>
 
-        <v-container fluid>
+            <!-- Cards Grid -->
             <v-row class="justify-center">
                 <v-col
                     v-for="(card, index) in cards"
@@ -12,44 +16,41 @@
                     cols="12"
                     sm="6"
                     md="3"
-                    class="d-flex justify-center"
+                    class="d-flex"
                 >
-                    <v-card
-                        elevation="0"
-                        class="text-center text-white px-3 py-6"
-                        color="transparent"
-                    >
-                        <div class="image-parent mb-4">
-                            <img
-                                :src="card.image"
-                                :alt="card.title"
-                                width="90"
-                                height="90"
-                                style="object-fit: contain"
-                            />
-                        </div>
-
-                        <v-card-title
-                            style="white-space: pre-wrap; line-height: 1.3; font-weight: 700"
+                    <v-hover v-slot="{ isHovering, props: hoverProps }">
+                        <v-card
+                            v-bind="hoverProps"
+                            class="feature-card text-center pa-6"
+                            :elevation="isHovering ? 4 : 1"
+                            rounded="xl"
+                            :class="[
+                                { 'feature-card--hover': isHovering },
+                                index % 2 === 0 ? 'feature-card--green' : 'feature-card--gold'
+                            ]"
                         >
-                            {{ card.title }}
-                        </v-card-title>
+                            <!-- Icon Container -->
+                            <div class="icon-wrapper mx-auto mb-4">
+                                <img
+                                    :src="card.image"
+                                    :alt="card.title"
+                                    width="70"
+                                    height="70"
+                                    style="object-fit: contain"
+                                />
+                            </div>
 
-                        <v-card-text
-                            class="pb-0 px-3"
-                            style="font-size: 15px; opacity: 0.85"
-                        >
-                            {{ card.desc }}
-                        </v-card-text>
+                            <!-- Title -->
+                            <h3 class="card-title mb-2">
+                                {{ card.title }}
+                            </h3>
 
-                        <a
-                            href="#"
-                            class="learn-more"
-                            style="color: white; font-weight: 700; font-size: 14px"
-                        >
-                            Learn More
-                        </a>
-                    </v-card>
+                            <!-- Description -->
+                            <p class="card-desc mb-0">
+                                {{ card.desc }}
+                            </p>
+                        </v-card>
+                    </v-hover>
                 </v-col>
             </v-row>
         </v-container>
@@ -87,37 +88,112 @@ const cards = computed(() => [
 
 <style lang="scss" scoped>
 .shop-withus {
-    background-image: url("@/assets/images/why-shop-with-us-banner.webp");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
+    background: #F5F0E7; /* Warm cream background */
     text-align: center;
+}
 
-    h2 {
-        color: white;
-        font-size: 34px;
-        font-weight: 900;
-        span {
-            color: rgb(45, 251, 223);
-            margin-right: 6px;
+/* Section Header */
+.section-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: #302F2B; /* Deep charcoal */
+    letter-spacing: -0.5px;
+
+    @media (max-width: 600px) {
+        font-size: 24px;
+    }
+}
+
+.section-subtitle {
+    font-size: 16px;
+    color: #77736B; /* Muted gray */
+    font-weight: 400;
+
+    @media (max-width: 600px) {
+        font-size: 14px;
+    }
+}
+
+/* Feature Cards */
+.feature-card {
+    width: 100%;
+    height: 100%;
+    transition: all 0.3s ease;
+    border: none;
+
+    /* Green card */
+    &--green {
+        background: #245447;
+
+        .card-title,
+        .card-desc {
+            color: white;
+        }
+
+        .icon-wrapper {
+            background: rgba(255, 255, 255, 0.15);
         }
     }
 
-    .learn-more {
-        text-decoration: underline;
-        transition: 0.3s;
-        &:hover {
-            color: rgb(45, 251, 223);
+    /* Gold card */
+    &--gold {
+        background: #E4B45D;
+
+        .card-title {
+            color: #302F2B;
+        }
+
+        .card-desc {
+            color: #302F2B;
+            opacity: 0.85;
+        }
+
+        .icon-wrapper {
+            background: rgba(36, 84, 71, 0.15);
         }
     }
 
-    @media (max-width: 960px) {
-        .v-card {
-            padding: 30px 10px;
-        }
-        h2 {
-            font-size: 26px;
-        }
+    &--hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 32px rgba(48, 47, 43, 0.15);
+    }
+}
+
+/* Icon Wrapper */
+.icon-wrapper {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+/* Card Content */
+.card-title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
+
+    @media (max-width: 600px) {
+        font-size: 16px;
+    }
+}
+
+.card-desc {
+    font-size: 14px;
+    line-height: 1.6;
+
+    @media (max-width: 600px) {
+        font-size: 13px;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 960px) {
+    .feature-card {
+        margin-bottom: 16px;
     }
 }
 </style>

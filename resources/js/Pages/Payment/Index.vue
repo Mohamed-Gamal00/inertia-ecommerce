@@ -141,7 +141,7 @@ onMounted(async () => {
 .pay-logo {
     width: 56px;
     height: 56px;
-    background: linear-gradient(135deg, #1a237e, #3949ab);
+    background: linear-gradient(135deg, #245447, #36826d);
     border-radius: 16px;
     display: flex;
     align-items: center;

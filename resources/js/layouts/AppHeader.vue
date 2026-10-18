@@ -1,6 +1,6 @@
 <template>
     <!-- Main App Bar -->
-    <v-app-bar elevation="0" color="primary" height="64">
+    <v-app-bar elevation="0" color="primary" height="64" class="brand-header">
         <v-container fluid class="d-flex align-center" style="gap:8px">
 
             <!-- Mobile: hamburger -->
@@ -8,8 +8,8 @@
 
             <!-- Logo -->
             <Link href="/" class="d-flex align-center text-decoration-none me-4">
-                <v-icon color="white" size="28" class="me-1">mdi-storefront</v-icon>
-                <span class="font-weight-bold text-white" style="font-size:18px">{{ siteName }}</span>
+                <v-icon color="white" size="28" class="me-1">mdi-package-variant</v-icon>
+                <span class="font-weight-bold text-white brand-name" style="font-size:18px">{{ siteName }}</span>
             </Link>
 
             <!-- Desktop nav links -->
@@ -108,7 +108,7 @@
                         </v-btn>
                     </Link>
                     <Link href="/register">
-                        <v-btn color="white" size="small" rounded="lg" style="text-transform:none; font-size:13px; color:#1a237e">
+                        <v-btn color="secondary" size="small" rounded="lg" style="text-transform:none; font-size:13px; color:#302F2B; font-weight:700">
                             {{ t('register') }}
                         </v-btn>
                     </Link>
@@ -121,8 +121,8 @@
     <!-- Mobile Drawer -->
     <v-navigation-drawer v-model="mobileDrawer" temporary location="right" width="280">
         <div class="pa-4 d-flex align-center border-b">
-            <v-icon color="primary" class="me-2">mdi-storefront</v-icon>
-            <span class="font-weight-bold text-primary">{{ siteName }}</span>
+            <v-icon color="primary" class="me-2">mdi-package-variant</v-icon>
+            <span class="font-weight-bold text-brand-primary">{{ siteName }}</span>
             <v-spacer />
             <v-btn icon variant="text" size="small" @click="mobileDrawer = false">
                 <v-icon>mdi-close</v-icon>
@@ -231,12 +231,20 @@ onBeforeUnmount(() => Emitter.off('cart-updated', updateCart));
 </script>
 
 <style scoped>
+.brand-header {
+    box-shadow: 0 2px 8px rgba(36, 84, 71, 0.15) !important;
+}
+
+.brand-name {
+    letter-spacing: 0.5px;
+}
+
 .nav-link {
     padding: 6px 12px;
     border-radius: 8px;
     font-size: 14px;
     font-weight: 500;
-    color: rgba(255,255,255,0.85);
+    color: rgba(255,255,255,0.9);
     transition: background 0.15s, color 0.15s;
     cursor: pointer;
     border: none;
@@ -247,12 +255,12 @@ onBeforeUnmount(() => Emitter.off('cart-updated', updateCart));
 }
 
 .nav-link:hover {
-    background: rgba(255,255,255,0.15);
+    background: rgba(228, 180, 93, 0.25);
     color: #ffffff;
 }
 
 .nav-link--active {
-    background: rgba(255,255,255,0.2);
+    background: rgba(228, 180, 93, 0.35);
     color: #ffffff;
     font-weight: 600;
 }

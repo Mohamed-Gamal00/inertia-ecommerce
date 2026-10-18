@@ -42,11 +42,11 @@ const categories = computed(() => usePage().props.categories ?? []);
     height: 90px;
     border-radius: 50%;
     overflow: hidden;
-    background: #e8eaf6;
+    background: rgba(36, 84, 71, 0.08);
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid #e5e7eb;
+    border: 2px solid #D7CDBD;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
@@ -56,7 +56,7 @@ const categories = computed(() => usePage().props.categories ?? []);
     margin-top: 8px;
     font-size: 12px;
     font-weight: 600;
-    color: #374151;
+    color: #302F2B;
     text-align: center;
     max-width: 90px;
     line-height: 1.3;

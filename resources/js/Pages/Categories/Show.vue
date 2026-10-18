@@ -7,7 +7,7 @@
         />
 
         <!-- Header -->
-        <div style="background:linear-gradient(135deg,#1a237e,#3949ab); padding:40px 16px 50px">
+        <div style="background:linear-gradient(135deg,#245447,#36826d); padding:40px 16px 50px">
             <h1 class="text-white font-weight-bold text-center" style="font-size:28px">
                 {{ category.name }}
             </h1>

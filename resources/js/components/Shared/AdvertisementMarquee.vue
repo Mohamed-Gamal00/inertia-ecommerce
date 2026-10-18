@@ -121,10 +121,10 @@ watch(advertisements, async () => {
   align-items: center;
   height: 38px;
   overflow: hidden;
-  background: linear-gradient(90deg, #0f0c29, #302b63, #24243e);
+  background: linear-gradient(90deg, #1d4237, #245447, #2d6b5a);
   background-size: 200% 200%;
   animation: gradientShift 6s ease infinite;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.35);
+  box-shadow: 0 2px 12px rgba(36, 84, 71, 0.4);
 }
 
 @keyframes gradientShift {
@@ -160,7 +160,7 @@ watch(advertisements, async () => {
   font-weight: 800;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  background: linear-gradient(90deg, #f9d423, #ff4e50);
+  background: linear-gradient(90deg, #E4B45D, #f0c875);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -178,7 +178,7 @@ watch(advertisements, async () => {
 
 @keyframes pulseGlow {
   0%, 100% { transform: scale(1);    filter: brightness(1); }
-  50%       { transform: scale(1.3); filter: brightness(1.6) drop-shadow(0 0 4px #ffe066); }
+  50%       { transform: scale(1.3); filter: brightness(1.6) drop-shadow(0 0 4px #E4B45D); }
 }
 
 .marquee-viewport {
@@ -216,12 +216,12 @@ watch(advertisements, async () => {
 }
 
 .marquee-item:hover .marquee-text {
-  color: #f9d423;
+  color: #E4B45D;
 }
 
 .marquee-star {
   font-size: 9px;
-  color: #f9d423;
+  color: #E4B45D;
   animation: starSpin 3s linear infinite;
   display: inline-block;
 }

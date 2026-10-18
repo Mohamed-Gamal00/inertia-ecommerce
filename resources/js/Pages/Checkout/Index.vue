@@ -524,8 +524,8 @@ async function submit() {
     transition: border-color 0.15s, background 0.15s;
 }
 
-.co-radio-item.active { border-color: #3949ab; background: #f0f2ff; }
-.co-radio-item input { accent-color: #3949ab; }
+.co-radio-item.active { border-color: #245447; background: rgba(36, 84, 71, 0.08); }
+.co-radio-item input { accent-color: #245447; }
 
 /* Discount */
 .co-discount-login-msg {
@@ -601,7 +601,7 @@ async function submit() {
     color: #374151;
 }
 
-.co-item-total { font-size: 13px; font-weight: 700; color: #1a237e; min-width: 70px; text-align: left; }
+.co-item-total { font-size: 13px; font-weight: 700; color: #245447; min-width: 70px; text-align: left; }
 
 .co-sum-row { display: flex; justify-content: space-between; font-size: 13px; color: #6b7280; padding: 4px 0; }
 .co-sum-total { font-size: 15px; font-weight: 700; color: #111827; padding-top: 8px; border-top: 1px solid #e5e7eb; margin-top: 4px; }
@@ -620,7 +620,7 @@ async function submit() {
     font-size: 13px;
 }
 
-.co-addr-opt.active { border-color: #3949ab; background: #f0f2ff; }
+.co-addr-opt.active { border-color: #245447; background: rgba(36, 84, 71, 0.08); }
 
 /* Contact form grid */
 .co-field-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -630,5 +630,5 @@ async function submit() {
 
 /* Checkbox */
 .co-check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #374151; cursor: pointer; }
-.co-check input { accent-color: #3949ab; width: 15px; height: 15px; }
+.co-check input { accent-color: #245447; width: 15px; height: 15px; }
 </style>

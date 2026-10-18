@@ -209,11 +209,11 @@ onMounted(() => {
 }
 
 .qv-image-col {
-    background: #f8f9fb;
+    background: #F5F0E7;
     display: flex;
     flex-direction: column;
     padding: 28px 24px;
-    border-left: 1px solid #e5e7eb;
+    border-left: 1px solid #D7CDBD;
 }
 
 .qv-main-image {
@@ -240,12 +240,13 @@ onMounted(() => {
     position: absolute;
     top: 0;
     right: 0;
-    background: #ef4444;
-    color: white;
+    background: linear-gradient(135deg, #E4B45D, #d9a54a);
+    color: #302F2B;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 800;
     padding: 4px 10px;
     border-radius: 0 12px 0 12px;
+    box-shadow: 0 2px 8px rgba(228, 180, 93, 0.3);
 }
 
 .qv-thumbs {
@@ -260,7 +261,7 @@ onMounted(() => {
     width: 56px;
     height: 56px;
     border-radius: 10px;
-    border: 2px solid #e5e7eb;
+    border: 2px solid #D7CDBD;
     overflow: hidden;
     cursor: pointer;
     transition: border-color 0.15s;
@@ -277,7 +278,7 @@ onMounted(() => {
 }
 
 .qv-thumb--active {
-    border-color: #3949ab;
+    border-color: #245447;
 }
 
 .qv-details-col {
@@ -290,7 +291,7 @@ onMounted(() => {
 .qv-category {
     font-size: 12px;
     font-weight: 600;
-    color: #3949ab;
+    color: #245447;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 8px;
@@ -299,7 +300,7 @@ onMounted(() => {
 .qv-name {
     font-size: 20px;
     font-weight: 700;
-    color: #111827;
+    color: #302F2B;
     line-height: 1.4;
     margin-bottom: 10px;
 }
@@ -314,12 +315,12 @@ onMounted(() => {
 .qv-price-new {
     font-size: 24px;
     font-weight: 800;
-    color: #1a237e;
+    color: #245447;
 }
 
 .qv-price-old {
     font-size: 15px;
-    color: #9ca3af;
+    color: #77736B;
     text-decoration: line-through;
 }
 

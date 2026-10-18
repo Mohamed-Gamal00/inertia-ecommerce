@@ -39,7 +39,7 @@ const { t, pick } = useLocale();
     left: 0;
     right: 0;
     background: white;
-    border-top: 2px solid #1a237e;
+    border-top: 2px solid #245447;
     box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
     z-index: 400;
     padding: 12px 16px;
@@ -116,7 +116,7 @@ const { t, pick } = useLocale();
 .compare-actions { display: flex; gap: 8px; align-items: center; }
 
 .compare-btn-go {
-    background: #1a237e;
+    background: #245447;
     color: white;
     border: none;
     border-radius: 10px;

@@ -26,7 +26,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll));
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: #1a237e;
+    background: #245447;
     color: white;
     border: none;
     cursor: pointer;

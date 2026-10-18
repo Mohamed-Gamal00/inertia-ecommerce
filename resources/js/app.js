@@ -1,4 +1,5 @@
 import "./bootstrap";
+import "../css/app.css"; // Dabbarha brand styles
 import { createApp, h } from "vue";
 import { createInertiaApp } from "@inertiajs/vue3";
 import Layout from "./layouts/AppLayout.vue";
@@ -31,7 +32,29 @@ const vuetify = createVuetify({
     locale: {
         locale: "ar",
         fallback: "en",
-        messages: { ar, en }, // 👈 ربط اللغة العربية والانجليزية الجاهزين من Vuetify
+        messages: { ar, en },
+    },
+    theme: {
+        defaultTheme: "dabbarhaTheme",
+        themes: {
+            dabbarhaTheme: {
+                dark: false,
+                colors: {
+                    primary: "#245447",      // Deep Green
+                    secondary: "#E4B45D",    // Warm Gold
+                    background: "#F5F0E7",   // Warm Cream
+                    surface: "#FFFFFF",      // White
+                    error: "#ef4444",
+                    info: "#245447",
+                    success: "#16a34a",
+                    warning: "#E4B45D",
+                    // Custom brand colors
+                    "brand-text": "#302F2B",       // Deep Charcoal
+                    "brand-text-muted": "#77736B", // Muted Gray
+                    "brand-border": "#D7CDBD",     // Warm Beige
+                },
+            },
+        },
     },
 });
 

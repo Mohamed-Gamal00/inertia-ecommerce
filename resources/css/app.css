@@ -1,0 +1,295 @@
+/**
+ * Dabbarha Brand Identity Styles
+ * User-Facing Website Only (Inertia.js + Vue.js + Vuetify)
+ *
+ * Brand: Dabbarha | دبّرها
+ * Positioning: Egyptian online shopping for practical household essentials
+ */
+
+/* ===================================
+   Brand Color Variables
+   =================================== */
+:root {
+    --brand-primary: #245447;        /* Deep Green */
+    --brand-secondary: #E4B45D;      /* Warm Gold */
+    --brand-background: #F5F0E7;     /* Warm Cream */
+    --brand-surface: #FFFFFF;        /* White */
+    --brand-text: #302F2B;           /* Deep Charcoal */
+    --brand-text-muted: #77736B;     /* Muted Gray */
+    --brand-border: #D7CDBD;         /* Warm Beige */
+
+    /* Functional colors */
+    --brand-error: #ef4444;
+    --brand-success: #16a34a;
+    --brand-warning: #E4B45D;
+}
+
+/* ===================================
+   Global App Styles
+   =================================== */
+.v-application {
+    background-color: var(--brand-background);
+    font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+    color: var(--brand-text);
+}
+
+/* Improve readability for Arabic text */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===================================
+   Typography Enhancements
+   =================================== */
+.v-card-title,
+.v-list-item-title {
+    color: var(--brand-text) !important;
+}
+
+.v-card-subtitle,
+.v-list-item-subtitle {
+    color: var(--brand-text-muted) !important;
+}
+
+/* ===================================
+   Button Overrides
+   =================================== */
+.v-btn {
+    text-transform: none;
+    letter-spacing: 0.3px;
+    font-weight: 600;
+}
+
+/* Primary buttons with brand green */
+.v-btn--variant-elevated.bg-primary,
+.v-btn--variant-flat.bg-primary {
+    background-color: var(--brand-primary) !important;
+    color: white !important;
+}
+
+.v-btn--variant-elevated.bg-primary:hover,
+.v-btn--variant-flat.bg-primary:hover {
+    background-color: #1d4338 !important;
+    box-shadow: 0 4px 12px rgba(36, 84, 71, 0.25) !important;
+}
+
+/* Outlined primary buttons */
+.v-btn--variant-outlined.text-primary {
+    border-color: var(--brand-primary) !important;
+    color: var(--brand-primary) !important;
+}
+
+.v-btn--variant-outlined.text-primary:hover {
+    background-color: rgba(36, 84, 71, 0.08) !important;
+}
+
+/* Secondary buttons with warm gold accent */
+.v-btn.bg-secondary {
+    background-color: var(--brand-secondary) !important;
+    color: var(--brand-text) !important;
+}
+
+.v-btn.bg-secondary:hover {
+    background-color: #d9a54a !important;
+}
+
+/* ===================================
+   Card Styles
+   =================================== */
+.v-card {
+    border-radius: 12px !important;
+    border: 1px solid var(--brand-border);
+}
+
+.v-card--variant-elevated {
+    box-shadow: 0 2px 8px rgba(48, 47, 43, 0.08) !important;
+}
+
+/* ===================================
+   Form Controls
+   =================================== */
+.v-text-field .v-field,
+.v-select .v-field,
+.v-textarea .v-field {
+    border-radius: 10px;
+}
+
+.v-text-field--outlined .v-field,
+.v-select--outlined .v-field {
+    border-color: var(--brand-border);
+}
+
+.v-text-field .v-field--focused,
+.v-select .v-field--focused {
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 2px rgba(36, 84, 71, 0.1);
+}
+
+/* Input label colors */
+.v-label {
+    color: var(--brand-text-muted);
+}
+
+.v-field--focused .v-label {
+    color: var(--brand-primary);
+}
+
+/* ===================================
+   Links
+   =================================== */
+a {
+    color: var(--brand-primary);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+a:hover {
+    color: #1d4338;
+}
+
+/* ===================================
+   Badges & Chips
+   =================================== */
+.v-badge .v-badge__badge {
+    border-radius: 10px;
+}
+
+.v-chip {
+    border-radius: 20px;
+}
+
+.v-chip.bg-primary {
+    background-color: var(--brand-primary) !important;
+    color: white !important;
+}
+
+.v-chip.bg-secondary {
+    background-color: var(--brand-secondary) !important;
+    color: var(--brand-text) !important;
+}
+
+/* ===================================
+   Navigation & Menus
+   =================================== */
+.v-list-item--active {
+    background-color: rgba(36, 84, 71, 0.08) !important;
+    color: var(--brand-primary) !important;
+}
+
+.v-list-item--active .v-list-item-title {
+    color: var(--brand-primary) !important;
+    font-weight: 600;
+}
+
+/* ===================================
+   Dividers
+   =================================== */
+.v-divider {
+    border-color: var(--brand-border) !important;
+}
+
+/* ===================================
+   Progress Indicators
+   =================================== */
+.v-progress-linear {
+    border-radius: 10px;
+}
+
+.v-progress-circular {
+    color: var(--brand-primary);
+}
+
+/* ===================================
+   Alerts & Snackbars
+   =================================== */
+.v-snackbar.bg-success {
+    background-color: var(--brand-success) !important;
+}
+
+.v-snackbar.bg-error {
+    background-color: var(--brand-error) !important;
+}
+
+.v-snackbar.bg-warning {
+    background-color: var(--brand-secondary) !important;
+    color: var(--brand-text) !important;
+}
+
+/* ===================================
+   Tabs
+   =================================== */
+.v-tabs .v-tab--selected {
+    color: var(--brand-primary) !important;
+}
+
+.v-tabs .v-tab-item--selected {
+    background-color: rgba(36, 84, 71, 0.08);
+}
+
+.v-tabs-slider {
+    background-color: var(--brand-primary) !important;
+}
+
+/* ===================================
+   Tooltips
+   =================================== */
+.v-tooltip .v-overlay__content {
+    background-color: var(--brand-text) !important;
+    border-radius: 6px;
+}
+
+/* ===================================
+   RTL Support
+   =================================== */
+[dir="rtl"] .v-application {
+    text-align: right;
+}
+
+[dir="rtl"] .v-btn__content {
+    flex-direction: row-reverse;
+}
+
+/* ===================================
+   Responsive Adjustments
+   =================================== */
+@media (max-width: 600px) {
+    .v-card {
+        border-radius: 10px !important;
+    }
+
+    .v-btn {
+        font-size: 14px;
+    }
+}
+
+/* ===================================
+   Utility Classes
+   =================================== */
+.text-brand-primary {
+    color: var(--brand-primary) !important;
+}
+
+.text-brand-secondary {
+    color: var(--brand-secondary) !important;
+}
+
+.text-brand-muted {
+    color: var(--brand-text-muted) !important;
+}
+
+.bg-brand-primary {
+    background-color: var(--brand-primary) !important;
+}
+
+.bg-brand-secondary {
+    background-color: var(--brand-secondary) !important;
+}
+
+.bg-brand-surface {
+    background-color: var(--brand-surface) !important;
+}
+
+.border-brand {
+    border-color: var(--brand-border) !important;
+}

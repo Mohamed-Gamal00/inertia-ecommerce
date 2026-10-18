@@ -3,7 +3,7 @@
         <!-- Left panel: branding -->
         <div class="auth-left d-none d-md-flex">
             <div class="auth-left-content">
-                <v-icon size="56" color="white" class="mb-4">mdi-storefront</v-icon>
+                <v-icon size="56" color="white" class="mb-4">mdi-package-variant</v-icon>
                 <h1 class="text-white font-weight-bold mb-3" style="font-size:32px">{{ siteName }}</h1>
                 <p class="text-white" style="opacity:0.85; font-size:15px; max-width:280px; line-height:1.8">
                     {{ t('login_tagline') }}
@@ -22,7 +22,7 @@
             <div class="auth-form-wrapper">
                 <!-- Mobile logo -->
                 <div class="d-flex d-md-none align-center mb-6">
-                    <v-icon size="32" color="primary" class="me-2">mdi-storefront</v-icon>
+                    <v-icon size="32" color="primary" class="me-2">mdi-package-variant</v-icon>
                     <span class="font-weight-bold text-h6">{{ siteName }}</span>
                 </div>
 
@@ -104,7 +104,7 @@ const submit = () => {
 
 .auth-left {
     width: 42%;
-    background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%);
+    background: linear-gradient(135deg, #245447 0%, #2d6b5a 50%, #36826d 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -119,7 +119,7 @@ const submit = () => {
     width: 300px;
     height: 300px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.05);
+    background: rgba(228, 180, 93, 0.08);
     top: -80px;
     right: -80px;
 }
@@ -130,7 +130,7 @@ const submit = () => {
     width: 200px;
     height: 200px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.05);
+    background: rgba(228, 180, 93, 0.08);
     bottom: -60px;
     left: -60px;
 }
@@ -163,6 +163,6 @@ const submit = () => {
 .field-label {
     font-size: 13px;
     font-weight: 600;
-    color: #374151;
+    color: #302F2B;
 }
 </style>

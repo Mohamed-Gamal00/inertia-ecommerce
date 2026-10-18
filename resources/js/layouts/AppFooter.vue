@@ -4,7 +4,7 @@
         <!-- Top wave -->
         <div class="footer-wave">
             <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="#1a237e" />
+                <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="#245447" />
             </svg>
         </div>
 
@@ -16,7 +16,7 @@
                     <!-- Brand -->
                     <div class="footer-brand">
                         <div class="brand-logo">
-                            <v-icon size="28" color="white">mdi-storefront</v-icon>
+                            <v-icon size="28" color="white">mdi-package-variant</v-icon>
                             <span>{{ siteName }}</span>
                         </div>
                         <p class="brand-desc">{{ t('footer_tagline') }}</p>
@@ -193,7 +193,7 @@ async function subscribe() {
 
 /* Body */
 .footer-body {
-    background: #1a237e;
+    background: #245447;
     padding: 48px 0 32px;
 }
 
@@ -363,17 +363,18 @@ async function subscribe() {
 .newsletter-input::placeholder { color: rgba(255,255,255,0.4); }
 
 .newsletter-btn {
-    background: white;
+    background: #E4B45D;
     border: none;
     padding: 0 16px;
     cursor: pointer;
-    color: #1a237e;
+    color: #302F2B;
+    font-weight: 700;
     transition: background 0.15s;
     display: flex;
     align-items: center;
 }
 
-.newsletter-btn:hover { background: #e8eaf6; }
+.newsletter-btn:hover { background: #d9a54a; }
 .newsletter-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .subscribe-msg {

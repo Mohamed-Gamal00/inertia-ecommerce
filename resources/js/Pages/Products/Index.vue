@@ -3,7 +3,7 @@
         <SeoHead :title="filters.q ? `${t('results_for')} ${filters.q}` : t('all_products')" />
 
         <!-- Header -->
-        <div style="background:linear-gradient(135deg,#1a237e,#3949ab); padding:32px 16px 44px">
+        <div style="background:linear-gradient(135deg,#245447,#36826d); padding:32px 16px 44px">
             <h1 class="text-white font-weight-bold text-center" style="font-size:26px">
                 {{ filters.q ? `${t('results_for')} "${filters.q}"` : t('all_products') }}
             </h1>
@@ -224,7 +224,7 @@ watch(() => props.products.current_page, (val) => page.value = val);
     transition: border-color 0.15s;
 }
 
-.filter-select:focus { border-color: #3949ab; }
+.filter-select:focus { border-color: #245447; }
 
 .filter-price {
     display: flex;
@@ -245,7 +245,7 @@ watch(() => props.products.current_page, (val) => page.value = val);
 }
 
 .filter-apply-btn {
-    background: #1a237e;
+    background: #245447;
     color: white;
     border: none;
     border-radius: 8px;
@@ -285,8 +285,8 @@ watch(() => props.products.current_page, (val) => page.value = val);
     display: flex;
     align-items: center;
     gap: 6px;
-    background: #e8eaf6;
-    color: #1a237e;
+    background: rgba(36, 84, 71, 0.1);
+    color: #245447;
     font-size: 12px;
     font-weight: 600;
     padding: 4px 10px;
@@ -297,7 +297,7 @@ watch(() => props.products.current_page, (val) => page.value = val);
     background: none;
     border: none;
     cursor: pointer;
-    color: #3949ab;
+    color: #245447;
     font-size: 14px;
     line-height: 1;
     padding: 0;

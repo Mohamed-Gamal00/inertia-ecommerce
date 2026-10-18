@@ -15,7 +15,7 @@
             <!-- Empty -->
             <div v-if="!products.length" class="cmp-empty">
                 <v-icon size="72" color="grey-lighten-1">mdi-compare-remove</v-icon>
-                <p class="mt-3 font-weight-bold" style="font-size:16px; color:#374151">{{ t('no_compare') }}</p>
+                <p class="mt-3 font-weight-bold" style="font-size:16px; color:#302F2B">{{ t('no_compare') }}</p>
                 <a href="/products" class="cmp-btn-go mt-4">{{ t('browse_products') }}</a>
             </div>
 
@@ -294,11 +294,11 @@ async function addToCart(p) {
 
 <style scoped>
 /* ── Base ── */
-.cmp-page { background: #f0f2f8; min-height: 100vh; padding-bottom: 80px; }
+.cmp-page { background: #F5F0E7; min-height: 100vh; padding-bottom: 80px; }
 
 /* ── Hero ── */
 .cmp-hero {
-    background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+    background: linear-gradient(135deg, #245447 0%, #36826d 100%);
     padding: 40px 16px 56px;
     text-align: center;
 }
@@ -323,7 +323,7 @@ async function addToCart(p) {
     align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.06);
 }
 .cmp-btn-go {
-    background: #1a237e; color: white; border-radius: 10px;
+    background: #245447; color: white; border-radius: 10px;
     padding: 10px 24px; font-size: 14px; font-weight: 600;
     text-decoration: none; display: inline-block;
 }
@@ -343,9 +343,9 @@ async function addToCart(p) {
 .cmp-header-row {
     display: flex; align-items: center;
     margin-bottom: 10px;
-    background: linear-gradient(135deg, #1a237e 0%, #283593 60%, #3949ab 100%);
+    background: linear-gradient(135deg, #245447 0%, #2d6b5a 60%, #36826d 100%);
     border-radius: 14px; overflow: hidden;
-    box-shadow: 0 4px 20px rgba(26,35,126,0.25);
+    box-shadow: 0 4px 20px rgba(36, 84, 71, 0.15);
     min-width: 700px;
 }
 
@@ -365,23 +365,23 @@ async function addToCart(p) {
 .cmp-col-action { width: 110px; flex-shrink: 0; }
 
 .cmp-product-row {
-    background: white; border-radius: 16px; border: 2px solid #e5e7eb;
+    background: white; border-radius: 16px; border: 2px solid #D7CDBD;
     padding: 18px 20px; margin-bottom: 12px;
     display: flex; align-items: center;
     position: relative; transition: border-color 0.2s, box-shadow 0.2s;
     min-width: 700px;
 }
-.cmp-product-row:hover { box-shadow: 0 6px 24px rgba(26,35,126,0.08); border-color: #c5cae9; }
-.cmp-product-row--best { border-color: #1a237e; box-shadow: 0 6px 24px rgba(26,35,126,0.12); }
+.cmp-product-row:hover { box-shadow: 0 6px 24px rgba(36, 84, 71, 0.1); border-color: #E4B45D; }
+.cmp-product-row--best { border-color: #245447; box-shadow: 0 6px 24px rgba(36, 84, 71, 0.15); }
 
 .cmp-best-badge {
     position: absolute; top: -1px; right: 20px;
-    background: #1a237e; color: white;
+    background: linear-gradient(135deg, #E4B45D, #d9a54a); color: #302F2B;
     font-size: 10px; font-weight: 700;
     padding: 3px 10px; border-radius: 0 0 8px 8px;
 }
 
-.cmp-product-name { font-size: 14px; font-weight: 700; color: #111827; line-height: 1.3; }
+.cmp-product-name { font-size: 14px; font-weight: 700; color: #302F2B; line-height: 1.3; }
 
 .cmp-colors { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; }
 .cmp-dot {
@@ -390,8 +390,8 @@ async function addToCart(p) {
 }
 
 .cmp-cat-pill {
-    font-size: 10px; font-weight: 700; color: #3949ab;
-    background: #e8eaf6; padding: 3px 8px; border-radius: 20px; white-space: nowrap;
+    font-size: 10px; font-weight: 700; color: #245447;
+    background: rgba(36, 84, 71, 0.1); padding: 3px 8px; border-radius: 20px; white-space: nowrap;
 }
 
 .val-empty { color: #d1d5db; font-size: 16px; }
@@ -399,12 +399,12 @@ async function addToCart(p) {
 .cmp-img-box {
     position: relative; width: 70px; height: 70px;
     border-radius: 10px; overflow: hidden;
-    border: 1px solid #e5e7eb; margin: 0 auto;
+    border: 1px solid #D7CDBD; margin: 0 auto;
 }
 .cmp-img-box img { width: 100%; height: 100%; object-fit: cover; }
 .cmp-img-badge {
     position: absolute; top: 3px; right: 3px;
-    background: #ef4444; color: white;
+    background: linear-gradient(135deg, #E4B45D, #d9a54a); color: #302F2B;
     font-size: 8px; font-weight: 700;
     padding: 1px 4px; border-radius: 8px;
 }
@@ -414,22 +414,22 @@ async function addToCart(p) {
 .val-bad  { color: #ef4444; font-weight: 700; }
 
 .cmp-col-price { text-align: center; }
-.cmp-price-new { font-size: 16px; font-weight: 800; color: #1a237e; }
+.cmp-price-new { font-size: 16px; font-weight: 800; color: #245447; }
 .cmp-price-old { font-size: 11px; color: #9ca3af; text-decoration: line-through; }
 
 .cmp-col-action { display: flex; gap: 6px; align-items: center; justify-content: center; }
 
 .cmp-btn-icon {
     width: 34px; height: 34px; border-radius: 9px;
-    border: 1.5px solid #e5e7eb; background: white;
+    border: 1.5px solid #D7CDBD; background: white;
     cursor: pointer; display: flex; align-items: center; justify-content: center;
     transition: all 0.15s; flex-shrink: 0; text-decoration: none;
 }
-.cmp-btn-cart-icon { border-color: #3949ab; color: #1a237e; background: #f0f2ff; }
-.cmp-btn-cart-icon:hover:not(:disabled) { background: #1a237e; color: white; border-color: #1a237e; }
+.cmp-btn-cart-icon { border-color: #245447; color: #245447; background: rgba(36, 84, 71, 0.08); }
+.cmp-btn-cart-icon:hover:not(:disabled) { background: #245447; color: white; border-color: #245447; }
 .cmp-btn-cart-icon:disabled { opacity: 0.4; cursor: not-allowed; }
 .cmp-btn-view { color: #6b7280; }
-.cmp-btn-view:hover { border-color: #3949ab; color: #3949ab; background: #f0f2ff; }
+.cmp-btn-view:hover { border-color: #E4B45D; color: #E4B45D; background: rgba(228, 180, 93, 0.1); }
 .cmp-btn-remove { background: #fff5f5; color: #ef4444; border-color: #fecaca; }
 .cmp-btn-remove:hover { background: #fee2e2; border-color: #ef4444; }
 
@@ -444,7 +444,7 @@ async function addToCart(p) {
 .cmp-ft-row:last-child { border-bottom: none; }
 .cmp-ft-label { padding: 12px 16px; font-size: 12px; font-weight: 700; color: #6b7280; background: #f8f9fb; border-left: 1px solid #e5e7eb; }
 .cmp-ft-val { padding: 12px 16px; font-size: 12px; color: #374151; border-left: 1px solid #f3f4f6; text-align: center; }
-.cmp-ft-val--head { font-weight: 700; color: #1a237e; background: #f0f2ff; font-size: 11px; }
+.cmp-ft-val--head { font-weight: 700; color: #245447; background: rgba(36, 84, 71, 0.08); font-size: 11px; }
 
 /* ══════════════════════════════════════
    MOBILE CARDS
@@ -457,17 +457,17 @@ async function addToCart(p) {
     .cmp-card {
         background: white;
         border-radius: 18px;
-        border: 2px solid #e5e7eb;
+        border: 2px solid #D7CDBD;
         overflow: hidden;
         position: relative;
         box-shadow: 0 2px 12px rgba(0,0,0,0.06);
         transition: box-shadow 0.2s;
     }
-    .cmp-card--best { border-color: #1a237e; box-shadow: 0 4px 20px rgba(26,35,126,0.14); }
+    .cmp-card--best { border-color: #245447; box-shadow: 0 4px 20px rgba(36, 84, 71, 0.14); }
 
     /* Ribbon */
     .cmp-card-ribbon {
-        background: linear-gradient(90deg, #1a237e, #3949ab);
+        background: linear-gradient(90deg, #245447, #36826d);
         color: white; font-size: 11px; font-weight: 700;
         padding: 5px 14px;
         display: flex; align-items: center;
@@ -484,24 +484,24 @@ async function addToCart(p) {
         position: relative; flex-shrink: 0;
         width: 90px; height: 90px;
         border-radius: 12px; overflow: hidden;
-        border: 1px solid #e5e7eb;
+        border: 1px solid #D7CDBD;
     }
     .cmp-card-img { width: 100%; height: 100%; object-fit: cover; }
     .cmp-card-discount-badge {
         position: absolute; top: 4px; right: 4px;
-        background: #ef4444; color: white;
+        background: linear-gradient(135deg, #E4B45D, #d9a54a); color: #302F2B;
         font-size: 9px; font-weight: 700;
         padding: 2px 5px; border-radius: 6px;
     }
     .cmp-card-info { flex: 1; min-width: 0; }
     .cmp-card-name {
-        font-size: 15px; font-weight: 800; color: #111827;
+        font-size: 15px; font-weight: 800; color: #302F2B;
         line-height: 1.3; margin-bottom: 6px;
     }
     .cmp-card-cat {
         display: inline-flex; align-items: center;
-        font-size: 11px; font-weight: 700; color: #3949ab;
-        background: #e8eaf6; padding: 3px 9px; border-radius: 20px;
+        font-size: 11px; font-weight: 700; color: #245447;
+        background: rgba(36, 84, 71, 0.1); padding: 3px 9px; border-radius: 20px;
         margin-bottom: 8px;
     }
     .cmp-card-colors { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px; }
@@ -529,8 +529,8 @@ async function addToCart(p) {
     .cmp-card-footer {
         display: flex; align-items: center; justify-content: space-between;
         padding: 14px 16px;
-        background: #f8f9fb;
-        border-top: 1px solid #e5e7eb;
+        background: #F5F0E7;
+        border-top: 1px solid #D7CDBD;
         gap: 10px;
     }
     .cmp-card-price { display: flex; align-items: baseline; gap: 6px; }
@@ -538,7 +538,7 @@ async function addToCart(p) {
 
     .cmp-card-btn {
         display: inline-flex; align-items: center; justify-content: center;
-        border-radius: 10px; border: 1.5px solid #e5e7eb;
+        border-radius: 10px; border: 1.5px solid #D7CDBD;
         background: white; cursor: pointer;
         font-size: 12px; font-weight: 700;
         padding: 8px 12px; gap: 4px;
@@ -546,12 +546,12 @@ async function addToCart(p) {
         white-space: nowrap;
     }
     .cmp-card-btn-cart {
-        background: #1a237e; color: white; border-color: #1a237e; flex: 1;
+        background: #245447; color: white; border-color: #245447; flex: 1;
     }
     .cmp-card-btn-cart:disabled { opacity: 0.45; cursor: not-allowed; }
-    .cmp-card-btn-cart:not(:disabled):hover { background: #283593; }
-    .cmp-card-btn-view { color: #3949ab; border-color: #c5cae9; width: 38px; padding: 8px; }
-    .cmp-card-btn-view:hover { background: #e8eaf6; }
+    .cmp-card-btn-cart:not(:disabled):hover { background: #1d4237; }
+    .cmp-card-btn-view { color: #E4B45D; border-color: #E4B45D; width: 38px; padding: 8px; }
+    .cmp-card-btn-view:hover { background: rgba(228, 180, 93, 0.1); }
     .cmp-card-btn-remove { color: #ef4444; border-color: #fecaca; background: #fff5f5; width: 38px; padding: 8px; }
     .cmp-card-btn-remove:hover { background: #fee2e2; }
 }

@@ -147,26 +147,27 @@ function toggleFavorite() {
 
 <style scoped>
 .pc {
-    background: white;
+    background: #FDFBF7;
     border-radius: 14px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #D7CDBD;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+    transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s, background 0.2s;
     cursor: pointer;
 }
 
 .pc--hovered {
-    box-shadow: 0 8px 28px rgba(26,35,126,0.10);
-    transform: translateY(-2px);
-    border-color: #c5cae9;
+    background: white;
+    box-shadow: 0 8px 28px rgba(36, 84, 71, 0.12);
+    transform: translateY(-3px);
+    border-color: #E4B45D;
 }
 
 .pc-img-wrap {
     position: relative;
     overflow: hidden;
-    background: #f3f4f6;
+    background: #F5F0E7;
     height: 160px;
 }
 
@@ -188,14 +189,15 @@ function toggleFavorite() {
     position: absolute;
     top: 8px;
     right: 8px;
-    background: #ef4444;
-    color: white;
+    background: linear-gradient(135deg, #E4B45D, #d9a54a);
+    color: #302F2B;
     font-size: 10px;
-    font-weight: 700;
-    padding: 2px 7px;
+    font-weight: 800;
+    padding: 3px 8px;
     border-radius: 20px;
     z-index: 2;
     line-height: 1.4;
+    box-shadow: 0 2px 8px rgba(228, 180, 93, 0.3);
 }
 
 .pc-wish {
@@ -241,7 +243,7 @@ function toggleFavorite() {
     padding: 5px 12px;
     font-size: 11px;
     font-weight: 600;
-    color: #1a237e;
+    color: #245447;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -254,7 +256,7 @@ function toggleFavorite() {
     bottom: 8px;
     left: 50%;
     transform: translateX(-50%);
-    background: #1a237e;
+    background: #245447;
     border: none;
     border-radius: 20px;
     padding: 6px 14px;
@@ -264,7 +266,7 @@ function toggleFavorite() {
     cursor: pointer;
     align-items: center;
     gap: 5px;
-    box-shadow: 0 3px 12px rgba(26,35,126,0.35);
+    box-shadow: 0 3px 12px rgba(36, 84, 71, 0.35);
     z-index: 4;
     white-space: nowrap;
     letter-spacing: 0.2px;
@@ -326,10 +328,10 @@ function toggleFavorite() {
 .pc-cat {
     font-size: 9px;
     font-weight: 700;
-    color: #3949ab;
+    color: #245447;
     text-transform: uppercase;
     letter-spacing: 0.4px;
-    background: #e8eaf6;
+    background: rgba(36, 84, 71, 0.1);
     padding: 2px 7px;
     border-radius: 20px;
     align-self: flex-start;
@@ -339,7 +341,7 @@ function toggleFavorite() {
 .pc-name {
     font-size: 13px;
     font-weight: 700;
-    color: #111827;
+    color: #302F2B;
     line-height: 1.35;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -358,13 +360,13 @@ function toggleFavorite() {
 .pc-price-new {
     font-size: 16px;
     font-weight: 800;
-    color: #1a237e;
+    color: #245447;
     line-height: 1;
 }
 
 .pc-price-old {
     font-size: 11px;
-    color: #9ca3af;
+    color: #77736B;
     text-decoration: line-through;
 }
 
@@ -379,9 +381,9 @@ function toggleFavorite() {
     flex: 1;
     height: 34px;
     border-radius: 8px;
-    border: 1.5px solid #3949ab;
+    border: 1.5px solid #245447;
     background: transparent;
-    color: #3949ab;
+    color: #245447;
     font-size: 11px;
     font-weight: 700;
     cursor: pointer;
@@ -395,8 +397,8 @@ function toggleFavorite() {
 }
 
 .pc-cart-btn:hover:not(:disabled) {
-    background: #1a237e;
-    border-color: #1a237e;
+    background: #245447;
+    border-color: #245447;
     color: white;
 }
 
@@ -417,26 +419,26 @@ function toggleFavorite() {
     width: 34px;
     height: 34px;
     border-radius: 8px;
-    border: 1.5px solid #e5e7eb;
+    border: 1.5px solid #D7CDBD;
     background: white;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #9ca3af;
+    color: #77736B;
     transition: all 0.15s;
     flex-shrink: 0;
 }
 
 .pc-compare-btn:hover {
-    border-color: #3949ab;
-    color: #3949ab;
-    background: #f0f2ff;
+    border-color: #E4B45D;
+    color: #E4B45D;
+    background: rgba(228, 180, 93, 0.1);
 }
 
 .pc-compare-btn--on {
-    border-color: #3949ab;
-    background: #3949ab;
-    color: white;
+    border-color: #E4B45D;
+    background: #E4B45D;
+    color: #302F2B;
 }
 </style>
