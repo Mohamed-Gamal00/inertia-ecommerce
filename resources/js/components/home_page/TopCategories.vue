@@ -9,13 +9,13 @@
             </a>
         </div>
 
-        <v-container fluid>
-            <div v-if="categories.length" style="display:flex; flex-wrap:wrap; justify-content:center; align-items:flex-start; gap:12px; padding:8px 0">
+        <v-container>
+            <div v-if="categories.length" class="categories-grid">
                 <a
                     v-for="cat in categories"
                     :key="cat.id"
                     :href="`/categories/${cat.slug}`"
-                    style="display:block; width:120px; text-decoration:none; flex-shrink:0; text-align:center"
+                    class="category-item"
                 >
                     <div class="cat-circle">
                         <img v-if="cat.image_url" :src="cat.image_url" :alt="pick(cat,'name')" />
@@ -37,6 +37,25 @@ const categories = computed(() => usePage().props.categories ?? []);
 </script>
 
 <style scoped>
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 20px;
+    justify-items: center;
+    padding: 8px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.category-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    width: 100%;
+    max-width: 120px;
+}
+
 .cat-circle {
     width: 90px;
     height: 90px;
@@ -47,23 +66,65 @@ const categories = computed(() => usePage().props.categories ?? []);
     align-items: center;
     justify-content: center;
     border: 2px solid #D7CDBD;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: all 0.2s;
+    margin: 0 auto;
 }
 
-.cat-circle img { width: 100%; height: 100%; object-fit: cover; }
+.category-item:hover .cat-circle {
+    border-color: #76543D;
+    box-shadow: 0 4px 12px rgba(118, 84, 61, 0.15);
+    transform: translateY(-2px);
+}
+
+.cat-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
 .cat-name {
-    margin-top: 8px;
-    font-size: 12px;
+    margin-top: 10px;
+    font-size: 13px;
     font-weight: 600;
     color: #302F2B;
     text-align: center;
-    max-width: 90px;
     line-height: 1.3;
+    width: 100%;
 }
 
+/* Mobile adjustments */
 @media (max-width: 599px) {
-    .cat-circle { width: 72px; height: 72px; }
-    .cat-name { font-size: 11px; max-width: 72px; }
+    .categories-grid {
+        grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+        gap: 16px;
+        padding: 4px;
+    }
+
+    .category-item {
+        max-width: 100px;
+    }
+
+    .cat-circle {
+        width: 75px;
+        height: 75px;
+    }
+
+    .cat-name {
+        font-size: 11px;
+        margin-top: 8px;
+    }
+}
+
+/* Tablet adjustments */
+@media (min-width: 600px) and (max-width: 959px) {
+    .categories-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 18px;
+    }
+
+    .cat-circle {
+        width: 85px;
+        height: 85px;
+    }
 }
 </style>
