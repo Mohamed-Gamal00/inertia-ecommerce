@@ -31,7 +31,7 @@
                 0: { slidesPerView: 1, spaceBetween: 10 },
                 600: { slidesPerView: 2, spaceBetween: 15 },
                 960: { slidesPerView: 3, spaceBetween: 25 },
-                1280: { slidesPerView: 4, spaceBetween: 35 },
+                1280: { slidesPerView: 5, spaceBetween: 35 },
             }"
             :space-between="35"
             :autoplay="{ delay: 20000 }"

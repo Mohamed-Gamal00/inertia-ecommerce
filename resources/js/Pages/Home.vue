@@ -33,6 +33,7 @@ const tvBannerSrc  = computed(() => props.homeDesigns?.home_tv_banner  || tvBann
         <SeoHead />
         <UpperPanner :banners="banners" />
         <TheFeatures />
+        <TopCategories />
         <TopOffers />
         <ProductsComponents
             :products="products"
@@ -40,7 +41,6 @@ const tvBannerSrc  = computed(() => props.homeDesigns?.home_tv_banner  || tvBann
             titleColor="red"
         />
 
-        <TopCategories />
         <NewProducts :products="products" />
         <QualityFeatuers />
         <ProductsComponents
@@ -77,7 +77,7 @@ const tvBannerSrc  = computed(() => props.homeDesigns?.home_tv_banner  || tvBann
             class="w-100"
         />
 
-        <WhyShopWithUsVue />
+        <!-- <WhyShopWithUsVue /> -->
     </div>
 </template>
 

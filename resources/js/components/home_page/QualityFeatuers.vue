@@ -1,10 +1,10 @@
 <template>
-    <div class="quality py-12" style="background:#f5f6fa">
+    <div class="quality py-12" style="background:#F7F0E5">
         <v-container>
-            <h2 class="text-center font-weight-bold mb-8" style="font-size:22px; color:#111827">
+            <h2 class="text-center font-weight-bold mb-8" style="font-size:22px; color:#302F2B">
                 {{ t('why_us_title') }}
             </h2>
-            <v-row>
+            <v-row justify="center">
                 <v-col
                     v-for="card in cards"
                     :key="card.title"
@@ -23,21 +23,22 @@
                             style="transition: all 0.25s ease; cursor:pointer; height:100%"
                         >
                             <div
-                                class="mx-auto mb-3 d-flex align-center justify-center"
-                                style="width:56px; height:56px; border-radius:14px; background:rgba(118, 84, 61, 0.1)"
+                                class="mx-auto mb-3 d-flex align-center justify-center icon-box"
+                                :class="{ 'icon-box--hover': isHovering }"
+                                style="width:56px; height:56px; border-radius:14px; transition: all 0.25s ease"
                             >
-                                <span v-html="card.svg" />
+                                <span v-html="card.svg" :class="{ 'icon-hover': isHovering }" />
                             </div>
                             <div
                                 class="font-weight-bold mb-1"
                                 style="font-size:12px; text-transform:uppercase; letter-spacing:0.3px"
-                                :style="{ color: isHovering ? 'white' : '#111827' }"
+                                :style="{ color: isHovering ? 'white' : '#302F2B' }"
                             >
                                 {{ card.title }}
                             </div>
                             <div
                                 style="font-size:11px; line-height:1.5"
-                                :style="{ color: isHovering ? 'rgba(255,255,255,0.85)' : '#9ca3af' }"
+                                :style="{ color: isHovering ? 'rgba(255,255,255,0.85)' : '#77736B' }"
                             >
                                 {{ card.desc }}
                             </div>
@@ -70,3 +71,18 @@ const cards = computed(() => [
     { title: t('why_support'),    desc: t('why_support_desc'),    svg: svgs.support },
 ]);
 </script>
+
+<style scoped>
+.icon-box {
+    background: rgba(118, 84, 61, 0.08);
+}
+
+.icon-box--hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Change icon gradient colors on hover */
+.icon-hover :deep(svg) {
+    filter: brightness(0) invert(1);
+}
+</style>
