@@ -102,7 +102,7 @@
             <template v-else>
                 <div class="d-none d-md-flex align-center ms-2" style="gap:8px">
                     <Link href="/login">
-                        <v-btn variant="text" size="small" style="text-transform:none; font-size:13px; color:white">
+                        <v-btn variant="text" size="small" style="text-transform:none; font-size:13px; color:#302F2B;">
                             {{ t('login') }}
                         </v-btn>
                     </Link>
