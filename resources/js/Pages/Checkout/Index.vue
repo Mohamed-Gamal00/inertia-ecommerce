@@ -124,7 +124,7 @@
                     <div class="co-card">
                         <div class="co-card-title">{{ t('confirm_order') }}</div>
                         <v-divider class="mb-3" />
-                        <div class="co-card-title mt-2" style="font-weight:500; color:#6b7280; font-size:13px">{{ t('note') }}</div>
+                        <div class="co-card-title mt-2" style="font-weight:500; color:#77736B; font-size:13px">{{ t('note') }}</div>
                         <v-textarea v-model="form.note" variant="outlined" density="compact" hide-details rows="3" rounded="lg" bg-color="grey-lighten-5" class="mt-1 mb-4" />
 
                         <div class="d-flex flex-column mb-4" style="gap:10px">
@@ -195,7 +195,7 @@
                                     <v-icon size="15" :color="form.user_address === String(addr.id) ? 'primary' : 'grey'">mdi-map-marker-outline</v-icon>
                                     <div style="flex:1">
                                         <div style="font-size:13px; font-weight:600">{{ addr.address_title || t('address_title') }}</div>
-                                        <div style="font-size:12px; color:#9ca3af">{{ addr.address }}</div>
+                                        <div style="font-size:12px; color:#77736B">{{ addr.address }}</div>
                                     </div>
                                     <v-chip v-if="addr.main_address" size="x-small" color="primary" variant="flat">{{ t('main_address') }}</v-chip>
                                 </label>
@@ -492,11 +492,11 @@ async function submit() {
 </script>
 
 <style scoped>
-.co-page { background: #f7f0e5; min-height: 100vh; }
+.co-page { background: #F7F0E5; min-height: 100vh; }
 
 .co-card {
     background: white;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #D7CDBD;
     border-radius: 12px;
     padding: 18px;
 }
@@ -504,7 +504,7 @@ async function submit() {
 .co-card-title {
     font-size: 14px;
     font-weight: 700;
-    color: #111827;
+    color: #302F2B;
     margin-bottom: 8px;
 }
 
@@ -516,11 +516,11 @@ async function submit() {
     align-items: center;
     gap: 8px;
     font-size: 13px;
-    color: #374151;
+    color: #302F2B;
     cursor: pointer;
     padding: 8px 12px;
     border-radius: 8px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #D7CDBD;
     transition: border-color 0.15s, background 0.15s;
 }
 
@@ -533,12 +533,12 @@ async function submit() {
     align-items: center;
     flex-wrap: wrap;
     gap: 2px;
-    background: #fffbeb;
-    border: 1px solid #fde68a;
+    background: #FFF9ED;
+    border: 1px solid #E6D3BB;
     border-radius: 8px;
     padding: 8px 12px;
     font-size: 13px;
-    color: #92400e;
+    color: #76543D;
 }
 
 .co-discount-input-row {
@@ -551,12 +551,12 @@ async function submit() {
     display: flex;
     align-items: center;
     gap: 6px;
-    background: #f0fdf4;
-    border: 1px solid #bbf7d0;
+    background: #EFF8F3;
+    border: 1px solid #C6E7D5;
     border-radius: 8px;
     padding: 10px 12px;
     font-size: 13px;
-    color: #15803d;
+    color: #16a34a;
 }
 
 .co-discount-remove {
@@ -564,7 +564,7 @@ async function submit() {
     background: none;
     border: none;
     cursor: pointer;
-    color: #9ca3af;
+    color: #77736B;
     display: flex;
     align-items: center;
     padding: 0;
@@ -577,7 +577,7 @@ async function submit() {
     align-items: center;
     gap: 12px;
     padding: 10px 0;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid #E6D3BB;
 }
 
 .co-item-img {
@@ -585,33 +585,33 @@ async function submit() {
     height: 52px;
     object-fit: cover;
     border-radius: 8px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #D7CDBD;
     flex-shrink: 0;
 }
 
 .co-item-info { flex: 1; }
-.co-item-name { font-size: 13px; font-weight: 600; color: #111827; }
+.co-item-name { font-size: 13px; font-weight: 600; color: #302F2B; }
 
 .co-item-qty {
-    border: 1px solid #e5e7eb;
+    border: 1px solid #D7CDBD;
     border-radius: 8px;
     padding: 4px 14px;
     font-size: 13px;
     font-weight: 600;
-    color: #374151;
+    color: #76543D;
 }
 
 .co-item-total { font-size: 13px; font-weight: 700; color: #76543D; min-width: 70px; text-align: left; }
 
-.co-sum-row { display: flex; justify-content: space-between; font-size: 13px; color: #6b7280; padding: 4px 0; }
-.co-sum-total { font-size: 15px; font-weight: 700; color: #111827; padding-top: 8px; border-top: 1px solid #e5e7eb; margin-top: 4px; }
+.co-sum-row { display: flex; justify-content: space-between; font-size: 13px; color: #77736B; padding: 4px 0; }
+.co-sum-total { font-size: 15px; font-weight: 700; color: #302F2B; padding-top: 8px; border-top: 1px solid #D7CDBD; margin-top: 4px; }
 
 /* Address option */
 .co-addr-opt {
     display: flex;
     align-items: center;
     gap: 10px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #D7CDBD;
     border-radius: 8px;
     padding: 10px 12px;
     cursor: pointer;
@@ -626,9 +626,9 @@ async function submit() {
 .co-field-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .co-field { display: flex; flex-direction: column; }
 .co-field--full { grid-column: 1 / -1; }
-.co-label { font-size: 12px; font-weight: 600; color: #374151; }
+.co-label { font-size: 12px; font-weight: 600; color: #302F2B; }
 
 /* Checkbox */
-.co-check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #374151; cursor: pointer; }
+.co-check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #302F2B; cursor: pointer; }
 .co-check input { accent-color: #76543D; width: 15px; height: 15px; }
 </style>
