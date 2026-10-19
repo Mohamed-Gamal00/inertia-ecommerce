@@ -1,15 +1,15 @@
 <template>
     <!-- Main App Bar -->
-    <v-app-bar elevation="0" color="primary" height="64" class="brand-header">
+    <v-app-bar elevation="0" height="64" class="brand-header" style="background:#F7F0E5 !important; border-bottom: 1px solid #E6D3BB">
         <v-container fluid class="d-flex align-center" style="gap:8px">
 
             <!-- Mobile: hamburger -->
-            <v-app-bar-nav-icon class="d-md-none" @click="mobileDrawer = !mobileDrawer" />
+            <v-app-bar-nav-icon class="d-md-none" style="color:#76543D" @click="mobileDrawer = !mobileDrawer" />
 
             <!-- Logo -->
             <Link href="/" class="d-flex align-center text-decoration-none me-4">
-                <v-icon color="white" size="28" class="me-1">mdi-package-variant</v-icon>
-                <span class="font-weight-bold text-white brand-name" style="font-size:18px">{{ siteName }}</span>
+                <v-icon size="28" class="me-1" style="color:#76543D">mdi-package-variant</v-icon>
+                <span class="font-weight-bold brand-name" style="font-size:18px; color:#76543D">{{ siteName }}</span>
             </Link>
 
             <!-- Desktop nav links -->
@@ -55,9 +55,8 @@
             <v-btn
                 variant="text"
                 size="small"
-                color="white"
                 class="ms-1 d-none d-md-flex"
-                style="text-transform:none; font-size:12px; font-weight:700; min-width:0; padding:0 8px"
+                style="text-transform:none; font-size:12px; font-weight:700; min-width:0; padding:0 8px; color:#76543D"
                 @click="switchLocale(locale === 'ar' ? 'en' : 'ar')"
                 title="تغيير اللغة"
             >
@@ -65,8 +64,8 @@
             </v-btn>
 
             <!-- Cart icon -->
-            <v-btn icon variant="text" @click="openCart" class="ms-1" color="white" data-cart-icon>
-                <v-badge :content="cartCount || ''" :model-value="cartCount > 0" color="red" floating>
+            <v-btn icon variant="text" @click="openCart" class="ms-1" style="color:#76543D" data-cart-icon>
+                <v-badge :content="cartCount || ''" :model-value="cartCount > 0" color="#76543d" floating>
                     <v-icon>mdi-cart-outline</v-icon>
                 </v-badge>
             </v-btn>
@@ -75,9 +74,9 @@
             <template v-if="user">
                 <v-menu :close-on-content-click="true">
                     <template #activator="{ props: menuProps }">
-                        <v-btn variant="text" v-bind="menuProps" class="ms-1 d-none d-md-flex text-white" style="text-transform:none">
-                            <v-avatar color="primary" size="32" class="me-2">
-                                <span class="text-white" style="font-size:13px; font-weight:700">
+                        <v-btn variant="text" v-bind="menuProps" class="ms-1 d-none d-md-flex" style="text-transform:none; color:#76543D">
+                            <v-avatar style="background:#E6D3BB" size="32" class="me-2">
+                                <span style="font-size:13px; font-weight:700; color:#76543D">
                                     {{ user.first_name?.charAt(0) }}
                                 </span>
                             </v-avatar>
@@ -232,7 +231,7 @@ onBeforeUnmount(() => Emitter.off('cart-updated', updateCart));
 
 <style scoped>
 .brand-header {
-    box-shadow: 0 2px 8px rgba(118, 84, 61, 0.15) !important;
+    box-shadow: 0 1px 4px rgba(118, 84, 61, 0.08) !important;
 }
 
 .brand-name {
@@ -244,7 +243,7 @@ onBeforeUnmount(() => Emitter.off('cart-updated', updateCart));
     border-radius: 8px;
     font-size: 14px;
     font-weight: 500;
-    color: rgba(255,255,255,0.9);
+    color: #76543D;
     transition: background 0.15s, color 0.15s;
     cursor: pointer;
     border: none;
@@ -255,13 +254,13 @@ onBeforeUnmount(() => Emitter.off('cart-updated', updateCart));
 }
 
 .nav-link:hover {
-    background: rgba(198, 151, 99, 0.25);
-    color: #ffffff;
+    background: rgba(118, 84, 61, 0.08);
+    color: #5e4331;
 }
 
 .nav-link--active {
-    background: rgba(198, 151, 99, 0.35);
-    color: #ffffff;
+    background: rgba(198, 151, 99, 0.15);
+    color: #76543D;
     font-weight: 600;
 }
 
