@@ -88,7 +88,7 @@ const cards = computed(() => [
 
 <style lang="scss" scoped>
 .shop-withus {
-    background: #F5F0E7; /* Warm cream background */
+    background: #F7F0E5; /* Warm cream background */
     text-align: center;
 }
 
@@ -121,9 +121,9 @@ const cards = computed(() => [
     transition: all 0.3s ease;
     border: none;
 
-    /* Green card */
+    /* Mocha card */
     &--green {
-        background: #245447;
+        background: #76543D;
 
         .card-title,
         .card-desc {
@@ -135,9 +135,9 @@ const cards = computed(() => [
         }
     }
 
-    /* Gold card */
+    /* Caramel card */
     &--gold {
-        background: #E4B45D;
+        background: #C69763;
 
         .card-title {
             color: #302F2B;
@@ -149,7 +149,7 @@ const cards = computed(() => [
         }
 
         .icon-wrapper {
-            background: rgba(36, 84, 71, 0.15);
+            background: rgba(118, 84, 61, 0.15);
         }
     }
 

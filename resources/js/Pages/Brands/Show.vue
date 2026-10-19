@@ -1,7 +1,7 @@
 <template>
     <div style="background:#f5f6fa; min-height:100vh; padding-bottom:48px">
 
-        <div style="background:linear-gradient(135deg,#245447,#36826d); padding:40px 16px 50px">
+        <div style="background:linear-gradient(135deg,#76543D,#8d6b51); padding:40px 16px 50px">
             <div style="display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap">
                 <div style="width:64px; height:64px; background:rgba(255,255,255,0.15); border-radius:50%; display:flex; align-items:center; justify-content:center; overflow:hidden">
                     <img v-if="brand.image_url && !brand.image_url.includes('no-image')" :src="brand.image_url" style="width:100%; height:100%; object-fit:contain; padding:8px" />

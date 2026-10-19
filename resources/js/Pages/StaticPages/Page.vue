@@ -1,6 +1,6 @@
 <template>
     <div style="background:#f5f6fa; min-height:100vh; padding-bottom:48px">
-        <div style="background:linear-gradient(135deg,#245447,#36826d); padding:40px 16px 50px">
+        <div style="background:linear-gradient(135deg,#76543D,#8d6b51); padding:40px 16px 50px">
             <h1 class="text-white font-weight-bold text-center" style="font-size:28px">{{ page?.title || t('home') }}</h1>
         </div>
 

@@ -4,7 +4,7 @@
         <!-- Top wave -->
         <div class="footer-wave">
             <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="#245447" />
+                <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="#76543D" />
             </svg>
         </div>
 
@@ -193,7 +193,7 @@ async function subscribe() {
 
 /* Body */
 .footer-body {
-    background: #245447;
+    background: #76543D;
     padding: 48px 0 32px;
 }
 
@@ -363,18 +363,18 @@ async function subscribe() {
 .newsletter-input::placeholder { color: rgba(255,255,255,0.4); }
 
 .newsletter-btn {
-    background: #E4B45D;
+    background: #C69763;
     border: none;
     padding: 0 16px;
     cursor: pointer;
-    color: #302F2B;
+    color: white;
     font-weight: 700;
     transition: background 0.15s;
     display: flex;
     align-items: center;
 }
 
-.newsletter-btn:hover { background: #d9a54a; }
+.newsletter-btn:hover { background: #b38556; }
 .newsletter-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .subscribe-msg {

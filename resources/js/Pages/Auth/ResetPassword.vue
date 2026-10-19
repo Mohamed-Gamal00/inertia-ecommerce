@@ -103,7 +103,7 @@ const submit = () => form.post('/update-password');
 
 <style scoped>
 .auth-page { display:flex; min-height:100vh; direction:rtl; }
-.auth-left { width:42%; background:linear-gradient(135deg,#245447 0%,#2d6b5a 50%,#36826d 100%); display:flex; align-items:center; justify-content:center; padding:48px; position:relative; overflow:hidden; }
+.auth-left { width:42%; background:linear-gradient(135deg,#76543D 0%,#8d6b51 50%,#8d6b51 100%); display:flex; align-items:center; justify-content:center; padding:48px; position:relative; overflow:hidden; }
 .auth-left::before { content:''; position:absolute; width:300px; height:300px; border-radius:50%; background:rgba(255,255,255,0.05); top:-80px; right:-80px; }
 .auth-left-content { position:relative; z-index:1; }
 .auth-right { flex:1; display:flex; align-items:center; justify-content:center; background:#ffffff; padding:32px; }

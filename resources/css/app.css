@@ -1,27 +1,39 @@
 /**
- * Dabbarha Brand Identity Styles
+ * Dabbarha Brand Identity Styles - Vanilla Latte Theme
  * User-Facing Website Only (Inertia.js + Vue.js + Vuetify)
  *
  * Brand: Dabbarha | دبّرها
  * Positioning: Egyptian online shopping for practical household essentials
+ * Theme: Warm, welcoming Vanilla Latte aesthetic
  */
 
 /* ===================================
-   Brand Color Variables
+   Brand Color Variables - Vanilla Latte Palette
    =================================== */
 :root {
-    --brand-primary: #245447;        /* Deep Green */
-    --brand-secondary: #E4B45D;      /* Warm Gold */
-    --brand-background: #F5F0E7;     /* Warm Cream */
-    --brand-surface: #FFFFFF;        /* White */
-    --brand-text: #302F2B;           /* Deep Charcoal */
-    --brand-text-muted: #77736B;     /* Muted Gray */
-    --brand-border: #D7CDBD;         /* Warm Beige */
+    /* Primary Colors */
+    --brand-vanilla: #F7F0E5;        /* Vanilla Cream - Main backgrounds */
+    --brand-latte: #E6D3BB;          /* Latte Beige - Secondary backgrounds */
+    --brand-mocha: #76543D;          /* Mocha Brown - Primary brand color */
+    --brand-caramel: #C69763;        /* Caramel - Promotional accents */
+
+    /* Supporting Colors */
+    --brand-white: #FFFFFF;          /* Pure White - Content surfaces */
+    --brand-text: #302F2B;           /* Primary Text */
+    --brand-text-muted: #77736B;     /* Secondary Text */
+    --brand-border: #D7CDBD;         /* Border Beige */
+    --brand-hover: #EFE3D2;          /* Soft Hover */
+
+    /* Legacy aliases for compatibility */
+    --brand-primary: #76543D;
+    --brand-secondary: #C69763;
+    --brand-background: #F7F0E5;
+    --brand-surface: #FFFFFF;
 
     /* Functional colors */
     --brand-error: #ef4444;
     --brand-success: #16a34a;
-    --brand-warning: #E4B45D;
+    --brand-warning: #C69763;
 }
 
 /* ===================================
@@ -61,37 +73,37 @@ body {
     font-weight: 600;
 }
 
-/* Primary buttons with brand green */
+/* Primary buttons with Mocha Brown */
 .v-btn--variant-elevated.bg-primary,
 .v-btn--variant-flat.bg-primary {
-    background-color: var(--brand-primary) !important;
+    background-color: var(--brand-mocha) !important;
     color: white !important;
 }
 
 .v-btn--variant-elevated.bg-primary:hover,
 .v-btn--variant-flat.bg-primary:hover {
-    background-color: #1d4338 !important;
-    box-shadow: 0 4px 12px rgba(36, 84, 71, 0.25) !important;
+    background-color: #5e4331 !important;
+    box-shadow: 0 4px 12px rgba(118, 84, 61, 0.25) !important;
 }
 
 /* Outlined primary buttons */
 .v-btn--variant-outlined.text-primary {
-    border-color: var(--brand-primary) !important;
-    color: var(--brand-primary) !important;
+    border-color: var(--brand-mocha) !important;
+    color: var(--brand-mocha) !important;
 }
 
 .v-btn--variant-outlined.text-primary:hover {
-    background-color: rgba(36, 84, 71, 0.08) !important;
+    background-color: var(--brand-hover) !important;
 }
 
-/* Secondary buttons with warm gold accent */
+/* Secondary buttons with Caramel accent */
 .v-btn.bg-secondary {
-    background-color: var(--brand-secondary) !important;
-    color: var(--brand-text) !important;
+    background-color: var(--brand-caramel) !important;
+    color: white !important;
 }
 
 .v-btn.bg-secondary:hover {
-    background-color: #d9a54a !important;
+    background-color: #b38556 !important;
 }
 
 /* ===================================
@@ -122,8 +134,8 @@ body {
 
 .v-text-field .v-field--focused,
 .v-select .v-field--focused {
-    border-color: var(--brand-primary);
-    box-shadow: 0 0 0 2px rgba(36, 84, 71, 0.1);
+    border-color: var(--brand-mocha);
+    box-shadow: 0 0 0 2px rgba(118, 84, 61, 0.1);
 }
 
 /* Input label colors */
@@ -132,20 +144,20 @@ body {
 }
 
 .v-field--focused .v-label {
-    color: var(--brand-primary);
+    color: var(--brand-mocha);
 }
 
 /* ===================================
    Links
    =================================== */
 a {
-    color: var(--brand-primary);
+    color: var(--brand-mocha);
     text-decoration: none;
     transition: color 0.2s;
 }
 
 a:hover {
-    color: #1d4338;
+    color: #5e4331;
 }
 
 /* ===================================
@@ -160,25 +172,25 @@ a:hover {
 }
 
 .v-chip.bg-primary {
-    background-color: var(--brand-primary) !important;
+    background-color: var(--brand-mocha) !important;
     color: white !important;
 }
 
 .v-chip.bg-secondary {
-    background-color: var(--brand-secondary) !important;
-    color: var(--brand-text) !important;
+    background-color: var(--brand-caramel) !important;
+    color: white !important;
 }
 
 /* ===================================
    Navigation & Menus
    =================================== */
 .v-list-item--active {
-    background-color: rgba(36, 84, 71, 0.08) !important;
-    color: var(--brand-primary) !important;
+    background-color: var(--brand-hover) !important;
+    color: var(--brand-mocha) !important;
 }
 
 .v-list-item--active .v-list-item-title {
-    color: var(--brand-primary) !important;
+    color: var(--brand-mocha) !important;
     font-weight: 600;
 }
 
@@ -197,7 +209,7 @@ a:hover {
 }
 
 .v-progress-circular {
-    color: var(--brand-primary);
+    color: var(--brand-mocha);
 }
 
 /* ===================================
@@ -212,23 +224,23 @@ a:hover {
 }
 
 .v-snackbar.bg-warning {
-    background-color: var(--brand-secondary) !important;
-    color: var(--brand-text) !important;
+    background-color: var(--brand-caramel) !important;
+    color: white !important;
 }
 
 /* ===================================
    Tabs
    =================================== */
 .v-tabs .v-tab--selected {
-    color: var(--brand-primary) !important;
+    color: var(--brand-mocha) !important;
 }
 
-.v-tabs .v-tab-item--selected {
-    background-color: rgba(36, 84, 71, 0.08);
+.v-tab-item--selected {
+    background-color: var(--brand-hover);
 }
 
 .v-tabs-slider {
-    background-color: var(--brand-primary) !important;
+    background-color: var(--brand-mocha) !important;
 }
 
 /* ===================================
@@ -267,11 +279,11 @@ a:hover {
    Utility Classes
    =================================== */
 .text-brand-primary {
-    color: var(--brand-primary) !important;
+    color: var(--brand-mocha) !important;
 }
 
 .text-brand-secondary {
-    color: var(--brand-secondary) !important;
+    color: var(--brand-caramel) !important;
 }
 
 .text-brand-muted {
@@ -279,15 +291,23 @@ a:hover {
 }
 
 .bg-brand-primary {
-    background-color: var(--brand-primary) !important;
+    background-color: var(--brand-mocha) !important;
 }
 
 .bg-brand-secondary {
-    background-color: var(--brand-secondary) !important;
+    background-color: var(--brand-caramel) !important;
 }
 
 .bg-brand-surface {
-    background-color: var(--brand-surface) !important;
+    background-color: var(--brand-white) !important;
+}
+
+.bg-brand-vanilla {
+    background-color: var(--brand-vanilla) !important;
+}
+
+.bg-brand-latte {
+    background-color: var(--brand-latte) !important;
 }
 
 .border-brand {

@@ -1,7 +1,7 @@
 
 <template>
     <div style="background:#f5f6fa; min-height:100vh; padding-bottom:48px">
-        <div style="background:linear-gradient(135deg,#245447,#36826d); padding:40px 16px 50px">
+        <div style="background:linear-gradient(135deg,#76543D,#8d6b51); padding:40px 16px 50px">
             <SeoHead :title="t('all_categories_title')" />
             <h1 class="text-white font-weight-bold text-center" style="font-size:28px">{{ t('all_categories_title') }}</h1>
             <p class="text-center mt-2" style="color:rgba(255,255,255,0.75); font-size:14px">

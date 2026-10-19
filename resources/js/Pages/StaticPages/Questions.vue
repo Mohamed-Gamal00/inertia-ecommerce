@@ -139,7 +139,7 @@ const filteredQuestions = computed(() => {
 
 /* Hero */
 .faq-hero {
-    background: linear-gradient(135deg, #245447 0%, #2d6b5a 60%, #36826d 100%);
+    background: linear-gradient(135deg, #76543D 0%, #8d6b51 60%, #8d6b51 100%);
     padding: 56px 16px 80px;
     text-align: center;
     position: relative;
@@ -232,7 +232,7 @@ const filteredQuestions = computed(() => {
 }
 
 .faq-tab:hover { background: #f3f4f6; color: #374151; }
-.faq-tab--active { background: #245447; color: white; }
+.faq-tab--active { background: #76543D; color: white; }
 
 /* Body */
 .faq-body {
@@ -256,7 +256,7 @@ const filteredQuestions = computed(() => {
 }
 
 .faq-item:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
-.faq-item--open { border-color: #245447; box-shadow: 0 4px 16px rgba(36, 84, 71, 0.1); }
+.faq-item--open { border-color: #76543D; box-shadow: 0 4px 16px rgba(118, 84, 61, 0.1); }
 
 .faq-question {
     display: flex;
@@ -269,8 +269,8 @@ const filteredQuestions = computed(() => {
     width: 28px;
     height: 28px;
     border-radius: 8px;
-    background: rgba(36, 84, 71, 0.1);
-    color: #245447;
+    background: rgba(118, 84, 61, 0.1);
+    color: #76543D;
     font-size: 12px;
     font-weight: 700;
     display: flex;
@@ -280,7 +280,7 @@ const filteredQuestions = computed(() => {
     transition: background 0.15s;
 }
 
-.faq-item--open .faq-q-num { background: #245447; color: white; }
+.faq-item--open .faq-q-num { background: #76543D; color: white; }
 
 .faq-q-text {
     flex: 1;

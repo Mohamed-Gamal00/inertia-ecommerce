@@ -139,7 +139,7 @@
                                 <div style="font-size:13px; font-weight:600">{{ item.product_name }}</div>
                                 <div style="font-size:12px; color:#9ca3af">{{ t('quantity') }}: {{ item.quantity }}</div>
                             </div>
-                            <div class="font-weight-bold" style="font-size:13px; color:#245447">
+                            <div class="font-weight-bold" style="font-size:13px; color:#76543D">
                                 {{ item.price }} ر.س
                             </div>
                         </div>

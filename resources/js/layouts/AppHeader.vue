@@ -232,7 +232,7 @@ onBeforeUnmount(() => Emitter.off('cart-updated', updateCart));
 
 <style scoped>
 .brand-header {
-    box-shadow: 0 2px 8px rgba(36, 84, 71, 0.15) !important;
+    box-shadow: 0 2px 8px rgba(118, 84, 61, 0.15) !important;
 }
 
 .brand-name {
@@ -255,12 +255,12 @@ onBeforeUnmount(() => Emitter.off('cart-updated', updateCart));
 }
 
 .nav-link:hover {
-    background: rgba(228, 180, 93, 0.25);
+    background: rgba(198, 151, 99, 0.25);
     color: #ffffff;
 }
 
 .nav-link--active {
-    background: rgba(228, 180, 93, 0.35);
+    background: rgba(198, 151, 99, 0.35);
     color: #ffffff;
     font-weight: 600;
 }

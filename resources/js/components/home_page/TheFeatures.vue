@@ -30,10 +30,10 @@ import { computed } from 'vue';
 import { useLocale } from '../../composables/useLocale';
 const { t } = useLocale();
 const features = computed(() => [
-    { icon: 'mdi-truck-fast-outline',   color: '#245447', title: t('features_free_shipping'),    sub: t('features_free_shipping_sub') },
-    { icon: 'mdi-shield-check-outline', color: '#245447', title: t('features_secure_payment'),   sub: t('features_secure_payment_sub') },
-    { icon: 'mdi-refresh',              color: '#245447', title: t('features_free_returns'),     sub: t('features_free_returns_sub') },
-    { icon: 'mdi-headset',              color: '#245447', title: t('features_support'),          sub: t('features_support_sub') },
+    { icon: 'mdi-truck-fast-outline',   color: '#76543D', title: t('features_free_shipping'),    sub: t('features_free_shipping_sub') },
+    { icon: 'mdi-shield-check-outline', color: '#76543D', title: t('features_secure_payment'),   sub: t('features_secure_payment_sub') },
+    { icon: 'mdi-refresh',              color: '#76543D', title: t('features_free_returns'),     sub: t('features_free_returns_sub') },
+    { icon: 'mdi-headset',              color: '#76543D', title: t('features_support'),          sub: t('features_support_sub') },
 ]);
 </script>
 
@@ -56,7 +56,7 @@ const features = computed(() => [
 .feature-icon {
     width: 48px;
     height: 48px;
-    background: rgba(36, 84, 71, 0.1);
+    background: rgba(118, 84, 61, 0.1);
     border-radius: 12px;
     display: flex;
     align-items: center;

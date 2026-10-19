@@ -159,15 +159,15 @@ function toggleFavorite() {
 
 .pc--hovered {
     background: white;
-    box-shadow: 0 8px 28px rgba(36, 84, 71, 0.12);
+    box-shadow: 0 8px 28px rgba(118, 84, 61, 0.12);
     transform: translateY(-3px);
-    border-color: #E4B45D;
+    border-color: #C69763;
 }
 
 .pc-img-wrap {
     position: relative;
     overflow: hidden;
-    background: #F5F0E7;
+    background: #F7F0E5;
     height: 160px;
 }
 
@@ -189,15 +189,15 @@ function toggleFavorite() {
     position: absolute;
     top: 8px;
     right: 8px;
-    background: linear-gradient(135deg, #E4B45D, #d9a54a);
-    color: #302F2B;
+    background: linear-gradient(135deg, #C69763, #b38556);
+    color: white;
     font-size: 10px;
     font-weight: 800;
     padding: 3px 8px;
     border-radius: 20px;
     z-index: 2;
     line-height: 1.4;
-    box-shadow: 0 2px 8px rgba(228, 180, 93, 0.3);
+    box-shadow: 0 2px 8px rgba(198, 151, 99, 0.3);
 }
 
 .pc-wish {
@@ -243,7 +243,7 @@ function toggleFavorite() {
     padding: 5px 12px;
     font-size: 11px;
     font-weight: 600;
-    color: #245447;
+    color: #76543D;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -256,7 +256,7 @@ function toggleFavorite() {
     bottom: 8px;
     left: 50%;
     transform: translateX(-50%);
-    background: #245447;
+    background: #76543D;
     border: none;
     border-radius: 20px;
     padding: 6px 14px;
@@ -266,7 +266,7 @@ function toggleFavorite() {
     cursor: pointer;
     align-items: center;
     gap: 5px;
-    box-shadow: 0 3px 12px rgba(36, 84, 71, 0.35);
+    box-shadow: 0 3px 12px rgba(118, 84, 61, 0.35);
     z-index: 4;
     white-space: nowrap;
     letter-spacing: 0.2px;
@@ -328,10 +328,10 @@ function toggleFavorite() {
 .pc-cat {
     font-size: 9px;
     font-weight: 700;
-    color: #245447;
+    color: #76543D;
     text-transform: uppercase;
     letter-spacing: 0.4px;
-    background: rgba(36, 84, 71, 0.1);
+    background: rgba(118, 84, 61, 0.1);
     padding: 2px 7px;
     border-radius: 20px;
     align-self: flex-start;
@@ -360,7 +360,7 @@ function toggleFavorite() {
 .pc-price-new {
     font-size: 16px;
     font-weight: 800;
-    color: #245447;
+    color: #76543D;
     line-height: 1;
 }
 
@@ -381,9 +381,9 @@ function toggleFavorite() {
     flex: 1;
     height: 34px;
     border-radius: 8px;
-    border: 1.5px solid #245447;
+    border: 1.5px solid #76543D;
     background: transparent;
-    color: #245447;
+    color: #76543D;
     font-size: 11px;
     font-weight: 700;
     cursor: pointer;
@@ -397,8 +397,8 @@ function toggleFavorite() {
 }
 
 .pc-cart-btn:hover:not(:disabled) {
-    background: #245447;
-    border-color: #245447;
+    background: #76543D;
+    border-color: #76543D;
     color: white;
 }
 
@@ -431,14 +431,14 @@ function toggleFavorite() {
 }
 
 .pc-compare-btn:hover {
-    border-color: #E4B45D;
-    color: #E4B45D;
-    background: rgba(228, 180, 93, 0.1);
+    border-color: #C69763;
+    color: #C69763;
+    background: rgba(198, 151, 99, 0.1);
 }
 
 .pc-compare-btn--on {
-    border-color: #E4B45D;
-    background: #E4B45D;
-    color: #302F2B;
+    border-color: #C69763;
+    background: #C69763;
+    color: white;
 }
 </style>

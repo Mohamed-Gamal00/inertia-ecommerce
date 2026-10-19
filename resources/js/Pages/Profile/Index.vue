@@ -158,7 +158,7 @@ const logout = () => router.post(route('logout'));
 }
 
 .profile-hero {
-    background: linear-gradient(135deg, #245447 0%, #2d6b5a 60%, #36826d 100%);
+    background: linear-gradient(135deg, #76543D 0%, #8d6b51 60%, #8d6b51 100%);
     padding: 40px 0 60px;
     position: relative;
     overflow: hidden;
@@ -223,12 +223,12 @@ const logout = () => router.post(route('logout'));
 }
 
 .sidebar-item--active {
-    background: rgba(36, 84, 71, 0.1) !important;
-    color: #245447 !important;
+    background: rgba(118, 84, 61, 0.1) !important;
+    color: #76543D !important;
 }
 
 .sidebar-item--active :deep(.v-list-item__prepend .v-icon) {
-    color: #245447 !important;
+    color: #76543D !important;
 }
 
 .content-card {

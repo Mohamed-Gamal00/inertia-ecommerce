@@ -240,7 +240,7 @@ onMounted(() => {
     position: absolute;
     top: 0;
     right: 0;
-    background: linear-gradient(135deg, #E4B45D, #d9a54a);
+    background: linear-gradient(135deg, #C69763, #d9a54a);
     color: #302F2B;
     font-size: 12px;
     font-weight: 800;
@@ -278,7 +278,7 @@ onMounted(() => {
 }
 
 .qv-thumb--active {
-    border-color: #245447;
+    border-color: #76543D;
 }
 
 .qv-details-col {
@@ -291,7 +291,7 @@ onMounted(() => {
 .qv-category {
     font-size: 12px;
     font-weight: 600;
-    color: #245447;
+    color: #76543D;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 8px;
@@ -315,7 +315,7 @@ onMounted(() => {
 .qv-price-new {
     font-size: 24px;
     font-weight: 800;
-    color: #245447;
+    color: #76543D;
 }
 
 .qv-price-old {

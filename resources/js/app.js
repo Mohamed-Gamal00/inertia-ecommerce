@@ -40,18 +40,20 @@ const vuetify = createVuetify({
             dabbarhaTheme: {
                 dark: false,
                 colors: {
-                    primary: "#245447",      // Deep Green
-                    secondary: "#E4B45D",    // Warm Gold
-                    background: "#F5F0E7",   // Warm Cream
-                    surface: "#FFFFFF",      // White
+                    primary: "#76543D",      // Mocha Brown
+                    secondary: "#C69763",    // Caramel
+                    background: "#F7F0E5",   // Vanilla Cream
+                    surface: "#FFFFFF",      // Pure White
                     error: "#ef4444",
-                    info: "#245447",
+                    info: "#76543D",
                     success: "#16a34a",
-                    warning: "#E4B45D",
+                    warning: "#C69763",
                     // Custom brand colors
-                    "brand-text": "#302F2B",       // Deep Charcoal
-                    "brand-text-muted": "#77736B", // Muted Gray
-                    "brand-border": "#D7CDBD",     // Warm Beige
+                    "brand-text": "#302F2B",       // Primary Text
+                    "brand-text-muted": "#77736B", // Secondary Text
+                    "brand-border": "#D7CDBD",     // Border Beige
+                    "brand-latte": "#E6D3BB",      // Latte Beige
+                    "brand-hover": "#EFE3D2",      // Soft Hover
                 },
             },
         },

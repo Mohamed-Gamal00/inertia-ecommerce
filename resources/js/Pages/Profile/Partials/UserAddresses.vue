@@ -284,7 +284,7 @@ function setMain(id) {
 }
 
 .address-card--main {
-    border: 1.5px solid #245447;
+    border: 1.5px solid #76543D;
 }
 
 .address-card-top {

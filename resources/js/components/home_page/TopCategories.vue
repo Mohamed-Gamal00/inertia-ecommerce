@@ -42,7 +42,7 @@ const categories = computed(() => usePage().props.categories ?? []);
     height: 90px;
     border-radius: 50%;
     overflow: hidden;
-    background: rgba(36, 84, 71, 0.08);
+    background: rgba(118, 84, 61, 0.08);
     display: flex;
     align-items: center;
     justify-content: center;

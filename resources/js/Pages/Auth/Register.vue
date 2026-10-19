@@ -128,7 +128,7 @@ const submit = () => {
 
 .auth-left {
     width: 38%;
-    background: linear-gradient(135deg, #245447 0%, #2d6b5a 50%, #36826d 100%);
+    background: linear-gradient(135deg, #76543D 0%, #8d6b51 50%, #8d6b51 100%);
     display: flex;
     align-items: center;
     justify-content: center;
