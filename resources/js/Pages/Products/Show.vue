@@ -358,7 +358,7 @@ async function addToCart() {
 </script>
 
 <style scoped>
-.pd-page { background: #f9fafb; min-height: 100vh; }
+.pd-page { background: #f7f0e5; min-height: 100vh; }
 
 .pd-breadcrumb {
     background: white;
