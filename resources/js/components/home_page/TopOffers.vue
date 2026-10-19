@@ -10,7 +10,7 @@
               style="overflow: hidden; border-radius: 7px"
             >
               <img
-                src="@/assets/images/playstations.webp"
+                src="@/assets/images/dabberha/Gifts&accessories.jpeg"
                 :style="`width:100%;cursor:pointer;transition:0.5s all ease-in-out; scale: ${
                   isHovering ? 1.05 : 1
                 }`"
@@ -27,7 +27,7 @@
               style="overflow: hidden; border-radius: 7px"
             >
               <img
-                src="@/assets/images/headset.webp"
+                src="@/assets/images/dabberha/Gifts&accessories.jpeg"
                 :style="`width:100%;cursor:pointer;transition:0.5s all ease-in-out; scale: ${
                   isHovering ? 1.05 : 1
                 }`"
@@ -44,7 +44,7 @@
               style="overflow: hidden; border-radius: 7px"
             >
               <img
-                src="@/assets/images/chairs.webp"
+                src="@/assets/images/dabberha/Gifts&accessories.jpeg"
                 :style="`width:100%;cursor:pointer;transition:0.5s all ease-in-out; scale: ${
                   isHovering ? 1.05 : 1
                 }`"
@@ -63,7 +63,7 @@
               style="overflow: hidden; height: 100%"
             >
               <img
-                src="@/assets/images/iphones.webp"
+                src="@/assets/images/dabberha/Gifts&accessories.jpeg"
                 :style="`width:100%;height:100%;cursor:pointer;transition:0.5s all ease-in-out; scale: ${
                   isHovering ? 1.05 : 1
                 }`"
@@ -80,7 +80,7 @@
               style="overflow: hidden; height: 100%"
             >
               <img
-                src="@/assets/images/laptops.webp"
+                src="@/assets/images/dabberha/Gifts&accessories.jpeg"
                 :style="`width:100%;height:100%;cursor:pointer;transition:0.5s all ease-in-out; scale: ${
                   isHovering ? 1.05 : 1
                 }`"
