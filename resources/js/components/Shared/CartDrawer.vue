@@ -7,8 +7,8 @@
                 <v-card-title class="pl-0 pr-0 d-flex justify-space-between align-center w-100" style="font-size:17px;font-weight:bold">
                     {{ t('cart_title') }}                    <v-icon @click="drawer = false">mdi-close</v-icon>
                 </v-card-title>
-                <v-card-text class="px-0" style="color:#6f6f6f">{{ cartItems.length }} {{ t('cart_items') }}</v-card-text>
-                <v-card-text class="px-0 text-center" style="color:#6f6f6f" v-if="!cartItems.length">
+                <v-card-text class="px-0" style="color:#77736B">{{ cartItems.length }} {{ t('cart_items') }}</v-card-text>
+                <v-card-text class="px-0 text-center" style="color:#77736B" v-if="!cartItems.length">
                     {{ t('cart_empty') }}
                 </v-card-text>
 
@@ -48,7 +48,7 @@
                             striped
                         />
                     </div>
-                    <v-card-text class="px-0 pt-1" style="color:#6f6f6f; font-size:13px">
+                    <v-card-text class="px-0 pt-1" style="color:#77736B; font-size:13px">
                         <span v-if="total < freeShippingThreshold">
                             {{ freeShippingThreshold - total }} ر.س {{ t('cart_free_shipping_remaining') }}
                         </span>
@@ -60,34 +60,34 @@
             <!-- Items list -->
             <v-card class="pa-0 mt-3" elevation="0" v-if="cartItems.length" max-height="350" style="overflow-y:auto">
                 <v-container class="px-1">
-                    <v-row v-for="item in cartItems" :key="item.id" class="align-center mb-4">
-                        <v-col cols="4">
-                            <img :src="item.image" class="w-100" style="border-radius:8px; object-fit:cover; height:80px" alt="product" />
-                        </v-col>
-                        <v-col cols="8">
-                            <div style="font-size:13px; font-weight:600; line-height:1.3">{{ item.name }}</div>
-                            <div class="mt-1 font-weight-bold" style="font-size:14px">
+                    <div v-for="item in cartItems" :key="item.id" class="cart-item">
+                        <div class="cart-item-image">
+                            <img :src="item.image" alt="product" />
+                        </div>
+                        <div class="cart-item-details">
+                            <div class="cart-item-name">{{ item.name }}</div>
+                            <div class="cart-item-price">
                                 {{ Math.ceil(item.discount_price || item.price) }} ر.س
                             </div>
-                            <div class="d-flex align-center justify-space-between mt-2">
+                            <div class="cart-item-footer">
                                 <!-- Quantity control -->
-                                <div class="d-flex align-center px-1" style="border:1px solid #ccc; border-radius:20px">
-                                    <v-icon size="18" color="#aaa" @click="changeQty(item, -1)">mdi-minus</v-icon>
-                                    <span class="mx-2" style="font-size:13px; min-width:20px; text-align:center">{{ item.quantity }}</span>
-                                    <v-icon size="18" color="#aaa" @click="changeQty(item, 1)">mdi-plus</v-icon>
+                                <div class="cart-qty-control">
+                                    <v-icon size="18" class="qty-icon" @click="changeQty(item, -1)">mdi-minus</v-icon>
+                                    <span class="qty-value">{{ item.quantity }}</span>
+                                    <v-icon size="18" class="qty-icon" @click="changeQty(item, 1)">mdi-plus</v-icon>
                                 </div>
-                                <v-icon size="20" color="grey" @click="removeItem(item.id)">mdi-delete-outline</v-icon>
+                                <v-icon size="20" color="#77736B" @click="removeItem(item.id)">mdi-delete-outline</v-icon>
                             </div>
-                        </v-col>
-                    </v-row>
+                        </div>
+                    </div>
                 </v-container>
             </v-card>
 
             <!-- Footer actions -->
             <v-card class="mt-4" elevation="0" v-if="cartItems.length">
                 <div class="d-flex justify-space-between px-2 mb-3">
-                    <span style="font-weight:600">{{ t('cart_total') }}</span>
-                    <span style="font-weight:700; font-size:16px">{{ total }} ر.س</span>
+                    <span style="font-weight:600; color:#302F2B">{{ t('cart_total') }}</span>
+                    <span style="font-weight:700; font-size:16px; color:#76543D">{{ total }} ر.س</span>
                 </div>
                 <v-card-actions class="flex-column gap-2">
                     <v-btn block variant="elevated" color="primary" height="44" style="border-radius:22px; text-transform:none" href="/checkout">
@@ -174,6 +174,86 @@ onMounted(() => {
 .v-navigation-drawer {
     overflow-y: auto;
     &::-webkit-scrollbar { width: 4px; }
-    &::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+    &::-webkit-scrollbar-thumb { background: #D7CDBD; border-radius: 4px; }
+}
+
+/* Cart Items */
+.cart-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #E6D3BB;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+.cart-item-image {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+}
+
+.cart-item-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cart-item-name {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #302F2B;
+}
+
+.cart-item-price {
+    font-size: 14px;
+    font-weight: 700;
+    color: #76543D;
+}
+
+.cart-item-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+}
+
+.cart-qty-control {
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    border: 1px solid #D7CDBD;
+    border-radius: 20px;
+    gap: 8px;
+    background: white;
+}
+
+.qty-icon {
+    color: #77736B;
+    cursor: pointer;
+    transition: color 0.2s;
+
+    &:hover {
+        color: #76543D;
+    }
+}
+
+.qty-value {
+    font-size: 13px;
+    min-width: 20px;
+    text-align: center;
+    color: #302F2B;
+    font-weight: 600;
 }
 </style>
