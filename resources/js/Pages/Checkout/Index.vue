@@ -492,7 +492,7 @@ async function submit() {
 </script>
 
 <style scoped>
-.co-page { background: #f5f6fa; min-height: 100vh; }
+.co-page { background: #f7f0e5; min-height: 100vh; }
 
 .co-card {
     background: white;

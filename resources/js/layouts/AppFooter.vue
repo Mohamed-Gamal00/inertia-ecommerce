@@ -182,7 +182,7 @@ async function subscribe() {
 /* Wave */
 .footer-wave {
     line-height: 0;
-    background: #f5f6fa;
+    background: #f7f0e5;
 }
 
 .footer-wave svg {

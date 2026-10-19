@@ -1,5 +1,5 @@
 <template>
-    <div style="background:#f5f6fa; min-height:100vh; display:flex; align-items:center; justify-content:center">
+    <div style="background:#f7f0e5; min-height:100vh; display:flex; align-items:center; justify-content:center">
         <v-card rounded="xl" elevation="2" class="pa-8 text-center" style="max-width:400px; width:100%">
             <v-icon size="56" color="primary" class="mb-4">mdi-account-circle-outline</v-icon>
             <h2 class="font-weight-bold mb-2" style="font-size:20px">حسابي</h2>

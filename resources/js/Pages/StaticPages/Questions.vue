@@ -135,7 +135,7 @@ const filteredQuestions = computed(() => {
 </script>
 
 <style scoped>
-.faq-page { background: #f5f6fa; min-height: 100vh; padding-bottom: 64px; }
+.faq-page { background: #f7f0e5; min-height: 100vh; padding-bottom: 64px; }
 
 /* Hero */
 .faq-hero {

@@ -1,5 +1,5 @@
 <template>
-    <div style="background:#f5f6fa; min-height:100vh; padding-bottom:48px">
+    <div style="background:#f7f0e5; min-height:100vh; padding-bottom:48px">
         <SeoHead :title="filters.q ? `${t('results_for')} ${filters.q}` : t('all_products')" />
 
         <!-- Header -->

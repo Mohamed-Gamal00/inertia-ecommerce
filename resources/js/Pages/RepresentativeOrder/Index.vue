@@ -1,5 +1,5 @@
 <template>
-    <div style="background:#f5f6fa; min-height:100vh; padding-bottom:48px">
+    <div style="background:#f7f0e5; min-height:100vh; padding-bottom:48px">
         <div style="background:linear-gradient(135deg,#76543D,#8d6b51); padding:40px 16px 50px">
             <h1 class="text-white font-weight-bold text-center" style="font-size:28px">{{ t('rep_title') }}</h1>
             <p class="text-center mt-2" style="color:rgba(255,255,255,0.75); font-size:14px">{{ t('rep_subtitle') }}</p>

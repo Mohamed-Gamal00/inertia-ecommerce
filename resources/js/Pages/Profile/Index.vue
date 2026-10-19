@@ -152,7 +152,7 @@ const logout = () => router.post(route('logout'));
 
 <style scoped>
 .profile-page {
-    background: #f5f6fa;
+    background: #f7f0e5;
     min-height: 100vh;
     padding-bottom: 48px;
 }
