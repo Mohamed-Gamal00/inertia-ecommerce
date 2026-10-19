@@ -57,11 +57,17 @@ class HomeController extends Controller
                 'description' => $d->description,
             ]);
 
+        // Fetch new products banner
+        $newProductsBanner = Design::where('page_name', 'home')
+            ->where('title', 'new_products_banner')
+            ->first();
+
         return Inertia::render('Home', [
-            'products'    => $products,
-            'banners'     => $banners,
-            'homeDesigns' => $homeDesigns,
-            'topOffers'   => $topOffers,
+            'products'           => $products,
+            'banners'            => $banners,
+            'homeDesigns'        => $homeDesigns,
+            'topOffers'          => $topOffers,
+            'newProductsBanner'  => $newProductsBanner ? $newProductsBanner->image_url : null,
         ]);
     }
 }

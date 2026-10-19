@@ -43,6 +43,12 @@ class TopOffersSeeder extends Seeder
                 'description' => 'Top Offer 5 - Large',
                 'image' => 'designs/top_offer_5.jpg',
             ],
+            [
+                'title' => 'new_products_banner',
+                'page_name' => 'home',
+                'description' => 'New Products Section Banner',
+                'image' => 'designs/new_products_banner.jpg',
+            ],
         ];
 
         foreach ($topOffers as $offer) {
@@ -55,6 +61,6 @@ class TopOffersSeeder extends Seeder
             );
         }
 
-        $this->command->info('Top Offers seeded successfully!');
+        $this->command->info('Top Offers and New Products Banner seeded successfully!');
     }
 }
