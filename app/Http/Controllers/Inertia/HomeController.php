@@ -45,10 +45,23 @@ class HomeController extends Controller
             ->keyBy('title')
             ->map(fn($d) => $d->image_url);
 
+        // Fetch top offers designs
+        $topOffers = Design::where('page_name', 'home')
+            ->whereIn('title', ['top_offer_1', 'top_offer_2', 'top_offer_3', 'top_offer_4', 'top_offer_5'])
+            ->orderBy('title')
+            ->get()
+            ->map(fn($d) => [
+                'id' => $d->id,
+                'title' => $d->title,
+                'image_url' => $d->image_url,
+                'description' => $d->description,
+            ]);
+
         return Inertia::render('Home', [
             'products'    => $products,
             'banners'     => $banners,
             'homeDesigns' => $homeDesigns,
+            'topOffers'   => $topOffers,
         ]);
     }
 }
