@@ -158,7 +158,7 @@ function toggleFavorite() {
 }
 
 .pc--hovered {
-    background: white;
+    background: #F7F0E5;
     box-shadow: 0 8px 28px rgba(118, 84, 61, 0.12);
     transform: translateY(-3px);
     border-color: #C69763;
