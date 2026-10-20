@@ -1,5 +1,5 @@
 <template>
-    <div class="quality py-12" style="background:#F7F0E5">
+    <div class="quality py-12" :style="{ backgroundColor: bgColor }">
         <v-container>
             <h2 class="text-center font-weight-bold mb-8" style="font-size:22px; color:#302F2B">
                 {{ t('why_us_title') }}
@@ -54,6 +54,13 @@
 import { computed } from 'vue';
 import { useLocale } from '../../composables/useLocale';
 const { t } = useLocale();
+
+defineProps({
+    bgColor: {
+        type: String,
+        default: '#F7F0E5' // Vanilla Cream fallback
+    }
+});
 
 const svgs = {
     quality: `<svg style="width:28px" viewBox="0 0 536 512" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8d6b51"/><stop offset="100%" stop-color="#76543D"/></linearGradient></defs><path fill="url(#g1)" d="M508.55 171.51L362.18 150.2 296.77 17.81C290.89 5.98 279.42 0 267.95 0c-11.4 0-22.79 5.9-28.69 17.81l-65.43 132.38-146.38 21.29c-26.25 3.8-36.77 36.09-17.74 54.59l105.89 103-25.06 145.48C86.98 495.33 103.57 512 122.15 512c4.93 0 10-1.17 14.87-3.75l130.95-68.68 130.94 68.7c4.86 2.55 9.92 3.71 14.83 3.71 18.6 0 35.22-16.61 31.66-37.4l-25.03-145.49 105.91-102.98c19.04-18.5 8.52-50.8-17.73-54.6z"/></svg>`,

@@ -1,5 +1,5 @@
 <template>
-  <div class="top-offers py-9" v-if="offers.length">
+  <div class="top-offers py-9" :style="{ backgroundColor: bgColor }" v-if="offers.length">
     <v-container fluid>
       <div class="offers-grid">
         <div
@@ -8,14 +8,16 @@
           class="offer-card"
           :class="index < 3 ? 'offer-card--top' : 'offer-card--bottom'"
         >
-          <img
-            :src="offer.image_url"
-            :alt="offer.description || offer.title"
-            :title="offer.description"
-            class="offer-image"
-            loading="lazy"
-            decoding="async"
-          />
+          <div class="offer-image-wrapper">
+            <img
+              :src="offer.image_url"
+              :alt="offer.description || offer.title"
+              :title="offer.description"
+              class="offer-image"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
         </div>
       </div>
     </v-container>
@@ -26,27 +28,28 @@
 import { computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 
+defineProps({
+  bgColor: {
+    type: String,
+    default: '#E6D3BB' // Latte Beige fallback
+  }
+});
+
 const offers = computed(() => usePage().props.topOffers || []);
 </script>
 
 <style scoped>
-.top-offers {
-  background:  #d7cdbd;
-}
-
 .offers-grid {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(6, 1fr);
   gap: 20px;
 }
 
 .offer-card {
   position: relative;
-  height: clamp(180px, 15vw, 240px);
-  min-width: 0;
-  overflow: hidden;
+  width: 100%;
   border-radius: 12px;
-  background: var(--brand-latte, #ff8000);
+  overflow: hidden;
   cursor: pointer;
 }
 
@@ -58,8 +61,20 @@ const offers = computed(() => usePage().props.topOffers || []);
   grid-column: span 3;
 }
 
+/* Aspect ratio container to prevent overlapping */
+.offer-image-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 60%; /* 5:3 aspect ratio */
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--brand-border);
+}
+
 .offer-image {
-  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -74,10 +89,6 @@ const offers = computed(() => usePage().props.topOffers || []);
 @media (max-width: 959px) {
   .offers-grid {
     gap: 16px;
-  }
-
-  .offer-card {
-    height: 200px;
   }
 
   .offer-card--top {
@@ -98,13 +109,13 @@ const offers = computed(() => usePage().props.topOffers || []);
     gap: 12px;
   }
 
-  .offer-card {
-    height: 170px;
-  }
-
   .offer-card--top,
   .offer-card--bottom {
     grid-column: span 6;
+  }
+
+  .offer-image-wrapper {
+    padding-bottom: 65%; /* Slightly taller on mobile */
   }
 }
 </style>

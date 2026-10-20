@@ -1,6 +1,6 @@
 <!-- resources/js/Components/home_page/NewProducts.vue -->
 <template>
-    <div class="new-products pt-15">
+    <div class="new-products pt-15" :style="{ backgroundColor: bgColor }">
         <!-- Title -->
         <div class="title px-5 d-flex align-center justify-space-between">
             <h2 class="section-title">{{ t('all_products') }}</h2>
@@ -78,7 +78,13 @@ import { inject, computed } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import { useLocale } from "../../composables/useLocale";
 
-const props = defineProps({ products: Array });
+const props = defineProps({
+    products: Array,
+    bgColor: {
+        type: String,
+        default: '#F7F0E5' // Vanilla Cream fallback
+    }
+});
 const Emitter = inject("Emitter");
 const { t } = useLocale();
 

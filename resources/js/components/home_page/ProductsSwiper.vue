@@ -1,5 +1,5 @@
 <template>
-    <div class="products-swiper pt-16 pb-5 px-5">
+    <div class="products-swiper pt-16 pb-5 px-5" :style="{ backgroundColor: bgColor }">
         <!-- Title and Shop All -->
         <div class="title mb-10 px-5 d-flex align-center justify-space-between">
             <h2 class="section-title">
@@ -55,7 +55,15 @@ import "swiper/css/navigation";
 import { ref, inject } from "vue";
 import { useLocale } from "../../composables/useLocale";
 
-const props = defineProps({ products: Array, title: String, titleColor: String });
+const props = defineProps({
+    products: Array,
+    title: String,
+    titleColor: String,
+    bgColor: {
+        type: String,
+        default: '#FF4585F' // White fallback
+    }
+});
 const Emitter = inject("Emitter");
 const { t } = useLocale();
 function openQuickView(product) { Emitter.emit("openQuickView", product); }
