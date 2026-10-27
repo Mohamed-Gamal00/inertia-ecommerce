@@ -56,7 +56,7 @@ const sectionColors = {
         <QualityFeatuers :bgColor="sectionColors.vanilla" />
         <ProductsComponents
             :products="products"
-            title="section_top_mobiles"
+            title="Gifts"
             titleColor="#404040"
             :bgColor="sectionColors.softHover"
         />
@@ -80,7 +80,7 @@ const sectionColors = {
         </v-container>
         <ProductsComponents
             :products="products"
-            title="section_top_fragrances"
+            title="Household_supplies"
             titleColor="#404040"
             :bgColor="sectionColors.softHover"
         />

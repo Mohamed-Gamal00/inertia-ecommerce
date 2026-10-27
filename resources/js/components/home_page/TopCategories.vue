@@ -1,5 +1,5 @@
 <template>
-    <div class="categories pt-12 pb-6">
+    <div class="categories pt-12 pb-6" :style="{ backgroundColor: bgColor }">
         <div class="title d-flex justify-center align-center px-5 mb-6">
             <h3 class="text-center flex-grow-1 font-weight-bold" style="font-size:22px">
                 {{ t('top_categories_title') }}
@@ -34,6 +34,13 @@ import { usePage } from '@inertiajs/vue3';
 import { useLocale } from '../../composables/useLocale';
 const { t, pick } = useLocale();
 const categories = computed(() => usePage().props.categories ?? []);
+
+defineProps({
+  bgColor: {
+    type: String,
+    default: '#E6D3BB' // Latte Beige fallback
+  }
+});
 </script>
 
 <style scoped>
