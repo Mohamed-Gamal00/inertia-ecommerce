@@ -9,7 +9,7 @@
         <!-- Header -->
         <div style="background:linear-gradient(135deg,#76543D,#8d6b51); padding:40px 16px 50px">
             <h1 class="text-white font-weight-bold text-center" style="font-size:28px">
-                {{ category.name }}
+                {{ pick(category, 'name') }}
             </h1>
             <p class="text-center mt-2" style="color:rgba(255,255,255,0.75); font-size:14px">
                 {{ products.length }} {{ t('products_in_category') }}
