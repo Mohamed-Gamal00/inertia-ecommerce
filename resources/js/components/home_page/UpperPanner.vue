@@ -7,7 +7,7 @@
         hide-delimiter-background
         show-arrows="hover"
         cycle
-        height="auto"
+        height="clamp(180px, 25.5vw, 520px)"
       >
         <v-carousel-item
           v-for="(banner, index) in banners"
