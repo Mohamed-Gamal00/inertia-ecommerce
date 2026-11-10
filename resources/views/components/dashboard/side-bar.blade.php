@@ -53,12 +53,12 @@
         <li class="menu-title">المبيعات</li>
 
         <li>
-            <a href="javascript:void(0);" class="{{ $unreadOrderCreatedCount > 0 ? '' : 'has-arrow' }} waves-effect">
-                @if($unreadOrderCreatedCount > 0)
-                    <span class="badge rounded-pill bg-danger float-end">{{ $unreadOrderCreatedCount }}</span>
-                @endif
+            <a href="javascript:void(0);" class="has-arrow waves-effect">
                 <i class="mdi mdi-package-variant-closed"></i>
                 <span>الطلبات</span>
+                @if($unreadOrderCreatedCount > 0)
+                    <span class="badge rounded-pill bg-danger">{{ $unreadOrderCreatedCount }}</span>
+                @endif
             </a>
             <ul class="sub-menu" aria-expanded="false">
                 <li><a href="{{ route('orders.index') }}">جميع الطلبات</a></li>
@@ -103,12 +103,12 @@
         </li>
 
         <li>
-            <a href="javascript:void(0);" class="{{ $unreadMessageCount > 0 ? '' : 'has-arrow' }} waves-effect">
-                @if($unreadMessageCount > 0)
-                    <span class="badge rounded-pill bg-danger float-end">{{ $unreadMessageCount }}</span>
-                @endif
+            <a href="javascript:void(0);" class="has-arrow waves-effect">
                 <i class="mdi mdi-email-outline"></i>
                 <span>التواصل والنشرة</span>
+                @if($unreadMessageCount > 0)
+                    <span class="badge rounded-pill bg-danger">{{ $unreadMessageCount }}</span>
+                @endif
             </a>
             <ul class="sub-menu" aria-expanded="false">
                 <li><a href="{{ route('contact_us.index') }}">رسائل التواصل</a></li>
@@ -205,6 +205,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    white-space: nowrap;
     transition: background 0.15s, color 0.15s;
     border-radius: 0;
 }
@@ -223,13 +224,69 @@
     background: rgba(255,255,255,0.08);
 }
 
+/* ── Arrow down: align at end of li on same line ── */
+#sidebar-menu .has-arrow:after {
+    margin-inline-start: auto !important;
+    float: none !important;
+    display: inline-block;
+    line-height: 1;
+    font-size: 16px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease-in-out;
+}
+
+[dir="rtl"] #sidebar-menu .has-arrow:after {
+    margin-right: auto !important;
+    margin-left: 0 !important;
+}
+
+[dir="ltr"] #sidebar-menu .has-arrow:after {
+    margin-left: auto !important;
+    margin-right: 0 !important;
+}
+
+/* Rotate arrow when sub-menu is active / opened */
+#sidebar-menu li.mm-active > a.has-arrow:after,
+#sidebar-menu a.has-arrow[aria-expanded="true"]:after {
+    transform: rotate(180deg);
+}
+
+/* Badge alignment */
+#sidebar-menu ul li a .badge {
+    margin-inline-start: auto;
+    font-size: 11px;
+    padding: 3px 7px;
+    margin-top: 0;
+}
+
+[dir="rtl"] #sidebar-menu ul li a .badge {
+    margin-right: auto;
+    margin-left: 0;
+}
+
+[dir="ltr"] #sidebar-menu ul li a .badge {
+    margin-left: auto;
+    margin-right: 0;
+}
+
+/* When badge and arrow exist together, badge pushes to end, arrow sits beside it */
+#sidebar-menu .has-arrow:has(.badge):after {
+    margin-inline-start: 0 !important;
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+}
+
 /* Sub-menu items — slightly indented, smaller */
 #sidebar-menu .sub-menu li a {
     font-size: 13px;
     font-weight: 400;
-    padding: 8px 20px 8px 36px;
+    padding: 8px 36px 8px 20px;
     color: rgba(255,255,255,0.65) !important;
     gap: 0;
+}
+
+[dir="ltr"] #sidebar-menu .sub-menu li a {
+    padding: 8px 20px 8px 36px;
 }
 
 #sidebar-menu .sub-menu li a::before {
@@ -242,6 +299,11 @@
     margin-left: 10px;
     flex-shrink: 0;
     transition: background 0.15s;
+}
+
+[dir="ltr"] #sidebar-menu .sub-menu li a::before {
+    margin-left: 0;
+    margin-right: 10px;
 }
 
 #sidebar-menu .sub-menu li a:hover::before,
@@ -258,10 +320,5 @@
 #sidebar-menu ul li.mm-active > a {
     color: #fff !important;
     background: rgba(255,255,255,0.1);
-}
-
-/* Badge alignment */
-#sidebar-menu ul li a .badge {
-    margin-top: 2px;
 }
 </style>
