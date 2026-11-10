@@ -209,11 +209,16 @@ class ProductsController extends Controller
         //Gate::authorize('product.delete.forever');
 
         $product = Product::onlyTrashed()->findOrFail($id);
-        $product->forceDelete();
 
         if ($product->image) {
             Storage::disk('public')->delete($product->image);
         }
+
+        foreach (ProductImage::where('product_id', $product->id)->get() as $image) {
+            Storage::disk('public')->delete($image->image);
+        }
+
+        $product->forceDelete();
 
         return redirect()->back()
             ->with('dark', __('messages.PRODUCT_REMOVED'));
