@@ -28,12 +28,12 @@
                     <div class="d-flex align-center" style="gap:10px">
                         <span class="text-grey" style="font-size:12px">{{ formatDate(order.created_at) }}</span>
                         <v-chip
-                            :color="statusColor(order.status)"
+                            :color="statusColor(order)"
                             size="x-small"
                             variant="flat"
                             class="text-white"
                         >
-                            {{ statusText(order.status) }}
+                            {{ statusText(order) }}
                         </v-chip>
                     </div>
                 </div>
@@ -83,8 +83,8 @@
                         <div class="text-grey" style="font-size:12px">{{ formatDate(selected.created_at) }}</div>
                     </div>
                     <div class="d-flex align-center" style="gap:10px">
-                        <v-chip :color="statusColor(selected.status)" size="small" variant="flat" class="text-white">
-                            {{ statusText(selected.status) }}
+                        <v-chip :color="statusColor(selected)" size="small" variant="flat" class="text-white">
+                            {{ statusText(selected) }}
                         </v-chip>
                         <v-btn icon size="small" variant="text" @click="dialog = false">
                             <v-icon>mdi-close</v-icon>
@@ -155,7 +155,7 @@
                     </template>
 
                     <!-- Return request -->
-                    <div v-if="!selected.return_order" class="mt-5">
+                    <div v-if="canReturn(selected)" class="mt-5">
                         <v-divider class="mb-4" />
                         <div class="d-flex align-center justify-space-between">
                             <div>
@@ -176,7 +176,7 @@
                             </v-btn>
                         </div>
                     </div>
-                    <div v-else class="mt-4">
+                    <div v-else-if="selected.return_order" class="mt-4">
                         <v-alert type="warning" variant="tonal" density="compact" rounded="lg" icon="mdi-arrow-u-left-top">
                             {{ t('return_submitted') }}
                         </v-alert>
@@ -230,16 +230,22 @@ async function requestReturn(orderId) {
     }
 }
 
-const statusMap = computed(() => ({
-    pending:     { text: t('status_pending'),     color: 'orange' },
-    approved:    { text: t('status_approved'),    color: 'blue' },
-    in_progress: { text: t('status_in_progress'), color: 'amber' },
-    completed:   { text: t('status_completed'),   color: 'green' },
-    rejected:    { text: t('status_rejected'),    color: 'red' },
-}));
+const statusText  = (order) => order.order_status?.name || order.order_status?.name_en || t('status_pending');
 
-const statusText  = (s) => statusMap.value[s]?.text  || s;
-const statusColor = (s) => statusMap.value[s]?.color || 'grey';
+const statusColor = (order) => {
+    if (!order.order_status) return 'orange';
+    if (order.order_status.default_status) return 'orange';
+    const name = (order.order_status.name_en || order.order_status.name || '').toLowerCase();
+    if (name.includes('confirm') || name.includes('تأكيد'))                                                    return 'blue';
+    if (name.includes('process') || name.includes('progress') || name.includes('جار'))                        return 'amber-darken-2';
+    if (name.includes('ship') || name.includes('deliver') || name.includes('شحن') || name.includes('توصيل')) return 'teal';
+    if (name.includes('complet') || name.includes('done') || name.includes('مكتمل') || name.includes('تم'))   return 'green';
+    if (name.includes('cancel') || name.includes('reject') || name.includes('ملغي') || name.includes('رفض')) return 'red';
+    return 'blue-grey';
+};
+
+// Return only allowed while order is still at default/pending status
+const canReturn = (order) => !order.return_order && !!order.order_status?.default_status;
 
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) : '-';
 </script>
