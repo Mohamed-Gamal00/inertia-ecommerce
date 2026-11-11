@@ -145,13 +145,6 @@ class CheckoutServices
                 'quantity'     => $cartItem->quantity,
             ]);
 
-            // لو فيه sub_choice كمان، زودها مع withPivot
-            if (!empty($cartItem->choices)) {
-                foreach ($cartItem->choices as $choiceId) {
-                    $orderItem->choices()->attach($choiceId);
-                }
-            }
-
             $cartItem->product->decrement('quantity', $cartItem->quantity);
         }
     }

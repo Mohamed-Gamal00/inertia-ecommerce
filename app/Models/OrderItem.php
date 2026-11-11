@@ -27,11 +27,4 @@ class OrderItem extends Pivot
     {
         return $this->belongsTo(Order::class);
     }
-
-    public function choices()
-    {
-        return $this->belongsToMany(Choice::class, 'order_item_choices')
-            ->withPivot('sub_choice_id')
-            ->withTimestamps();
-    }
 }
