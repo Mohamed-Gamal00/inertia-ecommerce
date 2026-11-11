@@ -86,7 +86,6 @@
             </a>
             <ul class="sub-menu" aria-expanded="false">
                 <li><a href="{{ route('shipping.index') }}">إعدادات الشحن</a></li>
-                <li><a href="{{ route('order_status.index') }}">حالات الطلب</a></li>
                 <li><a href="{{ route('countries.index') }}">الدول</a></li>
                 <li><a href="{{ route('cities.index') }}">المدن</a></li>
             </ul>

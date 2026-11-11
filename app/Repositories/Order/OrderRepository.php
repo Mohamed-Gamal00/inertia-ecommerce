@@ -20,7 +20,7 @@ class OrderRepository implements OrderInterface
     public function getAll()
     {
         return $this->order->latest()
-            ->with('user', 'guest', 'addresses', 'addresses.country', 'addresses.city', 'orderItems', 'orderStatus')
+            ->with('user', 'guest', 'addresses', 'addresses.country', 'addresses.city', 'orderItems')
             ->filter(request()->input('order_number'))
             ->where('return_order', false)
             ->paginate();
@@ -37,7 +37,7 @@ class OrderRepository implements OrderInterface
     {
         $order = $this->order->findOrFail($id);
         $order->update([
-            'order_status_id' => $request->order_status_id
+            'status' => $request->status,
         ]);
 
         return $order;

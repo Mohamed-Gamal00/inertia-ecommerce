@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,12 +22,15 @@ class Order extends Model
         'payment_method',
         'status',
         'payment_status',
-        'order_status_id',
         'return_order',
         'note',
         'totalBeforeDiscount',
         'total_price',
         'shipping_price',
+    ];
+
+    protected $casts = [
+        'status' => OrderStatus::class,
     ];
 
     protected static function booted()
@@ -123,11 +127,6 @@ class Order extends Model
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
-    }
-
-    public function orderStatus()
-    {
-        return $this->belongsTo(OrderStatus::class, 'order_status_id', 'id');
     }
 
     public function scopeFilter(Builder $builder, $orderNumber)

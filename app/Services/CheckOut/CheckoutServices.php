@@ -2,18 +2,17 @@
 
 namespace App\Services\CheckOut;
 
+use App\Enums\OrderStatus;
 use App\Models\Admin;
 use App\Models\Cart;
 use App\Models\City;
 use App\Models\Guest;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\OrderStatus;
 use App\Models\Product;
 use App\Models\SendNewsToUser;
 use App\Models\Setting;
 use App\Models\ShippingTypesAndPrice;
-use App\Models\UserAddress;
 use App\Notifications\OrderCreatedEmailAdmin;
 use App\Notifications\OrderCreatedNotification;
 use Illuminate\Support\Facades\Notification;
@@ -98,11 +97,8 @@ class CheckoutServices
 
     public function createOrder($request, $user, $shippingPrice): Order
     {
-        $settings            = Setting::first();
-        $valueAddedTax       = $settings->value_added_tax ?? 0;
         $totalPrice          = $this->calculateTotal($user);
         $totalBeforeDiscount = $this->calculateTotalBeforeDiscount($user);
-        $addedTax            = ($totalPrice * ($valueAddedTax / 100));
 
         // For guest checkout: create or update a Guest record
         $guestId = null;
@@ -127,11 +123,11 @@ class CheckoutServices
             'guest_id'            => $guestId,
             'discount_code_id'    => session('applied_discount_code_id'),
             'payment_method'      => $request->payment_method,
-            'order_status_id'     => OrderStatus::where('default_status', true)->first()->id,
+            'status'              => OrderStatus::Pending,
             'note'                => $request->note,
             'shipping_price'      => $shippingPrice,
             'totalBeforeDiscount' => $totalBeforeDiscount,
-            'total_price'         => $totalPrice + $addedTax,
+            'total_price'         => $totalPrice + $shippingPrice,
             'cookie_id'           => $user ? null : Cart::getCookieId(),
         ]);
     }

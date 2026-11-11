@@ -230,22 +230,32 @@ async function requestReturn(orderId) {
     }
 }
 
-const statusText  = (order) => order.order_status?.name || order.order_status?.name_en || t('status_pending');
-
-const statusColor = (order) => {
-    if (!order.order_status) return 'orange';
-    if (order.order_status.default_status) return 'orange';
-    const name = (order.order_status.name_en || order.order_status.name || '').toLowerCase();
-    if (name.includes('confirm') || name.includes('تأكيد'))                                                    return 'blue';
-    if (name.includes('process') || name.includes('progress') || name.includes('جار'))                        return 'amber-darken-2';
-    if (name.includes('ship') || name.includes('deliver') || name.includes('شحن') || name.includes('توصيل')) return 'teal';
-    if (name.includes('complet') || name.includes('done') || name.includes('مكتمل') || name.includes('تم'))   return 'green';
-    if (name.includes('cancel') || name.includes('reject') || name.includes('ملغي') || name.includes('رفض')) return 'red';
-    return 'blue-grey';
+const statusText  = (order) => {
+    const labels = {
+        pending:    'قيد الانتظار',
+        confirmed:  'تم التأكيد',
+        processing: 'قيد التجهيز',
+        shipped:    'تم الشحن',
+        delivered:  'تم التسليم',
+        cancelled:  'ملغي',
+    };
+    return labels[order.status] ?? order.status;
 };
 
-// Return only allowed while order is still at default/pending status
-const canReturn = (order) => !order.return_order && !!order.order_status?.default_status;
+const statusColor = (order) => {
+    const colors = {
+        pending:    'orange',
+        confirmed:  'blue',
+        processing: 'amber-darken-2',
+        shipped:    'teal',
+        delivered:  'green',
+        cancelled:  'red',
+    };
+    return colors[order.status] ?? 'grey';
+};
+
+// Return only allowed while order is still pending
+const canReturn = (order) => !order.return_order && order.status === 'pending';
 
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) : '-';
 </script>

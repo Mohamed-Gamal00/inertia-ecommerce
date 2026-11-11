@@ -59,15 +59,11 @@
 
                                     <td data-field="id">{{ $order->created_at}}</td>
 
-                                    {{-- set default order status if there'a no order status --}}
+                                    {{-- order status badge --}}
                                     <td data-field="id" style="width: 8%;">
-                                        @if ($order->orderStatus && $order->orderStatus->default_status != 1)
-                                            <span class="badge bg-success"
-                                                  style="font-size: 13px">{{ $order->orderStatus->name }}</span>
-                                        @else
-                                            <span class="badge bg-danger"
-                                                  style="font-size: 13px">{{ $defaultOrderStatus->name }}</span>
-                                        @endif
+                                        <span class="badge bg-{{ $order->status->badgeColor() }}" style="font-size:13px">
+                                            {{ $order->status->labelAr() }}
+                                        </span>
                                     </td>
                                     </td>
                                     <td style="width: 2%;text-align-last: center;">

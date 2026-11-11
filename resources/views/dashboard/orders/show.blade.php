@@ -97,16 +97,16 @@
             حالة الطلب
         </h5>
         <div class="d-flex align-items-center gap-2 flex-wrap">
-            @foreach($orderStatus->sortBy('arrangement') as $status)
+            @foreach(\App\Enums\OrderStatus::cases() as $i => $s)
                 <div class="d-flex align-items-center">
                     <div class="text-center" style="min-width:90px">
                         <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-1
-                            {{ $order->order_status_id == $status->id ? 'bg-primary text-white' : 'bg-light text-muted' }}"
+                            {{ $order->status === $s ? 'bg-primary text-white' : 'bg-light text-muted' }}"
                             style="width:40px; height:40px; font-size:13px; font-weight:700">
-                            {{ $status->arrangement }}
+                            {{ $i + 1 }}
                         </div>
-                        <div style="font-size:11px; {{ $order->order_status_id == $status->id ? 'color:#1a237e; font-weight:700' : 'color:#9ca3af' }}">
-                            {{ $status->CurrentNameLang }}
+                        <div style="font-size:11px; {{ $order->status === $s ? 'color:#1a237e; font-weight:700' : 'color:#9ca3af' }}">
+                            {{ $s->labelAr() }}
                         </div>
                     </div>
                     @if(!$loop->last)
@@ -324,10 +324,10 @@
             <div class="row align-items-end g-3">
                 <div class="col-md-6">
                     <label class="form-label fw-semibold">الحالة الجديدة</label>
-                    <select class="form-select" name="order_status_id" required>
-                        @foreach($orderStatus as $status)
-                            <option value="{{ $status->id }}" @selected($order->order_status_id == $status->id)>
-                                {{ $status->CurrentNameLang }}
+                    <select class="form-select" name="status" required>
+                        @foreach($statuses as $s)
+                            <option value="{{ $s->value }}" @selected($order->status === $s)>
+                                {{ $s->labelAr() }}
                             </option>
                         @endforeach
                     </select>

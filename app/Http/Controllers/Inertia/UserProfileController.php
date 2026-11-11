@@ -41,7 +41,6 @@ class UserProfileController extends Controller
 
         $user->load([
             'orders.orderItems',
-            'orders.orderStatus',
             'addresses',
             'wishlistProducts' => function ($query) use ($user) {
                 $query->with(['images', 'parent'])

@@ -3,7 +3,6 @@
 use App\Http\Controllers\Dashboard\ContactUsController;
 use App\Http\Controllers\Dashboard\DiscountCodeController;
 use App\Http\Controllers\Dashboard\NotificationsController;
-use App\Http\Controllers\Dashboard\OrderStatusController;
 use App\Http\Controllers\Dashboard\ProductAvailabilityController;
 use App\Http\Controllers\Dashboard\AdminsController;
 use App\Http\Controllers\Dashboard\AdvertisementController;
@@ -206,9 +205,6 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::get('/shipping_types/edit/{id}', [ShippingController::class, 'edit'])->name('shipping.edit');
     Route::put('/shipping_types/{id}/update', [ShippingController::class, 'update'])->name('shipping_data.update');
     Route::get('/get-cities', [ShippingController::class, 'getCities'])->name('get-cities');
-    Route::get('/order_status/arranging', [OrderStatusController::class, 'orderArrangement'])->name('order_status.arranging');
-    Route::put('/order_status/arranging/update', [OrderStatusController::class, 'orderArrangementUpdate'])->name('order_status.arranging_update');
-    Route::resource('/order_status', OrderStatusController::class);
 
     //----------------------------------------------/ Reports Routes
 

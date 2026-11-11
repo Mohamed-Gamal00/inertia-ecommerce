@@ -18,7 +18,7 @@ class ReturnOrderRepository implements ReturnOrderInterface
   public function getAll()
   {
     return $this->order->latest()
-      ->with('user', 'addresses', 'addresses.country', 'addresses.city', 'orderItems', 'orderStatus')
+      ->with('user', 'addresses', 'addresses.country', 'addresses.city', 'orderItems')
       ->where('return_order', true)
       ->filter(request()->input('order_number'))
       ->paginate();
@@ -34,7 +34,7 @@ class ReturnOrderRepository implements ReturnOrderInterface
   {
     $order = $this->order->findOrFail($id);
     $order->update([
-      'order_status_id' => $request->order_status_id
+      'status' => $request->status,
     ]);
 
     return $order;
