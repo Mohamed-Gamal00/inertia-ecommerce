@@ -193,7 +193,7 @@
                             <tr>
                                 <td colspan="3" class="text-end fw-bold fs-6">الإجمالي الكلي</td>
                                 <td class="text-center fw-bold fs-6 text-primary">
-                                    {{ number_format($order->total_price, 2) }} ر.س
+                                    {{ number_format($order->total_price + ($order->shipping_price ?? 0), 2) }} ر.س
                                 </td>
                             </tr>
                         </tfoot>
