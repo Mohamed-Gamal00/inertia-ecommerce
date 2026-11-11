@@ -40,8 +40,6 @@ class Order extends Model
         });
     }
 
-    // many to many (الاوردر يحتوى على اكثر من منتج والمنتج ممكن يكون في اكتر من اودر)
-
     public static function getNextOrderNumber(): string
     {
         $year = (int) date('Y');
