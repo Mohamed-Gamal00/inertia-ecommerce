@@ -42,15 +42,18 @@ class Order extends Model
 
     // many to many (الاوردر يحتوى على اكثر من منتج والمنتج ممكن يكون في اكتر من اودر)
 
-    public static function getNextOrderNumber()
+    public static function getNextOrderNumber(): string
     {
-        $year = date('Y'); // or Carbon::now()->year()
-        $number = Order::whereYear('created_at', $year)->max('number');
+        $year = (int) date('Y');
+        $lastNumber = static::whereYear('created_at', $year)->max('number');
 
-        if ($number) {
-            return $number + 1; // this will be the next number
+        $next = $lastNumber ? ((int) $lastNumber + 1) : (int) ($year . '000001');
+
+        while (static::where('number', (string) $next)->exists()) {
+            $next++;
         }
-        return $year . '000001';
+
+        return (string) $next;
     }
 
     public function user()
