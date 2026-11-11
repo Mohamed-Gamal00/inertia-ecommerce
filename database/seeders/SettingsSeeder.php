@@ -30,7 +30,7 @@ class SettingsSeeder extends Seeder
                 'phone_number'    => '+966500000000',
                 'address'         => 'الرياض، المملكة العربية السعودية',
                 'description'     => 'متجر إلكتروني متكامل',
-                'value_added_tax' => 15,
+                'value_added_tax' => 0,
                 'publishable_key' => env('MOYASAR_PUBLISHABLE_KEY'),
                 'secret_key'      => env('MOYASAR_SECRET_KEY'),
                 'sms_api_key'     => env('SMS_API_KEY'),
