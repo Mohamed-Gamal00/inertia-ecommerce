@@ -1,68 +1,124 @@
 <template>
-    <div
+    <article
         class="pc"
-        :class="{ 'pc--hovered': hovered && item.quantity > 0, 'pc--oos': item.quantity < 1 }"
+        :class="{ 'pc--oos': isOutOfStock }"
         :data-product-id="item.id"
-        @mouseenter="hovered = true"
-        @mouseleave="hovered = false"
     >
-        <!-- Image -->
-        <div class="pc-img-wrap">
-            <img :src="item.image_url" :alt="item.name" class="pc-img" />
-            <span v-if="discountPercent && item.quantity > 0" class="pc-badge">-{{ discountPercent }}%</span>
-            <button class="pc-wish" :class="{ 'pc-wish--on': isFavorite }" @click.stop="toggleFavorite">
-                <v-icon size="14">{{ isFavorite ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
-            </button>
-            <div v-if="item.quantity > 0" class="pc-qv-layer" :class="{ show: hovered }">
-                <button class="pc-qv-pill" @click.stop="$emit('quick-view', item)">
-                    <v-icon size="13" class="me-1">mdi-eye-outline</v-icon>
-                    {{ t('quick_view') }}
+        <!-- ───────── Media ───────── -->
+        <div class="pc-media">
+            <component
+                :is="productUrl ? 'a' : 'div'"
+                :href="productUrl || undefined"
+                class="pc-img-link"
+                :aria-label="productUrl ? pick(item, 'name') : undefined"
+                :tabindex="productUrl ? 0 : -1"
+            >
+                <img
+                    :src="item.image_url"
+                    :alt="pick(item, 'name')"
+                    class="pc-img"
+                    loading="lazy"
+                    decoding="async"
+                />
+            </component>
+
+            <!-- Discount badge -->
+            <span v-if="discountPercent && !isOutOfStock" class="pc-badge">
+                -{{ discountPercent }}%
+            </span>
+
+            <!-- Floating actions (logical positioning => works in RTL & LTR) -->
+            <div class="pc-tools">
+                <button
+                    type="button"
+                    class="pc-tool pc-tool--wish"
+                    :class="{ 'is-on': isFavorite }"
+                    :aria-pressed="isFavorite"
+                    :aria-label="isFavorite ? t('removed_from_wishlist') : t('add_to_wishlist')"
+                    :title="isFavorite ? t('removed_from_wishlist') : t('add_to_wishlist')"
+                    @click.stop="toggleFavorite"
+                >
+                    <v-icon size="18">{{ isFavorite ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
+                </button>
+
+                <button
+                    v-if="!isOutOfStock"
+                    type="button"
+                    class="pc-tool pc-tool--secondary"
+                    :class="{ 'is-on': inCompare }"
+                    :aria-pressed="inCompare"
+                    :aria-label="t('compare')"
+                    :title="t('compare')"
+                    @click.stop="toggleCompare(item)"
+                >
+                    <v-icon size="18">mdi-compare</v-icon>
+                </button>
+
+                <button
+                    v-if="!isOutOfStock"
+                    type="button"
+                    class="pc-tool pc-tool--secondary"
+                    :aria-label="t('quick_view')"
+                    :title="t('quick_view')"
+                    @click.stop="$emit('quick-view', item)"
+                >
+                    <v-icon size="18">mdi-eye-outline</v-icon>
                 </button>
             </div>
-            <button v-if="item.quantity > 0" class="pc-qv-mobile" @click.stop="$emit('quick-view', item)" :title="t('quick_view')">
-                <v-icon size="15">mdi-eye-outline</v-icon>
-                {{ t('quick_view') }}
-            </button>
-            <!-- OOS overlay -->
-            <div v-if="item.quantity < 1" class="pc-oos-overlay">
-                <span class="pc-oos-text">
-                    <v-icon size="16" class="me-1">mdi-package-variant-remove</v-icon>
-                    {{ t('out_of_stock') }}
-                </span>
+
+            <!-- Out of stock -->
+            <div v-if="isOutOfStock" class="pc-oos">
+                <span>{{ t('out_of_stock') }}</span>
             </div>
         </div>
 
-        <!-- Body -->
+        <!-- ───────── Body ───────── -->
         <div class="pc-body">
             <span v-if="item.parent" class="pc-cat">{{ pick(item.parent, 'name') }}</span>
-            <div class="pc-name">{{ pick(item, 'name') }}</div>
-            <div class="pc-price-row">
-                <span class="pc-price-new">
-                    ${{ Math.ceil(item.discount_price && Number(item.discount_price) < Number(item.price) ? item.discount_price : item.price) }}
-                </span>
-                <span v-if="item.discount_price && Number(item.discount_price) < Number(item.price)" class="pc-price-old">
-                    ${{ item.price }}
-                </span>
-            </div>
-            <div class="pc-actions">
-                <button
-                    class="pc-cart-btn"
-                    :class="{ 'pc-cart-btn--done': justAdded }"
-                    :disabled="addingToCart || item.quantity < 1"
-                    @click.stop="addToCart"
+
+            <h3 class="pc-name">
+                <component
+                    :is="productUrl ? 'a' : 'span'"
+                    :href="productUrl || undefined"
+                    class="pc-name-link"
                 >
-                    <v-icon size="14" class="me-1">{{ justAdded ? 'mdi-check' : 'mdi-cart-plus' }}</v-icon>
-                    {{ item.quantity < 1 ? t('out_of_stock') : justAdded ? t('added_to_cart') : t('add_to_cart') }}
-                </button>
-                <button
-                    class="pc-compare-btn"
-                    :class="{ 'pc-compare-btn--on': isInCompare(item.id) }"
-                    @click.stop="toggleCompare(item)"
-                    :title="t('compare')"
-                >
-                    <v-icon size="13">mdi-compare</v-icon>
-                </button>
+                    {{ pick(item, 'name') }}
+                </component>
+            </h3>
+
+            <!-- Price block -->
+            <div class="pc-price">
+                <span class="pc-price-now">${{ formatPrice(finalPrice) }}</span>
+                <span v-if="hasDiscount" class="pc-price-old">${{ formatPrice(item.price) }}</span>
             </div>
+
+            <!-- Low stock hint -->
+            <p v-if="isLowStock" class="pc-stock">
+                <span class="pc-stock-dot" aria-hidden="true"></span>
+                {{ item.quantity }} {{ t('left_in_stock') }}
+            </p>
+
+            <!-- Primary CTA -->
+            <button
+                type="button"
+                class="pc-cta"
+                :class="{ 'pc-cta--done': justAdded }"
+                :disabled="addingToCart || isOutOfStock"
+                :aria-busy="addingToCart"
+                @click.stop="addToCart"
+            >
+                <span class="pc-cta-inner">
+                    <v-progress-circular
+                        v-if="addingToCart"
+                        indeterminate
+                        size="16"
+                        width="2"
+                        color="currentColor"
+                    />
+                    <v-icon v-else size="18">{{ justAdded ? 'mdi-check' : 'mdi-cart-plus' }}</v-icon>
+                    <span>{{ ctaLabel }}</span>
+                </span>
+            </button>
         </div>
 
         <v-snackbar v-model="snackbar" location="top right" :color="snackbarColor" timeout="3000">
@@ -73,7 +129,7 @@
                 </v-btn>
             </template>
         </v-snackbar>
-    </div>
+    </article>
 </template>
 
 <script setup>
@@ -85,8 +141,11 @@ import { useCartFly } from '../../composables/useCartFly';
 import { useCompare } from '../../composables/useCompare';
 import { useLocale } from '../../composables/useLocale';
 
-const props = defineProps({ item: { type: Object, required: true } });
-const emit  = defineEmits(['quick-view']);
+const props = defineProps({
+    item: { type: Object, required: true },
+    lowStockThreshold: { type: Number, default: 5 },
+});
+defineEmits(['quick-view']);
 
 const Emitter = inject('Emitter');
 const { flyToCart } = useCartFly();
@@ -94,7 +153,6 @@ const { toggle: toggleCompare, isInCompare } = useCompare();
 const { t, pick } = useLocale();
 const user = usePage().props.auth?.user;
 
-const hovered= ref(false);
 const isFavorite   = ref(props.item.is_in_wishlist || false);
 const addingToCart = ref(false);
 const justAdded    = ref(false);
@@ -102,12 +160,49 @@ const snackbar     = ref(false);
 const snackbarMessage = ref('');
 const snackbarColor   = ref('success');
 
+/* ── Derived state ── */
+const isOutOfStock = computed(() => props.item.quantity < 1);
+const isLowStock   = computed(() => !isOutOfStock.value && props.item.quantity <= props.lowStockThreshold);
+const inCompare    = computed(() => isInCompare(props.item.id));
+
+// Adjust to your real product route if it differs (e.g. route('products.show', props.item.slug))
+const productUrl = computed(() => props.item.url || null);
+
+const hasDiscount = computed(() =>
+    props.item.discount_price && Number(props.item.discount_price) < Number(props.item.price)
+);
+const finalPrice = computed(() => (hasDiscount.value ? props.item.discount_price : props.item.price));
+
 const discountPercent = computed(() => {
-    if (!props.item.discount_price || !props.item.price) return 0;
+    if (!hasDiscount.value) return 0;
     return Math.round(((props.item.price - props.item.discount_price) / props.item.price) * 100);
 });
 
+const ctaLabel = computed(() => {
+    if (isOutOfStock.value) return t('out_of_stock');
+    if (justAdded.value)    return t('added_to_cart');
+    return t('add_to_cart');
+});
+
+/* Shows decimals only when they exist: 120 → "120", 119.5 → "119.50" */
+function formatPrice(value) {
+    const n = Number(value);
+    if (Number.isNaN(n)) return value;
+    return n.toLocaleString('en-US', {
+        minimumFractionDigits: Number.isInteger(n) ? 0 : 2,
+        maximumFractionDigits: 2,
+    });
+}
+
+function notify(message, color = 'success') {
+    snackbarMessage.value = message;
+    snackbarColor.value = color;
+    snackbar.value = true;
+}
+
+/* ── Actions ── */
 async function addToCart() {
+    if (addingToCart.value || isOutOfStock.value) return;
     addingToCart.value = true;
     try {
         const { data } = await axios.post('/cart/add', { product_id: props.item.id, quantity: 1 });
@@ -115,234 +210,193 @@ async function addToCart() {
         flyToCart(document.querySelector(`[data-product-id="${props.item.id}"]`));
         justAdded.value = true;
         setTimeout(() => { justAdded.value = false; }, 2200);
-        snackbarMessage.value = t('product_added_to_cart');        snackbarColor.value = 'success';
+        notify(t('product_added_to_cart'), 'success');
     } catch (e) {
-        snackbarMessage.value = e.response?.data?.message || t('error_occurred');
-        snackbarColor.value = 'error';
+        notify(e.response?.data?.message || t('error_occurred'), 'error');
     } finally {
         addingToCart.value = false;
-        snackbar.value = true;
     }
 }
 
 function toggleFavorite() {
     if (!user) {
-        snackbarMessage.value = t('wishlist_login_required');
-        snackbarColor.value = 'warning';
-        snackbar.value = true;
+        notify(t('wishlist_login_required'), 'warning');
         return;
     }
     const action = isFavorite.value ? 'wishlist.remove' : 'wishlist.add';
     router.post(route(action, props.item.id), {}, {
-        preserveState: true, preserveScroll: true,
+        preserveState: true,
+        preserveScroll: true,
         onSuccess: () => {
             isFavorite.value = !isFavorite.value;
-            snackbarMessage.value = isFavorite.value ? t('added_to_wishlist') : t('removed_from_wishlist');
-            snackbarColor.value = 'success';
-            snackbar.value = true;
+            notify(isFavorite.value ? t('added_to_wishlist') : t('removed_from_wishlist'));
         },
     });
 }
 </script>
 
 <style scoped>
+/* ───────── Tokens ───────── */
 .pc {
-    background: #FDFBF7;
-    border-radius: 14px;
-    border: 1px solid #D7CDBD;
-    overflow: hidden;
+    --c-bg: #FDFBF7;
+    --c-surface: #F3ECE0;
+    --c-line: #E6DDCF;
+    --c-brand: #76543D;
+    --c-brand-dark: #5C4130;
+    --c-accent: #C69763;
+    --c-sale: #B4452F;
+    --c-text: #302F2B;
+    --c-muted: #77736B;
+    --c-ok: #15803D;
+    --c-warn: #B45309;
+
+    position: relative;
     display: flex;
     flex-direction: column;
-    transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s, background 0.2s;
-    cursor: pointer;
-}
-
-.pc--hovered {
-    background: #F7F0E5;
-    box-shadow: 0 8px 28px rgba(118, 84, 61, 0.12);
-    transform: translateY(-3px);
-    border-color: #C69763;
-}
-
-.pc-img-wrap {
-    position: relative;
+    height: 100%;
+    background: var(--c-bg);
+    border: 1px solid var(--c-line);
+    border-radius: 12px;
     overflow: hidden;
-    background: #F7F0E5;
-    height: 160px;
+    transition: box-shadow .2s ease, border-color .2s ease;
 }
 
-@media (min-width: 600px) {
-    .pc-img-wrap { height: 180px; }
+@media (hover: hover) {
+    .pc:hover {
+        border-color: var(--c-accent);
+        box-shadow: 0 10px 28px rgba(118, 84, 61, .12);
+    }
 }
+
+/* ───────── Media ───────── */
+.pc-media {
+    position: relative;
+    aspect-ratio: 1 / 1;          /* no layout shift while images load */
+    background: var(--c-surface);
+    overflow: hidden;
+}
+
+.pc-img-link { display: block; width: 100%; height: 100%; }
 
 .pc-img {
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.4s ease;
-    display: block;
+    transition: transform .45s ease;
 }
 
-.pc--hovered .pc-img { transform: scale(1.05); }
+@media (hover: hover) {
+    .pc:not(.pc--oos):hover .pc-img { transform: scale(1.04); }
+}
 
+/* Discount badge */
 .pc-badge {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    background: linear-gradient(135deg, #C69763, #b38556);
-    color: white;
-    font-size: 10px;
-    font-weight: 800;
-    padding: 3px 8px;
-    border-radius: 20px;
+    inset-block-start: 10px;
+    inset-inline-start: 10px;
     z-index: 2;
-    line-height: 1.4;
-    box-shadow: 0 2px 8px rgba(198, 151, 99, 0.3);
-}
-
-.pc-wish {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.9);
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #9ca3af;
-    box-shadow: 0 1px 6px rgba(0,0,0,0.12);
-    transition: all 0.15s;
-    z-index: 5;
-}
-
-.pc-wish:hover { color: #ef4444; transform: scale(1.1); }
-.pc-wish--on { background: #fee2e2; color: #ef4444; }
-
-.pc-qv-layer {
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.2s;
-    z-index: 3;
-}
-
-.pc-qv-layer.show { opacity: 1; }
-
-.pc-qv-pill {
-    background: white;
-    border: none;
-    border-radius: 20px;
-    padding: 5px 12px;
-    font-size: 11px;
-    font-weight: 600;
-    color: #76543D;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-}
-
-/* Mobile quick-view button — hidden on desktop (hover handles it), shown on touch */
-.pc-qv-mobile {
-    display: none;
-    position: absolute;
-    bottom: 8px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #76543D;
-    border: none;
-    border-radius: 20px;
-    padding: 6px 14px;
+    padding: 3px 9px;
+    border-radius: 6px;
+    background: var(--c-sale);
+    color: #fff;
     font-size: 12px;
     font-weight: 700;
-    color: white;
-    cursor: pointer;
-    align-items: center;
-    gap: 5px;
-    box-shadow: 0 3px 12px rgba(118, 84, 61, 0.35);
-    z-index: 4;
-    white-space: nowrap;
-    letter-spacing: 0.2px;
-}
-
-@media (hover: none) {
-    /* touch device — show mobile QV button, hide hover overlay */
-    .pc-qv-mobile { display: flex; }
-    .pc-qv-layer  { display: none; }
-}
-
-/* Out-of-stock overlay */
-.pc-oos-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.55);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 6;
-}
-
-.pc-oos-text {
-    background: #ef4444;
-    color: white;
-    font-size: 12px;
-    font-weight: 800;
-    padding: 6px 16px;
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    letter-spacing: 0.4px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
-}
-
-/* Out-of-stock card state */
-.pc--oos {
-    cursor: not-allowed;
-}
-
-.pc--oos .pc-img { filter: grayscale(60%); }
-.pc--oos .pc-price-new { color: #9ca3af; }
-.pc--oos .pc-cart-btn {
-    background: #f3f4f6 !important;
-    border-color: #e5e7eb !important;
-    color: #9ca3af !important;
-    cursor: not-allowed !important;
-}
-.pc--oos .pc-wish { pointer-events: none; opacity: 0.4; }
-
-.pc-body {
-    padding: 10px 12px 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    flex: 1;
-}
-
-.pc-cat {
-    font-size: 9px;
-    font-weight: 700;
-    color: #76543D;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-    background: rgba(118, 84, 61, 0.1);
-    padding: 2px 7px;
-    border-radius: 20px;
-    align-self: flex-start;
     line-height: 1.5;
 }
 
-.pc-name {
+/* Floating tools */
+.pc-tools {
+    position: absolute;
+    inset-block-start: 10px;
+    inset-inline-end: 10px;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pc-tool {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .95);
+    color: var(--c-text);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, .14);
+    cursor: pointer;
+    transition: background .15s, color .15s, transform .15s, opacity .2s;
+}
+
+.pc-tool:hover { transform: scale(1.08); color: var(--c-brand); }
+
+.pc-tool--wish.is-on { background: #FDE8E8; color: #DC2626; }
+.pc-tool--wish:hover { color: #DC2626; }
+
+.pc-tool--secondary.is-on { background: var(--c-brand); color: #fff; }
+
+/* On devices with hover: secondary tools appear on hover / keyboard focus.
+   On touch devices they stay visible (no hover available). */
+@media (hover: hover) {
+    .pc-tool--secondary:not(.is-on) {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    .pc:hover .pc-tool--secondary,
+    .pc:focus-within .pc-tool--secondary {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* Out of stock */
+.pc-oos {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    background: rgba(253, 251, 247, .62);
+    pointer-events: none;
+}
+
+.pc-oos span {
+    padding: 6px 14px;
+    border-radius: 6px;
+    background: var(--c-text);
+    color: #fff;
     font-size: 13px;
     font-weight: 700;
-    color: #302F2B;
-    line-height: 1.35;
+}
+
+.pc--oos .pc-img { filter: grayscale(70%); }
+
+/* ───────── Body ───────── */
+.pc-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 14px 14px;
+}
+
+.pc-cat {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--c-muted);
+    line-height: 1.4;
+}
+
+.pc-name {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.45;
+    color: var(--c-text);
+    /* reserve 2 lines so every card in a row aligns */
+    min-height: calc(1.45em * 2);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
@@ -350,95 +404,120 @@ function toggleFavorite() {
     overflow: hidden;
 }
 
-.pc-price-row {
+.pc-name-link { color: inherit; text-decoration: none; }
+.pc-name-link:hover { color: var(--c-brand); }
+
+/* Price */
+.pc-price {
     display: flex;
     align-items: baseline;
-    gap: 5px;
-    margin-top: 2px;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    margin: 2px 0 8px;
 }
 
-.pc-price-new {
-    font-size: 16px;
+.pc-price-now {
+    font-size: 18px;
     font-weight: 800;
-    color: #76543D;
-    line-height: 1;
+    line-height: 1.2;
+    color: var(--c-brand);
+    font-variant-numeric: tabular-nums;
 }
 
 .pc-price-old {
-    font-size: 11px;
-    color: #77736B;
+    font-size: 13px;
+    color: var(--c-muted);
     text-decoration: line-through;
+    font-variant-numeric: tabular-nums;
 }
 
-.pc-actions {
+.pc--oos .pc-price-now { color: var(--c-muted); }
+
+/* Low stock */
+.pc-stock {
     display: flex;
-    gap: 6px;
-    margin-top: 6px;
     align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--c-warn);
 }
 
-.pc-cart-btn {
-    flex: 1;
-    height: 34px;
-    border-radius: 8px;
-    border: 1.5px solid #76543D;
-    background: transparent;
-    color: #76543D;
-    font-size: 11px;
+.pc-stock-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+/* CTA — pinned to bottom so all buttons line up across a row */
+.pc-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    gap: 6px;
+    width: 100%;
+    min-height: 42px;             /* comfortable touch target */
+    margin-top: auto;
+    border: 0;
+    border-radius: 10px;
+    background: var(--c-brand);
+    color: #fff;
+    font-size: 13px;
     font-weight: 700;
     cursor: pointer;
+    transition: background .18s ease, transform .1s ease;
+    /* force horizontal centering regardless of page direction */
+    direction: ltr;
+    unicode-bidi: plaintext;
+    text-align: center;
+}
+
+.pc-cta:hover:not(:disabled) { background: var(--c-brand-dark); }
+.pc-cta:active:not(:disabled) { transform: scale(.98); }
+
+.pc-cta-inner {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    transition: all 0.18s;
-    white-space: nowrap;
-    overflow: hidden;
+    gap: 6px;
+    direction: rtl;         /* keeps icon + text in natural Arabic order */
+    pointer-events: none;
 }
 
-.pc-cart-btn:hover:not(:disabled) {
-    background: #76543D;
-    border-color: #76543D;
-    color: white;
+.pc-cta--done,
+.pc-cta--done:hover:not(:disabled) { background: var(--c-ok); }
+
+.pc-cta:disabled { cursor: not-allowed; }
+.pc--oos .pc-cta:disabled {
+    background: #ECE8E1;
+    color: #8B867D;
 }
 
-.pc-cart-btn--done {
-    background: #16a34a !important;
-    border-color: #16a34a !important;
-    color: white !important;
+/* ───────── Accessibility ───────── */
+.pc-tool:focus-visible,
+.pc-cta:focus-visible,
+.pc-name-link:focus-visible,
+.pc-img-link:focus-visible {
+    outline: 2px solid var(--c-accent);
+    outline-offset: 2px;
 }
 
-.pc-cart-btn:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-    border-color: #d1d5db;
-    color: #9ca3af;
+@media (prefers-reduced-motion: reduce) {
+    .pc,
+    .pc-img,
+    .pc-tool,
+    .pc-cta { transition: none; }
+    .pc:hover .pc-img { transform: none; }
 }
 
-.pc-compare-btn {
-    width: 34px;
-    height: 34px;
-    border-radius: 8px;
-    border: 1.5px solid #D7CDBD;
-    background: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #77736B;
-    transition: all 0.15s;
-    flex-shrink: 0;
-}
-
-.pc-compare-btn:hover {
-    border-color: #C69763;
-    color: #C69763;
-    background: rgba(198, 151, 99, 0.1);
-}
-
-.pc-compare-btn--on {
-    border-color: #C69763;
-    background: #C69763;
-    color: white;
+/* ───────── Small screens ───────── */
+@media (max-width: 599px) {
+    .pc-body { padding: 10px 10px 12px; }
+    .pc-name { font-size: 13px; }
+    .pc-price-now { font-size: 16px; }
+    .pc-cta { font-size: 12px; min-height: 40px; }
 }
 </style>
