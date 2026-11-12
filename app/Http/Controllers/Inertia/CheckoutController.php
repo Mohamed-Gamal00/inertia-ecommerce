@@ -90,7 +90,7 @@ class CheckoutController extends Controller
         // ===== Validation =====
 
         // Terms always required
-        $request->validate(['terms' => 'required'], [
+        $request->validate(['terms' => 'nullable'], [
             'terms.required' => 'يجب الموافقة على الشروط والأحكام',
         ]);
 

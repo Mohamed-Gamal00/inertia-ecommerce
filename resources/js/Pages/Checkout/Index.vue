@@ -408,11 +408,6 @@ const discountSaving = computed(() => {
 });
 
 async function submit() {
-    if (!form.value.terms) {
-        errors.value = { terms: t('agree_terms_required') };
-        return;
-    }
-
     // Validate guest / new address fields
     const isGuest = !user.value;
     const needsAddressForm = isGuest ? guestMode.value === 'guest' : form.value.user_address === 'add_address';
@@ -443,7 +438,7 @@ async function submit() {
     const payload = {
         payment_method:  form.value.payment_method,
         note:            form.value.note,
-        terms:           1,
+        terms:           form.value.terms ? 1 : 0,
         shipping_price:  shippingCost.value,
         join_news:       joinNews.value ? 1 : 0,
     };
