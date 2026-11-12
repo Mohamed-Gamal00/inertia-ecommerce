@@ -6,13 +6,14 @@ use App\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\DiscountCode;
 use App\Models\OrderAddress;
 
 
 class Order extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'user_id',
@@ -43,11 +44,11 @@ class Order extends Model
     public static function getNextOrderNumber(): string
     {
         $year = (int) date('Y');
-        $lastNumber = static::whereYear('created_at', $year)->max('number');
+        $lastNumber = static::withTrashed()->whereYear('created_at', $year)->max('number');
 
         $next = $lastNumber ? ((int) $lastNumber + 1) : (int) ($year . '000001');
 
-        while (static::where('number', (string) $next)->exists()) {
+        while (static::withTrashed()->where('number', (string) $next)->exists()) {
             $next++;
         }
 

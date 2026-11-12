@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Inertia;
 
+use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use App\Models\OrderStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,7 +15,7 @@ class ReturnProductsController extends Controller
         $user = Auth::guard('web')->user();
 
         $returnOrders = $user->orders()
-            ->with(['orderItems', 'orderStatus'])
+            ->with('orderItems')
             ->where('return_order', true)
             ->latest()
             ->get();
@@ -34,11 +34,9 @@ class ReturnProductsController extends Controller
             ->where('user_id', $user->id)
             ->firstOrFail();
 
-        $statusId = OrderStatus::where('default_status', true)->value('id');
-
         $order->update([
-            'return_order'    => true,
-            'order_status_id' => $statusId,
+            'return_order' => true,
+            'status'       => OrderStatus::Pending,
         ]);
 
         return response()->json(['message' => __('flash.return_request_success')]);
