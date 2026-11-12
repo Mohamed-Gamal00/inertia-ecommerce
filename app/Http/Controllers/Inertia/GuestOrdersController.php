@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Inertia;
 
+use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Guest;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\OrderStatus;
 use Illuminate\Support\Str;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -19,19 +19,12 @@ class GuestOrdersController extends Controller
     public function orders($number)
     {
         $guest_cookie_id = Cart::getCookieId();
-        $order = Order::latest()->with('products', 'orderStatus', 'orderItems', 'orderItems.product')->where('cookie_id', $guest_cookie_id)
+        $order = Order::latest()->with('products', 'orderItems', 'orderItems.product')->where('cookie_id', $guest_cookie_id)
             ->where('return_order', false)
             ->where('number', $number)
             ->first();
 
-        // return $order->products;
-
-        $orderStatus = OrderStatus::orderBy('arrangement')->get();
-
-
-        $finalOrderStatus = max(OrderStatus::pluck('arrangement')->toArray());
-
-        return view('front.guest_orders.orders', compact('order', 'orderStatus'));
+        return view('front.guest_orders.orders', compact('order'));
     }
 
     /* حذف الطلب */
@@ -62,25 +55,16 @@ class GuestOrdersController extends Controller
             ->where('return_order', true)
             ->paginate(10);
 
-        $finalOrderStatus = max(OrderStatus::pluck('arrangement')->toArray());
-
-        $orderStatus = OrderStatus::orderBy('arrangement')->get();
-
-
-        return view('front.guest_orders.guest_return_products', compact('products', 'orderStatus'));
+        return view('front.guest_orders.guest_return_products', compact('products'));
     }
 
     /* ارجاع */
     public function store(Request $request)
     {
-        $firstOrderStatus = min(OrderStatus::pluck('arrangement')->toArray());
-
-        $statusId = OrderStatus::where('default_status', true)->first();
-
         if ($request->return_order_id) {
             Order::where('id', $request->return_order_id)->update([
                 'return_order' => true,
-                'order_status_id' => $statusId->id
+                'status'       => OrderStatus::Pending,
             ]);
         }
 
@@ -90,20 +74,13 @@ class GuestOrdersController extends Controller
     /* الطلبات */
     public function mainOrders()
     {
-        $orders = Order::latest()->with('products', 'orderStatus', 'orderItems', 'orderItems.product')
+        $orders = Order::latest()->with('products', 'orderItems', 'orderItems.product')
             ->where('cookie_id', Cart::getCookieId())
             ->where('return_order', false)
             ->has('orderItems')
             ->paginate(6);
 
-
-        $orderStatus = OrderStatus::orderBy('arrangement')->get();
-
-
-        $finalOrderStatus = max(OrderStatus::pluck('arrangement')->toArray());
-
-
-        return view('front.guest_orders.main_orders', \compact('orders', 'orderStatus', 'finalOrderStatus'));
+        return view('front.guest_orders.main_orders', compact('orders'));
     }
 
     /* المفضلة */

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Inertia;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\OrderStatus;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -17,7 +16,7 @@ class UserOrdersController extends Controller
     public function showOrder($number)
     {
         $user = Auth::guard('web')->user();
-        $order = Order::latest()->with('products', 'orderStatus', 'orderItems', 'orderItems.product')->where('user_id', $user->id)
+        $order = Order::latest()->with('products', 'orderItems', 'orderItems.product')->where('user_id', $user->id)
             ->where('return_order', false)
             ->where('number', $number)
             ->first();
@@ -26,10 +25,7 @@ class UserOrdersController extends Controller
             abort(Response::HTTP_NOT_FOUND);
         }
 
-        $orderStatus = OrderStatus::orderBy('arrangement')->get();
-        // dd($orderStatus);
-        $finalOrderStatus = max(OrderStatus::pluck('arrangement')->toArray());
-        return view('front.profile.user_orders', \compact('order', 'orderStatus', 'finalOrderStatus'));
+        return view('front.profile.user_orders', compact('order'));
 
 
     }
@@ -77,24 +73,11 @@ class UserOrdersController extends Controller
     public function mainOrders()
     {
         $user = Auth::guard('web')->user();
-        $orders = Order::latest()->with('products', 'orderStatus', 'orderItems', 'orderItems.product')->where('user_id', $user->id)
+        $orders = Order::latest()->with('products', 'orderItems', 'orderItems.product')->where('user_id', $user->id)
             ->where('return_order', false)
             ->has('orderItems')
             ->paginate(6);
-        // ->get();
 
-        // foreach ($orders as $order) {
-        //   return
-        //   $order->orderItems->count();
-        // }
-
-
-        $orderStatus = OrderStatus::orderBy('arrangement')->get();
-
-
-        $finalOrderStatus = max(OrderStatus::pluck('arrangement')->toArray());
-
-
-        return view('front.profile.main_orders', \compact('orders', 'orderStatus', 'finalOrderStatus'));
+        return view('front.profile.main_orders', compact('orders'));
     }
 }

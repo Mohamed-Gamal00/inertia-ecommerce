@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\guest;
 
+use App\Enums\OrderStatus;
 use App\Helper\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
@@ -9,7 +10,6 @@ use App\Models\Cart;
 use App\Models\City;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\OrderStatus;
 use App\Models\Product;
 use App\Models\SendNewsToUser;
 use App\Models\Setting;
@@ -141,7 +141,7 @@ class CheckoutController extends Controller
             $order = Order::create([
                 'guest_id' => $guestId,
                 'payment_method' => $request->payment_method, // cash on deleviry
-                'order_status_id' => OrderStatus::select('id')->where('default_status', true)->first()->id,
+                'status' => OrderStatus::Pending,
                 'note' => $request->note,
                 'shipping_price' => request()->pickup_from_store == '1' ? null : $shipping_price,
                 'totalBeforeDiscount' => $this->totalBeforeDiscount($guestId),

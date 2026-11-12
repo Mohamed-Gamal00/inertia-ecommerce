@@ -30,7 +30,6 @@ class SettingRequest extends FormRequest
             'instagram'                => 'nullable',
             'snap'                     => 'nullable',
             'tiktok'                   => 'nullable',
-            'order_status'             => 'nullable|exists:order_statuses,id',
             'publishable_key'          => 'nullable',
             'secret_key'               => 'nullable',
 

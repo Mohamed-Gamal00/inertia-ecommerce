@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Dashboard;
 use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Dashboard\Settings\SettingRequest;
-use App\Models\OrderStatus;
 use App\Models\Setting;
 use App\Repositories\Setting\SettingRepository;
 use Illuminate\Http\Request;
@@ -26,9 +25,7 @@ class SettingsController extends Controller
         //Gate::authorize('settings.edit');
 
         $setting = Setting::first();
-        $orderStatus = OrderStatus::all();
-        $currentOrderStatus = OrderStatus::where('default_status', true)->first();
-        return view('dashboard.front_settings.edit', compact('setting', 'orderStatus', 'currentOrderStatus'));
+        return view('dashboard.front_settings.edit', compact('setting'));
     }
 
     public function update(SettingRequest $request, $id)

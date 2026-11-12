@@ -27,8 +27,8 @@ class OrderResource extends JsonResource
                 'address' => $this->user->address,
                 // Add other user fields as needed
             ],
-            'order-status-id' => $this->orderStatus->id,
-            'order-status' => $this->orderStatus->getCurrentNameLangAttribute(),
+            'status' => $this->status->value,
+            'order-status' => $this->status->label(),
         ];
 
 

@@ -150,7 +150,7 @@
             <div class="card-body">
                 @forelse($ordersByStatus as $status)
                 <div class="d-flex align-items-center justify-content-between mb-3">
-                    <span style="font-size:13px; color:#374151">{{ $status->name }}</span>
+                    <span style="font-size:13px; color:#374151">{{ $status->status->labelAr() }}</span>
                     <div class="d-flex align-items-center gap-2">
                         <div class="progress" style="width:80px; height:6px; border-radius:3px">
                             @php $pct = $ordersCount > 0 ? ($status->total / $ordersCount) * 100 : 0; @endphp

@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\guest;
 
+use App\Enums\OrderStatus;
 use App\Helper\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
 use App\Models\Guest;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\OrderStatus;
 use Illuminate\Http\Request;
 
 class GuestOrdersController extends Controller
@@ -18,7 +18,7 @@ class GuestOrdersController extends Controller
         $guest = $request->header('guest-id');
 //        return $guest;
         $orders = Order::latest()
-            ->with('products', 'orderStatus', 'orderItems', 'orderItems.product')
+            ->with('products', 'orderItems', 'orderItems.product')
             ->where('guest_id', $guest)
             ->where('return_order', false)
             ->paginate(6);
@@ -43,7 +43,7 @@ class GuestOrdersController extends Controller
         }
 
         $order = Order::latest()
-            ->with('products', 'orderStatus', 'orderItems', 'orderItems.product')
+            ->with('products', 'orderItems', 'orderItems.product')
             ->where('guest_id', $guest)
             ->where('return_order', false)
             ->where('number', $number)
@@ -55,7 +55,7 @@ class GuestOrdersController extends Controller
 //        return $order;
         $data = [
             'order' => new  OrderResource($order),
-            'order status' => $order->orderStatus->getCurrentNameLangAttribute(),
+            'order status' => $order->status->label(),
         ];
         return ApiResponse::sendResponse(200, '', $data);
     }
@@ -113,7 +113,6 @@ class GuestOrdersController extends Controller
         if (!$returnProducts) {
             return response()->json(['message' => 'Guest or related data not found'], 404);
         }
-        $finalOrderStatus = max(OrderStatus::pluck('arrangement')->toArray());
         $products = $returnProducts->orders()
             ->where('return_order', true)
             ->paginate(10);
@@ -131,8 +130,7 @@ class GuestOrdersController extends Controller
             'status_code' => 200,
             'message' => 'success',
             'data' => [
-//                'order_status' => $orderStatus, // Assuming OrderStatusResource for order statuses
-                'products' => OrderResource::collection($products), // Assuming OrderResource is used for orders
+                'products' => OrderResource::collection($products),
             ]
         ]);
     }
@@ -141,12 +139,6 @@ class GuestOrdersController extends Controller
 
     public function store(Request $request)
     {
-
-        $statusId = OrderStatus::where('default_status', true)->first();
-
-        if (!$statusId) {
-            return response()->json(['status_code' => 400, 'message' => 'Default order status not found'], 400);
-        }
 
         $request->validate([
             'return_order_id' => 'required',
@@ -162,7 +154,7 @@ class GuestOrdersController extends Controller
 
             $order->update([
                 'return_order' => true,
-                'order_status_id' => $statusId->id
+                'status'       => OrderStatus::Pending,
             ]);
         }
         return response()->json(['status_code' => 200, 'message' => 'تم ارجاع الطلب بنجاح']);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\OrderStatus;
 use App\Models\ContactUs;
 use App\Models\DiscountCode;
 use App\Models\Order;
@@ -46,9 +47,8 @@ class DashboardController extends Controller
         // ── Orders by status (last 30 days) ──
         $ordersByStatus = Order::where('return_order', false)
                             ->where('created_at', '>=', now()->subDays(30))
-                            ->join('order_statuses', 'orders.order_status_id', '=', 'order_statuses.id')
-                            ->select('order_statuses.name', DB::raw('count(*) as total'))
-                            ->groupBy('order_statuses.name')
+                            ->select('status', DB::raw('count(*) as total'))
+                            ->groupBy('status')
                             ->get();
 
         // ── Sales last 7 days ──
@@ -78,7 +78,7 @@ class DashboardController extends Controller
         }
 
         // ── Latest 5 orders ──
-        $latestOrders = Order::with(['user', 'orderStatus'])
+        $latestOrders = Order::with('user')
                             ->where('return_order', false)
                             ->latest()
                             ->take(5)
@@ -108,7 +108,7 @@ class DashboardController extends Controller
 
         // ── Pending orders ──
         $pendingOrders = Order::where('return_order', false)
-                            ->whereHas('orderStatus', fn($q) => $q->where('default_status', true))
+                            ->where('status', OrderStatus::Pending)
                             ->count();
 
         return view('dashboard.dashboard', compact(

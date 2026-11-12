@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\OrderStatus;
 use App\Helper\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CartResource;
@@ -9,7 +10,6 @@ use App\Http\Resources\OrderResource;
 use App\Http\Resources\ProductsResource;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\OrderStatus;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -21,7 +21,7 @@ class UserOrdersController extends Controller
         $user = $request->user();
 
         $orders = Order::latest()
-            ->with('products', 'orderStatus', 'orderItems', 'orderItems.product')
+            ->with('products', 'orderItems', 'orderItems.product')
             ->where('user_id', $user->id)
             ->where('return_order', false)
             ->has('orderItems')
@@ -51,7 +51,7 @@ class UserOrdersController extends Controller
 
 
         $order = Order::latest()
-            ->with('products', 'orderStatus', 'orderItems', 'orderItems.product')
+            ->with('products', 'orderItems', 'orderItems.product')
             ->where('user_id', $user->id)
             ->where('return_order', false)
             ->where('number', $number)
@@ -63,7 +63,7 @@ class UserOrdersController extends Controller
 //        return $order;
         $data = [
             'order' => new  OrderResource($order),
-            'order status' => $order->orderStatus->getCurrentNameLangAttribute(),
+            'order status' => $order->status->label(),
         ];
         return ApiResponse::sendResponse(200, '', $data);
     }
@@ -126,7 +126,6 @@ class UserOrdersController extends Controller
         if (!$returnProducts) {
             return response()->json(['message' => 'User or related data not found'], 404);
         }
-        $finalOrderStatus = max(OrderStatus::pluck('arrangement')->toArray());
         $products = $returnProducts->orders()
             ->where('return_order', true)
             ->paginate(10);
@@ -141,8 +140,7 @@ class UserOrdersController extends Controller
             'status_code' => 200,
             'message' => 'User return products retrieved successfully',
             'data' => [
-//                'order_status' => $orderStatus, // Assuming OrderStatusResource for order statuses
-                'products' => OrderResource::collection($products), // Assuming OrderResource is used for orders
+                'products' => OrderResource::collection($products),
             ]
         ]);
     }
@@ -150,13 +148,6 @@ class UserOrdersController extends Controller
     /*  make return order  */
     public function store(Request $request)
     {
-
-        $statusId = OrderStatus::where('default_status', true)->first();
-//        return $statusId;
-
-        if (!$statusId) {
-            return response()->json(['status_code' => 400, 'message' => 'Default order status not found'], 400);
-        }
 
         $request->validate([
             'return_order_id' => 'required',
@@ -172,7 +163,7 @@ class UserOrdersController extends Controller
 
             $order->update([
                 'return_order' => true,
-                'order_status_id' => $statusId->id
+                'status'       => OrderStatus::Pending,
             ]);
         }
         return response()->json(['status_code' => 200, 'message' => 'تم ارجاع الطلب بنجاح']);

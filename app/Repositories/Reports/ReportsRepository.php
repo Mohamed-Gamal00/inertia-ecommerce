@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Reports;
 
+use App\Enums\OrderStatus;
 use App\Models\DiscountCode;
 use App\Models\Order;
 use App\Models\Product;
@@ -84,9 +85,7 @@ class ReportsRepository implements ReportInterface
 
 
       case 'shipping-report':
-        $query = Order::whereHas('orderStatus', function ($query) {
-          $query->where('name', 'تم التوصيل');
-        })->with('orderItems');
+        $query = Order::where('status', OrderStatus::Delivered)->with('orderItems');
 
         if ($startAt && $endAt) {
           $query->whereBetween('updated_at', [$startAt, $endAt]);
