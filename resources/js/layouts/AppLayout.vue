@@ -1,6 +1,6 @@
 <template>
   <v-app>
-      <CartDrawer />
+      <CartDrawer :key="user ? 'auth-' + user.id : 'guest'" />
       <AppHeader />
       <QuickView />
       <BackToTop />

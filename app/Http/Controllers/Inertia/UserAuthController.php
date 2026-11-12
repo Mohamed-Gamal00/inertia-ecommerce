@@ -96,7 +96,11 @@ class UserAuthController extends Controller
         });
 
         // Merge any guest cart items into the newly registered user's cart
-        $this->checkoutServices->mergeGuestCart(Auth::guard('web')->id());
+        try {
+            $this->checkoutServices->mergeGuestCart(Auth::guard('web')->id());
+        } catch (\Throwable $e) {
+            logger()->error('Cart merge failed on register: ' . $e->getMessage());
+        }
 
         return redirect()->route('home');
     }
@@ -112,7 +116,11 @@ class UserAuthController extends Controller
             $request->session()->regenerate();
 
             // Merge any guest cart items into the now-authenticated user's cart
-            $this->checkoutServices->mergeGuestCart(Auth::guard('web')->id());
+            try {
+                $this->checkoutServices->mergeGuestCart(Auth::guard('web')->id());
+            } catch (\Throwable $e) {
+                logger()->error('Cart merge failed on login: ' . $e->getMessage());
+            }
 
             return redirect()->route('home');
         }
@@ -122,6 +130,15 @@ class UserAuthController extends Controller
 
     public function logout(Request $request)
     {
+        $userId = Auth::guard('web')->id();
+
+        // Transfer the user's cart to a new guest identity before logging out.
+        // This preserves the cart items but makes them inaccessible to the
+        // authenticated user and the old guest identity.
+        if ($userId) {
+            $this->checkoutServices->transferCartToGuest($userId);
+        }
+
         Auth::guard('web')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

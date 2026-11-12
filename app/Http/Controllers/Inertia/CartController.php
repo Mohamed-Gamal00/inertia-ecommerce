@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Inertia;
 
 use App\Http\Controllers\Controller;
-use App\Models\Cart;
 use App\Models\Product;
 use App\Repositories\Cart\CartRepository;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use InvalidArgumentException;
 
 class CartController extends Controller
 {
@@ -18,25 +17,47 @@ class CartController extends Controller
         $this->cart = $cart;
     }
 
+    /**
+     * Map cart items to the JSON structure expected by the frontend.
+     */
+    protected function mapItems($items)
+    {
+        return $items->map(fn($item) => [
+            'id'             => $item->id,
+            'product_id'     => $item->product_id,
+            'name'           => $item->product?->name,
+            'name_en'        => $item->product?->name_en,
+            'image'          => $item->product?->image_url,
+            'price'          => $item->product?->price,
+            'discount_price' => $item->product?->discount_price,
+            'quantity'       => $item->quantity,
+        ]);
+    }
+
+    /**
+     * Build the standard JSON cart response.
+     */
+    protected function cartResponse(string $message = null): array
+    {
+        $items = $this->cart->get();
+
+        $response = [
+            'items' => $this->mapItems($items),
+            'count' => $items->count(),
+            'total' => $this->cart->total(),
+        ];
+
+        if ($message) {
+            $response['message'] = $message;
+        }
+
+        return $response;
+    }
+
     // GET /cart — return cart items as JSON
     public function index()
     {
-        $items = $this->cart->get()->map(fn($item) => [
-            'id'                  => $item->id,
-            'product_id'          => $item->product_id,
-            'name'                => $item->product?->name,
-            'name_en'             => $item->product?->name_en,
-            'image'               => $item->product?->image_url,
-            'price'               => $item->product?->price,
-            'discount_price'      => $item->product?->discount_price,
-            'quantity'            => $item->quantity,
-        ]);
-
-        return response()->json([
-            'items' => $items,
-            'count' => $items->count(),
-            'total' => $this->cart->total(),
-        ]);
+        return response()->json($this->cartResponse());
     }
 
     // POST /cart/add
@@ -50,53 +71,36 @@ class CartController extends Controller
 
         $product = Product::findOrFail($request->product_id);
 
-        if ($product->quantity < ($request->quantity ?? 1)) {
+        $quantity = $request->quantity ?? 1;
+
+        // Pre-check: the product must have at least one unit in stock.
+        if ($product->quantity < 1) {
             return response()->json(['message' => __('flash.quantity_not_available')], 422);
         }
 
-        $this->cart->add($product, $request->quantity ?? 1, $request->color_id);
+        try {
+            $this->cart->add($product, $quantity, $request->color_id);
+        } catch (InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
-        $items = $this->cart->get()->map(fn($item) => [
-            'id'             => $item->id,
-            'product_id'     => $item->product_id,
-            'name'           => $item->product?->name,
-            'name_en'        => $item->product?->name_en,
-            'image'          => $item->product?->image_url,
-            'price'          => $item->product?->price,
-            'discount_price' => $item->product?->discount_price,
-            'quantity'       => $item->quantity,
-        ]);
-
-        return response()->json([
-            'message' => __('flash.product_added_to_cart'),
-            'items'   => $items,
-            'count'   => $items->count(),
-            'total'   => $this->cart->total(),
-        ]);
+        return response()->json(
+            $this->cartResponse(__('flash.product_added_to_cart'))
+        );
     }
 
     // PATCH /cart/{id}
     public function update(Request $request, $id)
     {
         $request->validate(['quantity' => 'required|integer|min:1']);
-        $this->cart->update($id, $request->quantity);
 
-        $items = $this->cart->get()->map(fn($item) => [
-            'id'             => $item->id,
-            'product_id'     => $item->product_id,
-            'name'           => $item->product?->name,
-            'name_en'        => $item->product?->name_en,
-            'image'          => $item->product?->image_url,
-            'price'          => $item->product?->price,
-            'discount_price' => $item->product?->discount_price,
-            'quantity'       => $item->quantity,
-        ]);
+        try {
+            $this->cart->update($id, $request->quantity);
+        } catch (InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
-        return response()->json([
-            'items' => $items,
-            'count' => $items->count(),
-            'total' => $this->cart->total(),
-        ]);
+        return response()->json($this->cartResponse());
     }
 
     // DELETE /cart/{id}
@@ -104,21 +108,6 @@ class CartController extends Controller
     {
         $this->cart->delete($id);
 
-        $items = $this->cart->get()->map(fn($item) => [
-            'id'             => $item->id,
-            'product_id'     => $item->product_id,
-            'name'           => $item->product?->name,
-            'name_en'        => $item->product?->name_en,
-            'image'          => $item->product?->image_url,
-            'price'          => $item->product?->price,
-            'discount_price' => $item->product?->discount_price,
-            'quantity'       => $item->quantity,
-        ]);
-
-        return response()->json([
-            'items' => $items,
-            'count' => $items->count(),
-            'total' => $this->cart->total(),
-        ]);
+        return response()->json($this->cartResponse());
     }
 }

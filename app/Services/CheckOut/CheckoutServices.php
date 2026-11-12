@@ -15,6 +15,7 @@ use App\Models\Setting;
 use App\Models\ShippingTypesAndPrice;
 use App\Notifications\OrderCreatedEmailAdmin;
 use App\Notifications\OrderCreatedNotification;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 
 class CheckoutServices
@@ -314,39 +315,100 @@ class CheckoutServices
     /**
      * Merge guest cart (by cookie_id) into the authenticated user's cart.
      * Called right after login or register.
+     *
+     * Wrapped in a DB transaction with row-level locking to prevent race
+     * conditions when two requests try to merge the same guest cart or when
+     * the user adds items concurrently.
      */
     public function mergeGuestCart(int $userId): void
     {
         $cookieId = Cart::getCookieId();
 
-        $guestItems = Cart::withoutGlobalScope('cookie_id')
-            ->where('cookie_id', $cookieId)
-            ->where('status', 0)
-            ->whereNull('user_id')
-            ->get();
-
-        foreach ($guestItems as $guestItem) {
-            // Check if user already has this product in cart
-            $existing = Cart::withoutGlobalScope('cookie_id')
-                ->where('user_id', $userId)
-                ->where('product_id', $guestItem->product_id)
+        DB::transaction(function () use ($cookieId, $userId) {
+            // Lock and fetch guest cart items (cookie_id match, active, no user)
+            $guestItems = Cart::withoutGlobalScope('cookie_id')
+                ->where('cookie_id', $cookieId)
                 ->where('status', 0)
-                ->first();
+                ->whereNull('user_id')
+                ->lockForUpdate()
+                ->get();
 
-            if ($existing) {
-                // Merge quantities (cap at product stock)
-                $product  = $guestItem->product;
-                $newQty   = $existing->quantity + $guestItem->quantity;
-                $maxQty   = $product ? $product->quantity : $newQty;
-                $existing->update(['quantity' => min($newQty, $maxQty)]);
-                $guestItem->update(['status' => 1]); // mark old guest item as done
-            } else {
-                // Reassign to user
-                $guestItem->update([
-                    'user_id'   => $userId,
-                    'cookie_id' => $cookieId, // keep same cookie so global scope still works
-                ]);
+            foreach ($guestItems as $guestItem) {
+                // Lock and check if user already has this product
+                $existing = Cart::withoutGlobalScope('cookie_id')
+                    ->where('user_id', $userId)
+                    ->where('product_id', $guestItem->product_id)
+                    ->where('status', 0)
+                    ->lockForUpdate()
+                    ->first();
+
+                if ($existing) {
+                    // Merge quantities (cap at product stock)
+                    $product = $guestItem->product;
+                    $newQty  = $existing->quantity + $guestItem->quantity;
+                    $maxQty  = $product ? $product->quantity : $newQty;
+                    $existing->update(['quantity' => min($newQty, $maxQty)]);
+                    // Mark the old guest item as completed
+                    $guestItem->update(['status' => 1]);
+                } else {
+                    // Reassign to user — active_key changes from g:cookie:p:X to u:user:p:X
+                    $guestItem->update([
+                        'user_id' => $userId,
+                    ]);
+                }
             }
-        }
+        });
+    }
+
+    /**
+     * Transfer an authenticated user's cart to a new guest identity.
+     * Called during logout so the user's cart items are preserved but
+     * become inaccessible to the authenticated user and the old guest identity.
+     *
+     * Generates a fresh guest UUID, reassigns the user's active cart items
+     * (user_id → null, cookie_id → new UUID), and queues the new cookie
+     * so the browser picks it up on the next request.
+     */
+    public function transferCartToGuest(int $userId): void
+    {
+        $newCookieId = Cart::generateNewGuestCookie();
+
+        DB::transaction(function () use ($userId, $newCookieId) {
+            // Lock and fetch the user's active cart items
+            $userItems = Cart::withoutGlobalScope('cookie_id')
+                ->where('user_id', $userId)
+                ->where('status', 0)
+                ->lockForUpdate()
+                ->get();
+
+            foreach ($userItems as $item) {
+                // Check if a guest cart already has this product with the new cookie
+                // (unlikely since the cookie is fresh, but handle it safely)
+                $existingGuestItem = Cart::withoutGlobalScope('cookie_id')
+                    ->where('cookie_id', $newCookieId)
+                    ->where('product_id', $item->product_id)
+                    ->where('status', 0)
+                    ->whereNull('user_id')
+                    ->lockForUpdate()
+                    ->first();
+
+                if ($existingGuestItem) {
+                    // Merge quantities (cap at stock)
+                    $product = $item->product;
+                    $newQty  = $existingGuestItem->quantity + $item->quantity;
+                    $maxQty  = $product ? $product->quantity : $newQty;
+                    $existingGuestItem->update(['quantity' => min($newQty, $maxQty)]);
+                    // Mark the old user item as completed
+                    $item->update(['status' => 1]);
+                } else {
+                    // Transfer to the new guest identity
+                    // active_key changes from u:user:p:X to g:newCookie:p:X
+                    $item->update([
+                        'user_id'   => null,
+                        'cookie_id' => $newCookieId,
+                    ]);
+                }
+            }
+        });
     }
 }
