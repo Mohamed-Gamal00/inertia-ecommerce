@@ -113,7 +113,7 @@ class ProductRepository implements ProudctInterface
 
     public function getById($id)
     {
-        return $this->product->with('colors', 'chiled', 'parent', 'availability', 'features')->findOrFail($id);
+        return $this->product->with('colors', 'parent', 'availability', 'features')->findOrFail($id);
     }
 
     // protected function uploadedImage($request, $key, $folder)

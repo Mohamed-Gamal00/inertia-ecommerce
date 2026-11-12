@@ -6,9 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Color;
 use App\Models\Company;
 use App\Models\MainCategory;
-use App\Models\MainCategorySetting;
 use App\Models\Product;
-use App\Models\SubSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 

@@ -38,10 +38,6 @@ class CategoryRepository implements CategoryInterface
     DB::transaction(function () use ($data) {
       $category = $this->category->create($data);
 
-      if (request()->has('category')) {
-        $category->settings()->sync(request()->input('category'));
-      }
-
       if (request()->has('choice_id')) {
         $category->choices()->attach(request()->input('choice_id'));
       }
@@ -55,9 +51,6 @@ class CategoryRepository implements CategoryInterface
     DB::transaction(function () use ($category, $data) {
       $category->update($data);
 
-      if (request()->has('category')) {
-        $category->settings()->sync(request()->input('category'));
-      }
       if (request()->has('choice_id')) {
         // dd($data);
         $category->choices()->sync(request()->input('choice_id'));

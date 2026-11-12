@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\MainCategorySetting;
 
 class MainCategory extends Model
 {
@@ -43,16 +42,6 @@ class MainCategory extends Model
     return $this->name_en;
   }
 
-
-  // public function settings()
-  // {
-  //   return $this->belongsToMany(
-  //     MainCategorySetting::class,
-  //     'main_category_main_category_setting',
-  //     'main_category_id',
-  //     'category_setting_id',
-  //   );
-  // }
 
   public function products()
   {

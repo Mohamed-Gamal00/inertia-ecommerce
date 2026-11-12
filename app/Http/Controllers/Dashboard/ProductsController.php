@@ -10,7 +10,6 @@ use App\Models\MainCategory;
 use App\Models\Product;
 use App\Helper\Helper;
 use App\Models\Choice;
-use App\Models\MainCategorySetting;
 use App\Models\ProductAvailability;
 use App\Models\ProductFeature;
 use App\Models\ProductImage;
@@ -129,7 +128,7 @@ class ProductsController extends Controller
     public function edit(string $id)
     {
         //Gate::authorize('product.edit');
-        $product = Product::with('colors', 'choices', 'chiled', 'parent', 'availability', 'features')->findOrFail($id);
+        $product = Product::with('colors', 'choices', 'parent', 'availability', 'features')->findOrFail($id);
 
         $categories = MainCategory::all();
         $subCategories = MainCategory::whereNull('parent_id')->with('children')->get();
@@ -222,13 +221,6 @@ class ProductsController extends Controller
 
         return redirect()->back()
             ->with('dark', __('messages.PRODUCT_REMOVED'));
-    }
-
-    public function subCategory($categoryId)
-    {
-        $category = MainCategory::findOrFail($categoryId);
-        $subcategories = $category->settings()->select('main_category_settings.id', 'main_category_settings.name')->get();
-        return response()->json($subcategories);
     }
 
     public function imageDelete(Request $request)

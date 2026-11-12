@@ -17,11 +17,6 @@ class City extends Model
         return $this->belongsTo(Country::class);
     }
 
-    public function shippingLocations()
-    {
-        return $this->hasMany(ShippingLocation::class);
-    }
-
     protected $appends = ['name'];
 
     public function getNameAttribute()

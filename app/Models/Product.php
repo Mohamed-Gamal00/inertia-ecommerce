@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\SubSettings;
 use Illuminate\Support\Str;
 
 class Product extends Model
@@ -26,7 +25,6 @@ class Product extends Model
         'parent_id',
         'company_id',
         'quantity',
-        'main_category_setting_id',
         'is_special',
         'product_availability_id',
         'weight',
@@ -106,16 +104,6 @@ class Product extends Model
     public function sub_category(): BelongsTo
     {
         return $this->belongsTo(MainCategory::class, 'parent_id', 'id');
-    }
-
-    public function chiled(): BelongsTo
-    {
-        return $this->belongsTo(MainCategorySetting::class, 'main_category_setting_id', 'id');
-    }
-
-    public function subSettings()
-    {
-        return $this->belongsToMany(SubSettings::class, 'product_sub_settings', 'product_id', 'sub_settings_id');
     }
 
     public function comments()

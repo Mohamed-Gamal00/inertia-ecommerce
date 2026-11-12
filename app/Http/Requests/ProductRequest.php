@@ -31,7 +31,6 @@ class ProductRequest extends FormRequest
             // 'category_id' => ['required', 'exists:main_categories,id'],
             'parent_id' => ['required', 'exists:main_categories,id'],
             'company_id' => ['nullable', 'exists:companies,id'],
-            'main_category_setting_id' => ['nullable', 'exists:main_category_settings,id'],
             'description' => ['nullable'],
             'quantity' => ['nullable', 'numeric', 'min:0'],
             'is_special' => 'nullable|boolean',

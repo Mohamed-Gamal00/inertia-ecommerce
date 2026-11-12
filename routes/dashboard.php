@@ -19,11 +19,9 @@ use App\Http\Controllers\Dashboard\DesignsController;
 use App\Http\Controllers\Dashboard\HeaderBanerController;
 use App\Http\Controllers\Dashboard\HeaderTextController;
 use App\Http\Controllers\Dashboard\MainCategoriesController;
-use App\Http\Controllers\Dashboard\MainCategoriesSettingsController;
 use App\Http\Controllers\Dashboard\OrderController;
 use App\Http\Controllers\Dashboard\PageController;
 use App\Http\Controllers\Dashboard\ProductsController;
-use App\Http\Controllers\Dashboard\ProductSettingsController;
 use App\Http\Controllers\Dashboard\ProductsFeatures;
 use App\Http\Controllers\Dashboard\ReportsController;
 use App\Http\Controllers\Dashboard\ReturnOrderController;
@@ -35,10 +33,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Dashboard\ProfileController;
 use App\Http\Controllers\Dashboard\ProfileSettingsController;
 use App\Http\Controllers\Dashboard\RepresentativesOrderController;
-use App\Http\Controllers\Dashboard\Shipping\ShippingCompanyController;
 use App\Http\Controllers\Dashboard\StoreFatuerController;
 use App\Livewire\Categories;
-use App\Livewire\MainCategorySettings;
 use Illuminate\Support\Facades\Route;
 
 //=============================================== Dashboard Routes
@@ -88,10 +84,6 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::resource('/banners', App\Http\Controllers\Dashboard\NewHeaderBannerController::class);
 
 
-    //-----------------------------------------------------------------------------/ShippingCompany
-    // Route::resource('/shipping_companies', ShippingCompanyController::class);
-    // Route::get('/get-cities/{countryId}', [ShippingCompanyController::class, 'getCities']);
-
     //-----------------------------------------------------------------------------/softDelete Products
     Route::get('/products/trash', [productsController::class, 'trash'])->name('products.trash');
     Route::put('/products/{id}/restore', [productsController::class, 'restore'])->name('products.restore');
@@ -111,7 +103,6 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
 
     Route::post('/product_images/delete', [ProductsController::class, 'imageDelete'])->name('image.delete');
 
-    Route::get('/sub_category/{categoryId}', [ProductsController::class, 'subCategory'])->name('sub_category');
     Route::post('/search', [ProductsController::class, 'search'])->name('search');
     Route::get('/products/out_of_stock', [ProductsController::class, 'outOfStock'])->name('out_of_stock');
     Route::get('/fetch-choices', [ProductsController::class, 'fetchChoices'])->name('fetch.choices');
